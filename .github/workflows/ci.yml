@@ -14,7 +14,9 @@ jobs:
         with:
           node-version: 24
           cache: npm
-      - run: npm ci
+      # npm install plutôt que npm ci : le lock généré sous Windows omet des
+      # dépendances optionnelles Linux (@emnapi/*), voir npm/cli#4828.
+      - run: npm install
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run test
