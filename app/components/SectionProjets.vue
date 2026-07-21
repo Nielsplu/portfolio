@@ -5,6 +5,8 @@ const filtres = ['Tous', ...categoriesProjet] as const
 const actif = ref<(typeof filtres)[number]>('Tous')
 
 const visibles = computed(() => filtrerParCategorie(projets, actif.value))
+
+const demoFtpOuverte = ref(false)
 </script>
 
 <template>
@@ -34,7 +36,12 @@ const visibles = computed(() => filtrerParCategorie(projets, actif.value))
           <ul class="project__tags">
             <li v-for="t in p.tags" :key="t" class="tag">{{ t }}</li>
           </ul>
-          <div v-if="p.liens?.length" class="project__links">
+          <div v-if="p.liens?.length || p.demo" class="project__links">
+            <button
+              v-if="p.demo === 'ftp'"
+              class="project__link project__link--demo"
+              @click="demoFtpOuverte = true"
+            >▶ Tester ici</button>
             <a
               v-for="l in p.liens"
               :key="l.url"
@@ -46,6 +53,8 @@ const visibles = computed(() => filtrerParCategorie(projets, actif.value))
           </div>
         </article>
       </div>
+
+      <DemoFtpTerminal v-model:ouvert="demoFtpOuverte" />
     </div>
   </section>
 </template>
@@ -135,4 +144,11 @@ const visibles = computed(() => filtrerParCategorie(projets, actif.value))
   background: var(--accent);
   color: #fff;
 }
+.project__link--demo {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  cursor: pointer;
+}
+.project__link--demo:hover { background: var(--accent-bright); }
 </style>
