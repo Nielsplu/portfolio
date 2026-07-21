@@ -135,7 +135,10 @@ export const projets: Projet[] = [
       "Implémentation d'un protocole de transfert de fichiers : envoi par chunks pour les gros fichiers, gestion de la concurrence et des race conditions via un design pattern « Stopper » maison, timeout des connexions inactives et sécurisation de l'arborescence servie.",
     tags: ['Go', 'Concurrence', 'Réseau', 'CLI'],
     categorie: 'Réseaux & Sécurité',
-    liens: [{ label: 'Code', url: 'https://github.com/Nielsplu/ftp-go' }],
+    liens: [
+      { label: 'Code', url: 'https://github.com/Nielsplu/ftp-go' },
+      { label: 'Tester', url: 'https://github.com/Nielsplu/ftp-go/releases/tag/v1.0' },
+    ],
   },
 ]
 
