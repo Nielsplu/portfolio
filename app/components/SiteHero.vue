@@ -10,10 +10,9 @@ import { profil } from '~/data/portfolio'
         <h1 class="hero__name">{{ profil.nom }}</h1>
         <p class="hero__prompt">
           <span class="hero__prompt-symbol">&gt;</span>
-          alternance : développement web · sécurité des SI
+          développement web · sécurité des SI
         </p>
         <p class="hero__text">{{ profil.accroche }}</p>
-        <p class="hero__text hero__text--search">{{ profil.recherche }}</p>
         <div class="hero__actions">
           <a href="#projets" class="btn btn--primary">Voir mes projets</a>
           <a href="#contact" class="btn btn--ghost">Me contacter</a>
@@ -57,7 +56,6 @@ import { profil } from '~/data/portfolio'
 }
 .hero__prompt-symbol { color: var(--muted); margin-right: 0.4rem; }
 .hero__text { color: var(--muted); max-width: 56ch; margin: 0 0 0.9rem; }
-.hero__text--search { color: var(--ink); font-weight: 500; }
 .hero__actions { display: flex; gap: 0.9rem; flex-wrap: wrap; margin-top: 1.6rem; }
 .hero__photo-wrap { display: flex; justify-content: center; }
 .hero__photo {

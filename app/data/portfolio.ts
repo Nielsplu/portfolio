@@ -6,11 +6,9 @@
 export const profil = {
   nom: 'Niels Plu',
   titre: 'Développeur — BUT Informatique',
-  statut: "Étudiant en BUT Informatique · IUT de Nantes · Promotion 2027",
+  statut: "Étudiant en 3ᵉ année de BUT Informatique · IUT de Nantes",
   accroche:
-    "Étudiant en 2ᵉ année de BUT Informatique, je conçois des applications web de bout en bout : back-end, base de données, front-end et déploiement. Rigoureux et curieux, je cherche à progresser au contact d'équipes exigeantes.",
-  recherche:
-    "Je suis à la recherche d'une alternance en développement web et/ou sécurité des systèmes d'information à partir de la rentrée 2026.",
+    "Étudiant en 3ᵉ année de BUT Informatique, je conçois des applications web de bout en bout : back-end, base de données, front-end et déploiement. Rigoureux et curieux, je cherche à progresser au contact d'équipes exigeantes.",
   email: 'pluniels@gmail.com',
   github: 'https://github.com/Nielsplu',
   linkedin: 'https://www.linkedin.com/in/niels-plu-389ba12a2/',

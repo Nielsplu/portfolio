@@ -9,7 +9,7 @@ import { profil } from '~/data/portfolio'
         <p class="eyebrow">contact</p>
         <h2 class="section-title contact__title">Travaillons ensemble</h2>
         <p class="contact__text">
-          Une alternance, un projet, une question ? Je réponds rapidement.
+          Un projet, une question ? Je réponds rapidement.
         </p>
         <div class="contact__actions">
           <a :href="`mailto:${profil.email}`" class="btn btn--primary">M'envoyer un email</a>

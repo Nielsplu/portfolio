@@ -1,7 +1,7 @@
 // GitHub Pages : le site sera servi sur https://nielsplu.github.io/portfolio/
 const baseURL = process.env.NUXT_APP_BASE_URL || '/portfolio/'
 const siteUrl = `https://nielsplu.github.io${baseURL}`
-const description = "Portfolio de Niels Plu, étudiant en BUT Informatique à l'IUT de Nantes, à la recherche d'une alternance en développement web et sécurité des systèmes d'information."
+const description = "Portfolio de Niels Plu, étudiant en 3ᵉ année de BUT Informatique à l'IUT de Nantes — développement web et sécurité des systèmes d'information."
 
 export default defineNuxtConfig({
   compatibilityDate: '2026-01-01',
