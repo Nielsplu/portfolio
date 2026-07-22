@@ -5,7 +5,7 @@ import { competences } from '~/content'
 <template>
   <BaseSection id="competences" eyebrow="competences" title="Compétences & outils">
     <div class="skills">
-      <article v-for="(c, i) in competences" :key="c.titre" class="card skill">
+      <article v-for="(c, i) in competences" :key="c.titre" v-reveal="i * 70" class="card skill">
         <span class="skill__num" aria-hidden="true">{{ String(i + 1).padStart(2, '0') }}</span>
         <h3 class="skill__title">{{ c.titre }}</h3>
         <div class="skill__groups">

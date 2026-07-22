@@ -5,7 +5,7 @@ import { profil } from '~/content'
 <template>
   <section id="contact" class="section">
     <div class="container">
-      <div class="card contact">
+      <div v-reveal class="card contact">
         <p class="eyebrow">contact</p>
         <h2 class="section-title contact__title">Travaillons ensemble</h2>
         <p class="contact__text">

@@ -12,6 +12,7 @@ export default defineNuxtConfig({
     '~/assets/css/tokens.css',
     '~/assets/css/base.css',
     '~/assets/css/components.css',
+    '~/assets/css/motion.css',
   ],
   // Nom des composants = nom de fichier, sans préfixe du dossier
   // (BaseSection, SiteNav…) : les sous-dossiers restent purement organisationnels.
@@ -24,6 +25,13 @@ export default defineNuxtConfig({
     head: {
       htmlAttrs: { lang: 'fr' },
       title: 'Niels Plu – Portfolio',
+      // Pose la classe `js` avant le premier paint : l'état masqué des
+      // animations d'apparition s'applique dès le rendu (pas de flash). Ne
+      // s'active que si IntersectionObserver existe pour révéler ensuite.
+      script: [{
+        innerHTML: 'window.IntersectionObserver&&document.documentElement.classList.add("js")',
+        tagPosition: 'head',
+      }],
       meta: [
         { name: 'description', content: description },
         { name: 'theme-color', content: '#1f4e79' },

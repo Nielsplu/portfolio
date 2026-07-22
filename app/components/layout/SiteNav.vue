@@ -3,6 +3,8 @@ import { profil } from '~/content'
 import { liensNavigation } from '~/sections/registry'
 
 const open = ref(false)
+// Met en surbrillance le lien de la section visible à l'écran.
+const actif = useScrollSpy(liensNavigation.map(l => l.href.slice(1)))
 </script>
 
 <template>
@@ -20,7 +22,12 @@ const open = ref(false)
       </button>
       <ul id="nav-links" class="nav__links" :class="{ 'nav__links--open': open }">
         <li v-for="l in liensNavigation" :key="l.href">
-          <a :href="l.href" @click="open = false">{{ l.label }}</a>
+          <a
+            :href="l.href"
+            :class="{ 'is-active': actif === l.href.slice(1) }"
+            :aria-current="actif === l.href.slice(1) ? 'true' : undefined"
+            @click="open = false"
+          >{{ l.label }}</a>
         </li>
         <li>
           <a :href="profil.cv" class="btn btn--primary nav__cv" download>CV</a>
@@ -62,12 +69,33 @@ const open = ref(false)
   padding: 0;
 }
 .nav__links a:not(.btn) {
+  position: relative;
   text-decoration: none;
   color: var(--muted);
   font-weight: 500;
   font-size: 0.95rem;
+  transition: color 0.15s ease;
 }
 .nav__links a:not(.btn):hover { color: var(--accent); }
+/* Lien de la section active : couleur d'accent + soulignement animé. */
+.nav__links a.is-active { color: var(--accent); }
+.nav__links a:not(.btn)::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.2s ease;
+}
+.nav__links a.is-active::after { transform: scaleX(1); }
+@media (max-width: 720px) {
+  .nav__links a:not(.btn)::after { display: none; }
+}
 .nav__cv { padding: 0.4rem 1rem; }
 .nav__burger {
   display: none;

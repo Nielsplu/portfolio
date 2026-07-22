@@ -5,7 +5,7 @@ import { parcours } from '~/content'
 <template>
   <BaseSection id="parcours" eyebrow="parcours" title="Formation & expérience">
     <ol class="timeline">
-      <li v-for="etape in parcours" :key="etape.titre" class="timeline__item">
+      <li v-for="(etape, i) in parcours" :key="etape.titre" v-reveal="i * 70" class="timeline__item">
         <div class="timeline__dot" aria-hidden="true" />
         <p class="timeline__period">{{ etape.periode }}</p>
         <div class="card timeline__card">
