@@ -1,0 +1,15 @@
+name: Setup
+description: Installe Node.js (version depuis .nvmrc) et les dépendances (npm ci).
+
+# Action composite réutilisée par tous les jobs : la version de Node et la
+# stratégie d'installation ne sont définies qu'ici. Suppose le dépôt déjà
+# récupéré (actions/checkout en amont dans le job).
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version-file: .nvmrc
+        cache: npm
+    - run: npm ci
+      shell: bash

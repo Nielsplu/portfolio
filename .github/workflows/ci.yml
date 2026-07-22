@@ -1,23 +1,66 @@
-name: CI
+name: CI/CD
+
+# Pipeline unique : qualité → build → déploiement.
+# - Sur pull request : qualité + build (validation, sans déploiement).
+# - Sur push vers main : qualité + build + déploiement GitHub Pages.
+# Chaque étape est une barrière : rien n'est déployé si le lint, les types,
+# les tests ou le build échouent.
 
 on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
+
+# Least privilege par défaut ; le job de déploiement élève ses droits.
+permissions:
+  contents: read
+
+# Annule les exécutions superflues sur les PR (feedback rapide) mais jamais
+# sur main, pour ne pas interrompre un déploiement en cours.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  check:
+  quality:
+    name: Qualité (lint · types · tests)
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: npm
-      # npm install plutôt que npm ci : le lock généré sous Windows omet des
-      # dépendances optionnelles Linux (@emnapi/*), voir npm/cli#4828.
-      - run: npm install
+      - uses: ./.github/actions/setup
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run test
+
+  build:
+    name: Build statique
+    needs: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
       - run: npm run generate
+      - name: Téléverser l'artefact Pages
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .output/public
+
+  deploy:
+    name: Déploiement GitHub Pages
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

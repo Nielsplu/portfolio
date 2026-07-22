@@ -1,5 +1,7 @@
 # Portfolio — Niels Plu
 
+[![CI/CD](https://github.com/Nielsplu/portfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/Nielsplu/portfolio/actions/workflows/ci.yml)
+
 Portfolio one-page en **Nuxt 4** (Vue 3, TypeScript), sans dépendance CSS externe, prêt pour **GitHub Pages**.
 
 En ligne : <https://nielsplu.github.io/portfolio/>
@@ -73,11 +75,27 @@ npm run lint         # ESLint
 npm run typecheck    # vérification TypeScript
 ```
 
-## Déployer sur GitHub Pages
+## CI/CD
+
+Un pipeline unique (`.github/workflows/ci.yml`) enchaîne trois étapes, chacune
+barrière de la suivante :
+
+```
+qualité (lint · types · tests) ─▶ build statique ─▶ déploiement Pages
+```
+
+- **Pull request** : qualité + build (validation, sans déploiement).
+- **Push sur `main`** : qualité + build + déploiement sur GitHub Pages.
+
+Rien n'est déployé si le lint, les types, les tests ou le build échouent. La
+version de Node vient de `.nvmrc`, les installs sont reproductibles (`npm ci`),
+et le setup commun est factorisé dans une action composite
+(`.github/actions/setup`).
+
+### Mise en place (une fois)
 
 1. Repo `portfolio` sur GitHub, pousser sur `main`.
 2. Settings → Pages → Source : **GitHub Actions**.
-3. `.github/workflows/deploy.yml` build et déploie à chaque push.
 
 Le site est servi sur `https://nielsplu.github.io/portfolio/`. Si le repo a un
 autre nom, changer `baseURL` dans `nuxt.config.ts`.
