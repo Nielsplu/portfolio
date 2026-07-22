@@ -33,7 +33,7 @@ const icon = computed<SimpleIcon | undefined>(() => techIcons[props.label])
   color: var(--accent);
   white-space: nowrap;
 }
-.tech--logo { transition: background 0.15s ease; }
+.tech--logo { transition: background 0.15s ease, transform 0.15s ease; }
 .tech__logo {
   width: 0.9rem;
   height: 0.9rem;
@@ -41,8 +41,10 @@ const icon = computed<SimpleIcon | undefined>(() => techIcons[props.label])
   flex-shrink: 0;
   transition: fill 0.15s ease;
 }
-/* Au survol de la carte, les logos prennent leur couleur de marque. */
-:global(.project:hover) .tech--logo .tech__logo {
-  fill: var(--brand, currentColor);
+/* Au survol d'un badge, son logo prend sa couleur de marque. */
+.tech--logo:hover {
+  background: var(--surface);
+  transform: translateY(-1px);
 }
+.tech--logo:hover .tech__logo { fill: var(--brand, currentColor); }
 </style>

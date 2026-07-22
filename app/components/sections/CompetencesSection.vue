@@ -4,48 +4,62 @@ import { competences } from '~/content'
 
 <template>
   <BaseSection id="competences" eyebrow="competences" title="Compétences & outils">
-    <div class="grid">
-      <div v-for="(c, i) in competences" :key="c.titre" class="card skill">
-        <h3 class="skill__title">
-          <span class="skill__index" aria-hidden="true">{{ String(i + 1).padStart(2, '0') }}</span>
-          {{ c.titre }}
-        </h3>
-        <div v-for="g in c.groupes" :key="g.label" class="skill__group">
-          <p class="skill__label">{{ g.label }}</p>
-          <TagList :items="g.items" />
+    <div class="skills">
+      <article v-for="(c, i) in competences" :key="c.titre" class="card skill">
+        <span class="skill__num" aria-hidden="true">{{ String(i + 1).padStart(2, '0') }}</span>
+        <h3 class="skill__title">{{ c.titre }}</h3>
+        <div class="skill__groups">
+          <div v-for="g in c.groupes" :key="g.label" class="skill__group">
+            <p class="skill__label">{{ g.label }}</p>
+            <TechList :items="g.items" />
+          </div>
         </div>
-      </div>
+      </article>
     </div>
   </BaseSection>
 </template>
 
 <style scoped>
-.grid {
+.skills {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
   gap: 1.4rem;
 }
-.skill { padding: 1.4rem 1.5rem; }
-.skill__title {
-  font-size: 1.05rem;
-  margin-bottom: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
+.skill {
+  position: relative;
+  overflow: hidden;
+  padding: 1.6rem 1.7rem;
 }
-.skill__index {
+/* Grand chiffre filigrane : signature visuelle en fond. */
+.skill__num {
+  position: absolute;
+  top: -0.6rem;
+  right: 0.4rem;
   font-family: var(--font-mono);
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: var(--accent-bright);
+  font-size: 4.5rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--accent-soft);
+  opacity: 0.7;
+  pointer-events: none;
+  user-select: none;
 }
-.skill__group { margin-bottom: 0.9rem; }
+.skill__title {
+  position: relative;
+  font-size: 1.1rem;
+  margin-bottom: 1.3rem;
+}
+.skill__groups {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
 .skill__label {
-  font-size: 0.8rem;
+  font-size: 0.72rem;
   font-weight: 600;
   color: var(--muted);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin: 0 0 0.45rem;
+  letter-spacing: 0.08em;
+  margin: 0 0 0.55rem;
 }
 </style>
