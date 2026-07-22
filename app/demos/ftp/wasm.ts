@@ -365,14 +365,14 @@ function chargerScript(url: string): Promise<void> {
 export async function demarrerFtpWasm(base: string): Promise<PontFtp> {
   if (window.__ftpgo?.ready) return window.__ftpgo
 
-  const reponseManifeste = await fetch(`${base}demo/ftp-data.json`)
+  const reponseManifeste = await fetch(`${base}demos/ftp/data.json`)
   if (!reponseManifeste.ok) throw new Error('manifeste introuvable')
   construireFs(await reponseManifeste.json() as ManifesteDemo)
   installerShim()
 
-  await chargerScript(`${base}demo/wasm_exec.js`)
+  await chargerScript(`${base}demos/ftp/wasm_exec.js`)
   const go = new window.Go!()
-  const reponseWasm = await fetch(`${base}demo/ftp.wasm`)
+  const reponseWasm = await fetch(`${base}demos/ftp/ftp.wasm`)
   if (!reponseWasm.ok) throw new Error('binaire wasm introuvable')
   const { instance } = await WebAssembly.instantiate(await reponseWasm.arrayBuffer(), go.importObject)
   void go.run(instance)
@@ -384,9 +384,18 @@ export async function demarrerFtpWasm(base: string): Promise<PontFtp> {
   throw new Error('le pont wasm ne répond pas')
 }
 
+// Le serveur Go et le pont __ftpgo sont des singletons de page. Une génération
+// monotone garantit qu'une seule session est « active » : les callbacks d'une
+// session superseded (composant démonté, reconnexion en cours, instance
+// résiduelle d'un rechargement HMR) sont ignorés, ce qui évite les boucles de
+// End/reconnexion entre plusieurs souscriptions au même pont.
+let generationActive = 0
+
 /** Ouvre une session client sur le serveur embarqué (3333 client, 4444 admin). */
 export function connecterFtpWasm(pont: PontFtp, evenements: EvenementsFtp, port = '3333'): void {
+  const generation = ++generationActive
   pont.connect((type: string, ...args: unknown[]) => {
+    if (generation !== generationActive) return
     switch (type) {
       case 'log': evenements.log(String(args[0]), String(args[1])); break
       case 'cwd': evenements.cwd(String(args[0])); break
@@ -396,4 +405,9 @@ export function connecterFtpWasm(pont: PontFtp, evenements: EvenementsFtp, port 
       case 'fatal': evenements.fatal(String(args[0]), String(args[1] ?? '')); break
     }
   }, port)
+}
+
+/** Invalide la session courante (démontage) : ses callbacks deviennent muets. */
+export function deconnecterFtpWasm(): void {
+  generationActive++
 }

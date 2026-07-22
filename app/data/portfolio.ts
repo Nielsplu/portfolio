@@ -2,6 +2,7 @@
 // Toutes les données du portfolio sont ici.
 // Modifie ce fichier, le site se met à jour tout seul.
 // ============================================================
+import type { DemoId } from '~/demos'
 
 export const profil = {
   nom: 'Niels Plu',
@@ -80,9 +81,8 @@ export interface Projet {
   tags: string[]
   categorie: CategorieProjet
   liens?: ProjetLien[]
-  // Identifiant d'une démo interactive embarquée dans le site
-  // (voir SectionProjets.vue pour le composant associé).
-  demo?: 'ftp'
+  // Identifiant d'une démo interactive embarquée (registre : app/demos).
+  demo?: DemoId
 }
 
 export const projets: Projet[] = [

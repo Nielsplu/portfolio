@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { SEUIL_GROS_FICHIER, creerEtat, executerCommande, formatTaille, invite } from './demoFtp'
+import { SEUIL_GROS_FICHIER, creerEtat, executerCommande, formatTaille, invite } from './simulation'
 
 describe('demoFtp', () => {
   it('liste la racine avec dossiers et tailles', () => {

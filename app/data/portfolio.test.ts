@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { demos } from '../demos'
 import { categoriesProjet, competences, parcours, profil, projets } from './portfolio'
 
 describe('profil', () => {
@@ -31,6 +32,12 @@ describe('projets', () => {
         expect(l.label.trim().length).toBeGreaterThan(0)
         expect(l.url).toMatch(/^https:\/\//)
       }
+    }
+  })
+
+  it('ne référence que des démos présentes dans le registre app/demos', () => {
+    for (const p of projets) {
+      if (p.demo) expect(Object.keys(demos)).toContain(p.demo)
     }
   })
 })

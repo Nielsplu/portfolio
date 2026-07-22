@@ -1,12 +1,16 @@
 <script setup lang="ts">
+import type { DemoId } from '~/demos'
 import { categoriesProjet, projets } from '~/data/portfolio'
+import { demos } from '~/demos'
 
 const filtres = ['Tous', ...categoriesProjet] as const
 const actif = ref<(typeof filtres)[number]>('Tous')
 
 const visibles = computed(() => filtrerParCategorie(projets, actif.value))
 
-const demoFtpOuverte = ref(false)
+// Démo active : son composant (async) n'est monté — et donc chargé — qu'à
+// l'ouverture, et démonté à la fermeture.
+const demoOuverte = ref<DemoId | null>(null)
 </script>
 
 <template>
@@ -38,9 +42,9 @@ const demoFtpOuverte = ref(false)
           </ul>
           <div v-if="p.liens?.length || p.demo" class="project__links">
             <button
-              v-if="p.demo === 'ftp'"
+              v-if="p.demo"
               class="project__link project__link--demo"
-              @click="demoFtpOuverte = true"
+              @click="demoOuverte = p.demo"
             >▶ Tester ici</button>
             <a
               v-for="l in p.liens"
@@ -54,7 +58,12 @@ const demoFtpOuverte = ref(false)
         </article>
       </div>
 
-      <DemoFtpTerminal v-model:ouvert="demoFtpOuverte" />
+      <component
+        :is="demos[demoOuverte]"
+        v-if="demoOuverte"
+        :ouvert="true"
+        @update:ouvert="(valeur: boolean) => { if (!valeur) demoOuverte = null }"
+      />
     </div>
   </section>
 </template>

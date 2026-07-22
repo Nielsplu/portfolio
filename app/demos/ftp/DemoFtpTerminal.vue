@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { EtatDemo, Telechargement } from '~/utils/demoFtp'
-import { SEUIL_GROS_FICHIER, creerEtat, executerCommande, formatTaille, invite } from '~/utils/demoFtp'
-import { connecterFtpWasm, demarrerFtpWasm, lireFichierVirtuel } from '~/utils/demoFtpWasm'
+import type { EtatDemo, Telechargement } from '~/demos/ftp/simulation'
+import { SEUIL_GROS_FICHIER, creerEtat, executerCommande, formatTaille, invite } from '~/demos/ftp/simulation'
+import { connecterFtpWasm, deconnecterFtpWasm, demarrerFtpWasm, lireFichierVirtuel } from '~/demos/ftp/wasm'
 
 const props = defineProps<{ ouvert: boolean }>()
 const emit = defineEmits<{ 'update:ouvert': [valeur: boolean] }>()
@@ -45,6 +45,45 @@ function livrerFichier(nom: string, contenu: Uint8Array | string) {
   lien.download = nom
   lien.click()
   URL.revokeObjectURL(url)
+}
+
+// ------------------------------------------------------------------
+// Historique de saisie : réplique de la TUI native
+// (internal/app/client/view/cmd/model.go) — ↑/↓, sauvegarde de la saisie en
+// cours, pas de doublons consécutifs.
+// ------------------------------------------------------------------
+
+const historique: string[] = []
+let indexHistorique = -1
+let saisieSauvegardee = ''
+
+function memoriser(commande: string) {
+  indexHistorique = -1
+  if (historique.length === 0 || historique[historique.length - 1] !== commande)
+    historique.push(commande)
+}
+
+function historiquePrecedent() {
+  if (historique.length === 0) return
+  if (indexHistorique === -1) {
+    saisieSauvegardee = saisie.value
+    indexHistorique = historique.length - 1
+  }
+  else if (indexHistorique > 0) {
+    indexHistorique -= 1
+  }
+  saisie.value = historique[indexHistorique]!
+}
+
+function historiqueSuivant() {
+  if (historique.length === 0 || indexHistorique === -1) return
+  if (indexHistorique === historique.length - 1) {
+    indexHistorique = -1
+    saisie.value = saisieSauvegardee
+    return
+  }
+  indexHistorique += 1
+  saisie.value = historique[indexHistorique]!
 }
 
 // ------------------------------------------------------------------
@@ -93,7 +132,7 @@ function aideReelle() {
 
 function connecterReel() {
   const pont = window.__ftpgo
-  if (!pont?.ready) return
+  if (!pont?.ready || connecte.value) return
   connecte.value = true
   barres.clear()
   connecterFtpWasm(pont, {
@@ -175,7 +214,7 @@ async function ouvrirSession() {
 }
 
 // ------------------------------------------------------------------
-// Mode simulation (repli) : moteur TypeScript de ~/utils/demoFtp.
+// Mode simulation (repli) : moteur TypeScript de ~/demos/ftp/simulation.
 // ------------------------------------------------------------------
 
 let etatSimulation: EtatDemo = creerEtat()
@@ -208,7 +247,7 @@ async function telechargerSimulation({ nom, taille, contenu }: Telechargement) {
 }
 
 async function executerSimulation(commande: string) {
-  ecrire(`${invite(etatSimulation)} > ${commande}`, 'terminal__ligne--usr')
+  ecrire(`${invite(etatSimulation)} $ ${commande}`, 'terminal__ligne--usr')
   const resultat = executerCommande(etatSimulation, commande)
   for (const ligne of resultat.lignes) ecrire(ligne)
   if (resultat.deconnexion) {
@@ -234,6 +273,7 @@ function soumettre() {
     return
   }
   if (!commande.trim()) return
+  memoriser(commande)
 
   if (mode.value === 'reel') {
     // L'aide est un souci de vue (comme la TUI native qui affiche ses
@@ -254,23 +294,44 @@ function fermer() {
   emit('update:ouvert', false)
 }
 
-watch(() => props.ouvert, async (ouvert) => {
+async function ouvrir() {
+  dialogue.value?.showModal()
+  lignes.value = []
+  cheminCourant.value = ''
+  await ouvrirSession()
+  await nextTick()
+  champ.value?.focus()
+}
+
+function nettoyer() {
+  // Ferme proprement la session côté serveur (sinon son timer d'inactivité
+  // de 60 s tournerait pour rien en arrière-plan), et coupe le son des
+  // callbacks de cette session avant tout futur remontage.
+  reconnexionAuto = false
+  if (mode.value === 'reel') {
+    if (connecte.value) window.__ftpgo?.send('End')
+    deconnecterFtpWasm()
+  }
+  connecte.value = false
+}
+
+watch(() => props.ouvert, (ouvert) => {
   if (ouvert) {
-    dialogue.value?.showModal()
-    lignes.value = []
-    cheminCourant.value = ''
-    await ouvrirSession()
-    await nextTick()
-    champ.value?.focus()
+    void ouvrir()
   }
   else {
-    // Ferme proprement la session côté serveur (sinon son timer d'inactivité
-    // de 60 s tournerait pour rien en arrière-plan).
-    if (mode.value === 'reel' && connecte.value) window.__ftpgo?.send('End')
-    connecte.value = false
+    nettoyer()
     dialogue.value?.close()
   }
 })
+
+onMounted(() => {
+  // Monté à la demande par le registre des démos, souvent avec ouvert déjà à
+  // true : le watch seul ne suffirait pas.
+  if (props.ouvert) void ouvrir()
+})
+
+onBeforeUnmount(nettoyer)
 </script>
 
 <template>
@@ -299,7 +360,8 @@ watch(() => props.ouvert, async (ouvert) => {
     </div>
 
     <form class="terminal__invite" @submit.prevent="soumettre">
-      <label class="terminal__prompt" for="demo-ftp-champ">{{ connecte ? `${cheminCourant} >` : '>' }}</label>
+      <!-- Prompt identique à la TUI native : "<chemin>/ $ " -->
+      <label class="terminal__prompt" for="demo-ftp-champ">{{ connecte && mode === 'reel' ? `${cheminCourant}/ $` : '$' }}</label>
       <input
         id="demo-ftp-champ"
         ref="champ"
@@ -308,7 +370,10 @@ watch(() => props.ouvert, async (ouvert) => {
         type="text"
         autocomplete="off"
         spellcheck="false"
-        :placeholder="connecte ? 'help, List, Cd, Get zib.txt…' : 'Entrée pour se reconnecter'"
+        maxlength="156"
+        :placeholder="connecte ? 'Entrez une commande' : 'Entrée pour se reconnecter'"
+        @keydown.up.prevent="historiquePrecedent"
+        @keydown.down.prevent="historiqueSuivant"
       >
     </form>
 
@@ -341,6 +406,8 @@ watch(() => props.ouvert, async (ouvert) => {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 0.6rem;
+  flex-wrap: wrap;
   padding: 0.6rem 1rem;
   border-bottom: 1px solid rgba(226, 233, 241, 0.12);
 }
