@@ -1,0 +1,35 @@
+version: 2
+
+# Mises à jour de dépendances automatiques, regroupées pour limiter le bruit :
+# une PR hebdomadaire par écosystème pour les mineures et patch, les majeures
+# restant isolées pour être relues une par une.
+updates:
+  # Dépendances applicatives (pnpm — écosystème npm).
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: deps
+    groups:
+      dependances:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+
+  # Actions du pipeline CI/CD.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    commit-message:
+      prefix: ci
+    groups:
+      actions:
+        patterns:
+          - "*"
