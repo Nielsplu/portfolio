@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import type { EtatDemo, Telechargement } from '~/utils/demoFtp'
 import { SEUIL_GROS_FICHIER, creerEtat, executerCommande, formatTaille, invite } from '~/utils/demoFtp'
+import { connecterFtpWasm, demarrerFtpWasm, lireFichierVirtuel } from '~/utils/demoFtpWasm'
 
 const props = defineProps<{ ouvert: boolean }>()
 const emit = defineEmits<{ 'update:ouvert': [valeur: boolean] }>()
-
-const DELAI_INACTIVITE = 60_000
-const TAILLE_CHUNK = 1 << 20
 
 const dialogue = ref<HTMLDialogElement>()
 const sortie = ref<HTMLElement>()
@@ -15,13 +13,17 @@ const champ = ref<HTMLInputElement>()
 const lignes = ref<{ texte: string, classe?: string }[]>([])
 const saisie = ref('')
 const connecte = ref(false)
-const occupe = ref(false)
+const chargement = ref(false)
+// 'reel' : le vrai client/serveur Go tournent en WebAssembly.
+// 'simulation' : repli TypeScript si le wasm ne charge pas.
+const mode = ref<'reel' | 'simulation'>('reel')
+const cheminCourant = ref('')
 
-let etat: EtatDemo = creerEtat()
-let minuteurInactivite: ReturnType<typeof setTimeout> | undefined
+const baseURL = useRuntimeConfig().app.baseURL
 
 function ecrire(texte: string, classe?: string) {
   lignes.value.push({ texte, classe })
+  defiler()
 }
 
 async function defiler() {
@@ -29,34 +31,15 @@ async function defiler() {
   sortie.value?.scrollTo({ top: sortie.value.scrollHeight })
 }
 
-function armerInactivite() {
-  clearTimeout(minuteurInactivite)
-  if (!connecte.value) return
-  minuteurInactivite = setTimeout(() => {
-    // Fidèle au vrai serveur : les connexions inactives sont coupées après 60 s.
-    connecte.value = false
-    ecrire('Délai d\'inactivité dépassé (60 s) : connexion fermée par le serveur.', 'terminal__ligne--info')
-    ecrire('Appuyez sur Entrée pour vous reconnecter.', 'terminal__ligne--info')
-    defiler()
-  }, DELAI_INACTIVITE)
+function classePourOrigine(origine: string): string {
+  if (origine === 'Usr') return 'terminal__ligne--usr'
+  if (origine === 'Srv') return 'terminal__ligne--srv'
+  return 'terminal__ligne--sys'
 }
 
-function connecter() {
-  etat = creerEtat()
-  connecte.value = true
-  ecrire('Connecté au serveur FTP — démo simulée dans le navigateur.', 'terminal__ligne--info')
-  ecrire('Tapez "help" pour la liste des commandes.', 'terminal__ligne--info')
-  armerInactivite()
-  defiler()
-}
-
-function contenuGenere(nom: string, taille: number): string {
-  const motif = `Contenu de démonstration du fichier ${nom} (portfolio ftp-go).\n`
-  return motif.repeat(Math.max(1, Math.ceil(taille / motif.length))).slice(0, taille)
-}
-
-function livrerFichier(nom: string, contenu: string) {
-  const url = URL.createObjectURL(new Blob([contenu], { type: 'text/plain' }))
+function livrerFichier(nom: string, contenu: Uint8Array | string) {
+  // slice() recopie vers un ArrayBuffer non partagé, seul type accepté par Blob.
+  const url = URL.createObjectURL(new Blob([typeof contenu === 'string' ? contenu : contenu.slice()]))
   const lien = document.createElement('a')
   lien.href = url
   lien.download = nom
@@ -64,66 +47,207 @@ function livrerFichier(nom: string, contenu: string) {
   URL.revokeObjectURL(url)
 }
 
-async function telecharger({ nom, taille, contenu }: Telechargement) {
+// ------------------------------------------------------------------
+// Mode réel : pilotage du binaire wasm compilé depuis Nielsplu/ftp-go.
+// ------------------------------------------------------------------
+
+// Port du serveur embarqué, comme le flag -p du client natif : 3333 expose
+// List/Cd/Get, 4444 (admin) expose List/Cd/Hide/Reveal/Terminate.
+const port = ref<'3333' | '4444'>('3333')
+let reconnexionAuto = false
+
+// Barres de progression du vrai client : nom de fichier -> index de ligne.
+const barres = new Map<string, number>()
+
+function rendreBarre(pourcent: number): string {
+  const pleins = Math.round(Math.min(1, pourcent) * 24)
+  return `[${'#'.repeat(pleins)}${'-'.repeat(24 - pleins)}] ${Math.round(Math.min(1, pourcent) * 100)} %`
+}
+
+function basculerPort(nouveau: '3333' | '4444') {
+  if (port.value === nouveau || mode.value !== 'reel' || chargement.value) return
+  port.value = nouveau
+  if (connecte.value) {
+    // On ferme proprement la session en cours, la reconnexion sur le nouveau
+    // port se fait à la réception du quit du vrai client.
+    reconnexionAuto = true
+    window.__ftpgo?.send('End')
+  }
+  else {
+    connecterReel()
+  }
+}
+
+function aideReelle() {
+  const communes = ['  List              liste le dossier courant', '  Cd <dossier>      change de dossier (Cd .. pour remonter)', '  End               ferme la session']
+  ecrire('Commandes du serveur sur ce port :', 'terminal__ligne--sys')
+  if (port.value === '3333') {
+    for (const l of [...communes.slice(0, 2), '  Get <fichier>     télécharge un fichier (chunks au-delà de 1 Mio)', communes[2]!]) ecrire(l)
+    ecrire('Port admin (4444) : Hide, Reveal, Terminate.', 'terminal__ligne--sys')
+  }
+  else {
+    for (const l of [...communes.slice(0, 2), '  Hide <fichier>    masque un fichier côté serveur', '  Reveal <fichier>  ré-affiche un fichier masqué', '  Terminate         arrêt gracieux du serveur (Stoppers)', communes[2]!]) ecrire(l)
+    ecrire('Port client (3333) : Get.', 'terminal__ligne--sys')
+  }
+}
+
+function connecterReel() {
+  const pont = window.__ftpgo
+  if (!pont?.ready) return
+  connecte.value = true
+  barres.clear()
+  connecterFtpWasm(pont, {
+    log(origine, contenu) {
+      ecrire(`[${origine}] ${contenu}`, classePourOrigine(origine))
+      // Message émis par le vrai client à la fin d'un Get : on récupère le
+      // fichier écrit dans downloads/ (FS virtuel) pour le navigateur.
+      const fini = contenu.match(/^File transfer finished : (.+)$/)
+      if (fini?.[1]) {
+        const nom = fini[1].split('/').pop() ?? fini[1]
+        const donnees = lireFichierVirtuel(`/downloads/${nom}`)
+        if (donnees) livrerFichier(nom, donnees)
+      }
+    },
+    cwd(vers) {
+      cheminCourant.value = vers
+    },
+    progress(nom, pourcent) {
+      const index = barres.get(nom)
+      const texte = `${nom.split('/').pop()} ${rendreBarre(pourcent)}`
+      if (index === undefined) {
+        barres.set(nom, lignes.value.length)
+        ecrire(texte, 'terminal__ligne--sys')
+      }
+      else {
+        lignes.value[index] = { texte, classe: 'terminal__ligne--sys' }
+      }
+    },
+    progressEnd(nom) {
+      const index = barres.get(nom)
+      if (index !== undefined)
+        lignes.value[index] = { texte: `${nom.split('/').pop()} ${rendreBarre(1)}`, classe: 'terminal__ligne--sys' }
+      barres.delete(nom)
+    },
+    quit() {
+      connecte.value = false
+      cheminCourant.value = ''
+      if (reconnexionAuto) {
+        reconnexionAuto = false
+        setTimeout(connecterReel, 150)
+        return
+      }
+      ecrire('Session fermée. Appuyez sur Entrée pour vous reconnecter.', 'terminal__ligne--sys')
+    },
+    fatal(message, details) {
+      connecte.value = false
+      cheminCourant.value = ''
+      ecrire(`[Sys] ${message}${details ? ` (${details})` : ''}`, 'terminal__ligne--sys')
+      if (reconnexionAuto) {
+        reconnexionAuto = false
+        setTimeout(connecterReel, 150)
+        return
+      }
+      ecrire('Appuyez sur Entrée pour vous reconnecter.', 'terminal__ligne--sys')
+    },
+  }, port.value)
+}
+
+async function ouvrirSession() {
+  chargement.value = true
+  try {
+    ecrire('Chargement du binaire Go (4,4 Mo, WebAssembly)…', 'terminal__ligne--sys')
+    await demarrerFtpWasm(baseURL)
+    mode.value = 'reel'
+    ecrire('Serveur FTP démarré dans la page — code réel de Nielsplu/ftp-go.', 'terminal__ligne--sys')
+    ecrire('Tapez "help" pour la liste des commandes.', 'terminal__ligne--sys')
+    connecterReel()
+  }
+  catch (erreur) {
+    mode.value = 'simulation'
+    console.warn('démo FTP : repli sur la simulation', erreur)
+    ecrire('WebAssembly indisponible : démo simulée.', 'terminal__ligne--sys')
+    ecrire('Tapez "help" pour la liste des commandes.', 'terminal__ligne--sys')
+    connecterSimulation()
+  }
+  finally {
+    chargement.value = false
+  }
+}
+
+// ------------------------------------------------------------------
+// Mode simulation (repli) : moteur TypeScript de ~/utils/demoFtp.
+// ------------------------------------------------------------------
+
+let etatSimulation: EtatDemo = creerEtat()
+
+function connecterSimulation() {
+  etatSimulation = creerEtat()
+  connecte.value = true
+}
+
+async function telechargerSimulation({ nom, taille, contenu }: Telechargement) {
   if (taille <= SEUIL_GROS_FICHIER) {
     ecrire(`Réception de ${nom} (${formatTaille(taille)})… ok`)
-    livrerFichier(nom, contenu ?? contenuGenere(nom, taille))
+    livrerFichier(nom, contenu ?? `Contenu de démonstration du fichier ${nom}.\n`)
     return
   }
-  // Gros fichier : le vrai serveur l'envoie chunk par chunk, on anime pareil.
-  occupe.value = true
-  const chunks = Math.ceil(taille / TAILLE_CHUNK)
+  const chunks = Math.ceil(taille / (1 << 20))
   ecrire(`Fichier volumineux : envoi en ${chunks} chunks de 1 Mio…`)
   const indexBarre = lignes.value.length
   lignes.value.push({ texte: '' })
-  await defiler()
-  // Progression indexée sur le temps écoulé (et pas sur un nombre fixe de
-  // pauses) : la durée reste ~1,2 s même quand le navigateur bride les timers.
-  const DUREE_ANIMATION = 1200
   const debut = Date.now()
   let chunk = 0
   while (chunk < chunks) {
-    chunk = Math.min(chunks, Math.max(chunk + 1, Math.round(((Date.now() - debut) / DUREE_ANIMATION) * chunks)))
-    const ratio = chunk / chunks
-    const pleins = Math.round(ratio * 24)
-    lignes.value[indexBarre] = {
-      texte: `[${'#'.repeat(pleins)}${'-'.repeat(24 - pleins)}] ${Math.round(ratio * 100)} % — chunk ${chunk}/${chunks}`,
-    }
+    chunk = Math.min(chunks, Math.max(chunk + 1, Math.round(((Date.now() - debut) / 1200) * chunks)))
+    lignes.value[indexBarre] = { texte: `${rendreBarre(chunk / chunks)} — chunk ${chunk}/${chunks}` }
     if (chunk % 5 === 0 || chunk === chunks) await defiler()
     if (chunk < chunks) await new Promise(r => setTimeout(r, 30))
   }
   ecrire(`Réception de ${nom} (${formatTaille(taille)})… ok`)
-  ecrire('(démo : le fichier téléchargé est tronqué à 1 Mio)', 'terminal__ligne--info')
-  livrerFichier(nom, contenuGenere(nom, TAILLE_CHUNK))
-  occupe.value = false
+  livrerFichier(nom, `Contenu de démonstration du fichier ${nom}.\n`.repeat(20000))
 }
 
-async function soumettre() {
-  if (occupe.value) return
+async function executerSimulation(commande: string) {
+  ecrire(`${invite(etatSimulation)} > ${commande}`, 'terminal__ligne--usr')
+  const resultat = executerCommande(etatSimulation, commande)
+  for (const ligne of resultat.lignes) ecrire(ligne)
+  if (resultat.deconnexion) {
+    connecte.value = false
+    ecrire('Appuyez sur Entrée pour vous reconnecter.', 'terminal__ligne--sys')
+  }
+  if (resultat.telechargement) await telechargerSimulation(resultat.telechargement)
+}
+
+// ------------------------------------------------------------------
+
+function soumettre() {
+  if (chargement.value) return
   const commande = saisie.value
   saisie.value = ''
 
   if (!connecte.value) {
-    connecter()
+    if (mode.value === 'reel') connecterReel()
+    else {
+      connecterSimulation()
+      ecrire('Reconnecté.', 'terminal__ligne--sys')
+    }
     return
   }
+  if (!commande.trim()) return
 
-  ecrire(`${invite(etat)} > ${commande}`, 'terminal__ligne--saisie')
-  const resultat = executerCommande(etat, commande)
-  for (const ligne of resultat.lignes) ecrire(ligne)
-
-  if (resultat.deconnexion) {
-    connecte.value = false
-    clearTimeout(minuteurInactivite)
-    ecrire('Appuyez sur Entrée pour vous reconnecter.', 'terminal__ligne--info')
+  if (mode.value === 'reel') {
+    // L'aide est un souci de vue (comme la TUI native qui affiche ses
+    // commandes) : on ne l'envoie pas au serveur.
+    if (commande.trim().toLowerCase() === 'help') {
+      ecrire(`[Usr] ${commande}`, 'terminal__ligne--usr')
+      aideReelle()
+      return
+    }
+    window.__ftpgo?.send(commande)
   }
   else {
-    armerInactivite()
+    void executerSimulation(commande)
   }
-
-  await defiler()
-  if (resultat.telechargement) await telecharger(resultat.telechargement)
-  await defiler()
 }
 
 function fermer() {
@@ -134,23 +258,39 @@ watch(() => props.ouvert, async (ouvert) => {
   if (ouvert) {
     dialogue.value?.showModal()
     lignes.value = []
-    connecter()
+    cheminCourant.value = ''
+    await ouvrirSession()
     await nextTick()
     champ.value?.focus()
   }
   else {
-    clearTimeout(minuteurInactivite)
+    // Ferme proprement la session côté serveur (sinon son timer d'inactivité
+    // de 60 s tournerait pour rien en arrière-plan).
+    if (mode.value === 'reel' && connecte.value) window.__ftpgo?.send('End')
+    connecte.value = false
     dialogue.value?.close()
   }
 })
-
-onBeforeUnmount(() => clearTimeout(minuteurInactivite))
 </script>
 
 <template>
   <dialog ref="dialogue" class="terminal" aria-label="Démo interactive du client FTP" @close="fermer">
     <div class="terminal__barre">
-      <span class="terminal__titre">ftp-client — démo interactive</span>
+      <span class="terminal__titre">ftp-client — {{ mode === 'reel' ? 'vrai binaire Go en WebAssembly' : 'démo simulée' }}</span>
+      <span v-if="mode === 'reel'" class="terminal__ports" role="group" aria-label="Port du serveur">
+        <button
+          class="terminal__port"
+          :class="{ 'terminal__port--actif': port === '3333' }"
+          title="List, Cd, Get"
+          @click="basculerPort('3333')"
+        >-p 3333</button>
+        <button
+          class="terminal__port"
+          :class="{ 'terminal__port--actif': port === '4444' }"
+          title="List, Cd, Hide, Reveal, Terminate"
+          @click="basculerPort('4444')"
+        >-p 4444 (admin)</button>
+      </span>
       <button class="terminal__fermer" aria-label="Fermer la démo" @click="fermer">✕</button>
     </div>
 
@@ -159,7 +299,7 @@ onBeforeUnmount(() => clearTimeout(minuteurInactivite))
     </div>
 
     <form class="terminal__invite" @submit.prevent="soumettre">
-      <label class="terminal__prompt" for="demo-ftp-champ">{{ connecte ? `${invite(etat)} >` : '>' }}</label>
+      <label class="terminal__prompt" for="demo-ftp-champ">{{ connecte ? `${cheminCourant} >` : '>' }}</label>
       <input
         id="demo-ftp-champ"
         ref="champ"
@@ -173,7 +313,13 @@ onBeforeUnmount(() => clearTimeout(minuteurInactivite))
     </form>
 
     <p class="terminal__note">
-      Protocole simulé pour la démo — le vrai client/serveur tourne en TCP :
+      <template v-if="mode === 'reel'">
+        Le vrai serveur et le vrai client Go de ce projet tournent dans votre navigateur
+        (WebAssembly), reliés par un réseau TCP en mémoire —
+      </template>
+      <template v-else>
+        Protocole simulé pour la démo —
+      </template>
       <a href="https://github.com/Nielsplu/ftp-go" target="_blank" rel="noopener">code source</a> ·
       <a href="https://github.com/Nielsplu/ftp-go/releases/tag/v1.0" target="_blank" rel="noopener">binaires</a>
     </p>
@@ -203,6 +349,22 @@ onBeforeUnmount(() => clearTimeout(minuteurInactivite))
   font-size: 0.8rem;
   color: #8fb4d8;
 }
+.terminal__ports { display: flex; gap: 0.4rem; }
+.terminal__port {
+  border: 1px solid rgba(143, 180, 216, 0.35);
+  background: none;
+  color: #8fb4d8;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  border-radius: var(--radius-sm);
+  padding: 0.2rem 0.55rem;
+  cursor: pointer;
+}
+.terminal__port--actif {
+  background: rgba(143, 180, 216, 0.18);
+  color: #d7e2ec;
+  border-color: #8fb4d8;
+}
 .terminal__fermer {
   border: none;
   background: none;
@@ -226,8 +388,9 @@ onBeforeUnmount(() => clearTimeout(minuteurInactivite))
   white-space: pre-wrap;
   word-break: break-word;
 }
-.terminal__ligne--saisie { color: #7ee0a3; }
-.terminal__ligne--info { color: #8fb4d8; }
+.terminal__ligne--usr { color: #c2d2ff; }
+.terminal__ligne--sys { color: #f38080; }
+.terminal__ligne--srv { color: #f6a96e; }
 .terminal__invite {
   display: flex;
   gap: 0.5rem;
