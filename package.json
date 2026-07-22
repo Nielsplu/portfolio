@@ -51,5 +51,8 @@
       "esbuild",
       "unrs-resolver"
     ]
+  },
+  "dependencies": {
+    "simple-icons": "^16.27.0"
   }
 }
