@@ -96,6 +96,14 @@ version de Node vient de `.nvmrc`, celle de pnpm de `package.json`, les installs
 sont reproductibles (`pnpm install --frozen-lockfile`), et le setup commun est
 factorisé dans une action composite (`.github/actions/setup`).
 
+### Mises à jour automatiques
+
+Dependabot ouvre chaque semaine des PR de mise à jour groupées. Elles sont
+**fusionnées automatiquement** dès que la CI passe, via
+`.github/workflows/dependabot-auto-merge.yml` et la protection de branche : une
+mise à jour qui casse la qualité ou le build reste ouverte au lieu d'atteindre
+`main`. Aucune intervention manuelle nécessaire.
+
 ### Mise en place (une fois)
 
 1. Repo `portfolio` sur GitHub, pousser sur `main`.
