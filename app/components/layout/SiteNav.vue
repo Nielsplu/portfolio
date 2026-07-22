@@ -1,13 +1,8 @@
 <script setup lang="ts">
-import { profil } from '~/data/portfolio'
+import { profil } from '~/content'
+import { liensNavigation } from '~/sections/registry'
 
 const open = ref(false)
-const links = [
-  { href: '#parcours', label: 'Parcours' },
-  { href: '#projets', label: 'Projets' },
-  { href: '#competences', label: 'Compétences' },
-  { href: '#contact', label: 'Contact' },
-]
 </script>
 
 <template>
@@ -24,7 +19,7 @@ const links = [
         <span /><span /><span />
       </button>
       <ul id="nav-links" class="nav__links" :class="{ 'nav__links--open': open }">
-        <li v-for="l in links" :key="l.href">
+        <li v-for="l in liensNavigation" :key="l.href">
           <a :href="l.href" @click="open = false">{{ l.label }}</a>
         </li>
         <li>

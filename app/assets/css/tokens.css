@@ -1,0 +1,18 @@
+/* Design tokens : couleurs, rayons, typographies, ombres.
+   Point d'entrée unique pour reskinner le site (thème, dark mode…). */
+:root {
+  --bg: #f6f8fb;
+  --surface: #ffffff;
+  --ink: #16202b;
+  --muted: #5a6b7e;
+  --line: #e2e9f1;
+  --accent: #1f4e79;
+  --accent-bright: #3e7cb1;
+  --accent-soft: #dce9f5;
+  --radius: 14px;
+  --radius-sm: 8px;
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --shadow: 0 10px 30px -18px rgba(22, 32, 43, 0.35);
+}

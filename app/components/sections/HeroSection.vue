@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { profil } from '~/data/portfolio'
+import { profil } from '~/content'
 </script>
 
 <template>

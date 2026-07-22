@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { filtrerParCategorie } from './projets'
+import { filtrerParCategorie } from './filtres'
 
 const items = [
   { nom: 'a', categorie: 'Web' },

@@ -7,7 +7,15 @@ export default defineNuxtConfig({
   compatibilityDate: '2026-01-01',
   devtools: { enabled: true },
   modules: ['@nuxt/eslint', '@nuxt/fonts'],
-  css: ['~/assets/css/main.css'],
+  // Design system découpé : tokens → base → classes partagées.
+  css: [
+    '~/assets/css/tokens.css',
+    '~/assets/css/base.css',
+    '~/assets/css/components.css',
+  ],
+  // Nom des composants = nom de fichier, sans préfixe du dossier
+  // (BaseSection, SiteNav…) : les sous-dossiers restent purement organisationnels.
+  components: [{ path: '~/components', pathPrefix: false }],
   // 'build' : vérifie les types au build/CI sans injecter vite-plugin-checker
   // dans le serveur de dev (qui plante avec le baseURL custom ci-dessous).
   typescript: { typeCheck: 'build' },

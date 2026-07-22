@@ -1,25 +1,21 @@
 <script setup lang="ts">
-import { parcours } from '~/data/portfolio'
+import { parcours } from '~/content'
 </script>
 
 <template>
-  <section id="parcours" class="section">
-    <div class="container">
-      <p class="eyebrow">parcours</p>
-      <h2 class="section-title">Formation & expérience</h2>
-      <ol class="timeline">
-        <li v-for="etape in parcours" :key="etape.titre" class="timeline__item">
-          <div class="timeline__dot" aria-hidden="true" />
-          <p class="timeline__period">{{ etape.periode }}</p>
-          <div class="card timeline__card">
-            <h3>{{ etape.titre }}</h3>
-            <p class="timeline__place">{{ etape.lieu }}</p>
-            <p class="timeline__desc">{{ etape.description }}</p>
-          </div>
-        </li>
-      </ol>
-    </div>
-  </section>
+  <BaseSection id="parcours" eyebrow="parcours" title="Formation & expérience">
+    <ol class="timeline">
+      <li v-for="etape in parcours" :key="etape.titre" class="timeline__item">
+        <div class="timeline__dot" aria-hidden="true" />
+        <p class="timeline__period">{{ etape.periode }}</p>
+        <div class="card timeline__card">
+          <h3>{{ etape.titre }}</h3>
+          <p class="timeline__place">{{ etape.lieu }}</p>
+          <p class="timeline__desc">{{ etape.description }}</p>
+        </div>
+      </li>
+    </ol>
+  </BaseSection>
 </template>
 
 <style scoped>

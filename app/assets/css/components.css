@@ -1,0 +1,81 @@
+/* Classes partagées du design system : mises en page et éléments réutilisés
+   par plusieurs sections. Les styles propres à une section restent scoped
+   dans son composant. */
+
+/* Conteneur centré. */
+.container {
+  width: min(1080px, 100% - 2.5rem);
+  margin-inline: auto;
+}
+
+/* Rythme vertical d'une section. */
+.section {
+  padding-block: 5.5rem 4rem;
+}
+
+/* Signature visuelle : les intitulés de section en commentaire de code. */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--accent-bright);
+  letter-spacing: 0.04em;
+  margin: 0 0 0.4rem;
+}
+
+.eyebrow::before {
+  content: '// ';
+  color: var(--muted);
+}
+
+.section-title {
+  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+  margin-bottom: 2.2rem;
+}
+
+/* Boutons. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.3rem;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  border: 1.5px solid var(--accent);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+.btn--primary {
+  background: var(--accent);
+  color: #fff;
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--accent);
+}
+
+/* Jetons mono (technos, mots-clés). */
+.tag {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  padding: 0.22rem 0.55rem;
+  border-radius: 6px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+/* Cartes. */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: 0 2px 10px -8px rgba(22, 32, 43, 0.25);
+}
