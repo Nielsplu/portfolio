@@ -1,0 +1,16 @@
+# Fins de ligne normalisées : LF dans le dépôt, quel que soit l'OS du
+# contributeur. Supprime les avertissements CRLF/LF à chaque commit.
+* text=auto eol=lf
+
+# Binaires : jamais de conversion de fins de ligne ni de diff.
+*.pdf   binary
+*.wasm  binary
+*.jpg   binary
+*.jpeg  binary
+*.png   binary
+*.ico   binary
+*.woff  binary
+*.woff2 binary
+
+# Lockfile généré : masqué dans les diffs, marqué « generated » sur GitHub.
+pnpm-lock.yaml linguist-generated=true -diff

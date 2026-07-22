@@ -1,8 +1,26 @@
 {
   "name": "portfolio-niels",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
+  "description": "Portfolio de Niels Plu — étudiant en BUT Informatique, développement web et sécurité des SI. Nuxt 4, TypeScript.",
+  "license": "MIT",
+  "author": "Niels Plu",
+  "homepage": "https://nielsplu.github.io/portfolio/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nielsplu/portfolio.git"
+  },
+  "keywords": [
+    "portfolio",
+    "nuxt",
+    "vue",
+    "typescript"
+  ],
   "packageManager": "pnpm@10.32.1",
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "postinstall": "nuxt prepare",
     "dev": "nuxt dev",
