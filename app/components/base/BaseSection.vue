@@ -12,8 +12,8 @@ defineProps<{
 <template>
   <section :id="id" class="section">
     <div class="container">
-      <p class="eyebrow">{{ eyebrow }}</p>
-      <h2 class="section-title">{{ title }}</h2>
+      <p v-reveal class="eyebrow">{{ eyebrow }}</p>
+      <h2 v-reveal="60" class="section-title">{{ title }}</h2>
       <slot />
     </div>
   </section>

@@ -6,19 +6,19 @@ import { profil } from '~/content'
   <section id="accueil" class="hero">
     <div class="container hero__grid">
       <div>
-        <p class="hero__status">{{ profil.statut }}</p>
-        <h1 class="hero__name">{{ profil.nom }}</h1>
-        <p class="hero__prompt">
+        <p v-reveal class="hero__status">{{ profil.statut }}</p>
+        <h1 v-reveal="80" class="hero__name">{{ profil.nom }}</h1>
+        <p v-reveal="160" class="hero__prompt">
           <span class="hero__prompt-symbol">&gt;</span>
           développement web · sécurité des SI
         </p>
-        <p class="hero__text">{{ profil.accroche }}</p>
-        <div class="hero__actions">
+        <p v-reveal="240" class="hero__text">{{ profil.accroche }}</p>
+        <div v-reveal="320" class="hero__actions">
           <a href="#projets" class="btn btn--primary">Voir mes projets</a>
           <a href="#contact" class="btn btn--ghost">Me contacter</a>
         </div>
       </div>
-      <div class="hero__photo-wrap">
+      <div v-reveal="200" class="hero__photo-wrap">
         <!-- Remplace public/photo.jpg par ta photo -->
         <img class="hero__photo" src="/photo.jpg" :alt="`Portrait de ${profil.nom}`" width="320" height="320">
       </div>
@@ -27,8 +27,27 @@ import { profil } from '~/content'
 </template>
 
 <style scoped>
-.hero { padding-block: 5rem 4.5rem; }
+.hero {
+  position: relative;
+  padding-block: 5rem 4.5rem;
+  overflow: hidden;
+}
+/* Fond en grille de points, estompé vers les bords : touche « technique »
+   discrète, sans image ni requête réseau. */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(var(--line) 1px, transparent 1px);
+  background-size: 24px 24px;
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 70% 30%, #000, transparent 75%);
+  mask-image: radial-gradient(ellipse 80% 60% at 70% 30%, #000, transparent 75%);
+  opacity: 0.6;
+  pointer-events: none;
+}
 .hero__grid {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: 1.4fr 1fr;
   gap: 3rem;

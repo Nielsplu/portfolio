@@ -1,0 +1,22 @@
+/* Animations d'apparition (directive v-reveal). Progressive enhancement :
+   le masquage initial n'est appliqué que si JS est actif (classe .js). */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.js .reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Respect des préférences d'accessibilité : aucune animation. */
+@media (prefers-reduced-motion: reduce) {
+  .js .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

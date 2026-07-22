@@ -30,8 +30,9 @@ const demoOuverte = ref<DemoId | null>(null)
 
     <div class="grid">
       <ProjetCard
-        v-for="p in visibles"
+        v-for="(p, i) in visibles"
         :key="p.titre"
+        v-reveal="i * 60"
         :projet="p"
         @ouvrir-demo="demoOuverte = p.demo ?? null"
       />
