@@ -61,18 +61,22 @@ menu, **sans toucher ni la page ni la navigation**.
 
 ## Démarrer
 
+Le projet utilise **pnpm** (version épinglée dans `package.json`). Avec
+Corepack (fourni par Node), pas besoin de l'installer à la main :
+
 ```bash
+corepack enable
 nvm install && nvm use
-npm install
-npm run dev          # http://localhost:3000
+pnpm install
+pnpm dev             # http://localhost:3000
 ```
 
 ## Qualité
 
 ```bash
-npm run test         # tests unitaires (Vitest)
-npm run lint         # ESLint
-npm run typecheck    # vérification TypeScript
+pnpm test            # tests unitaires (Vitest)
+pnpm lint            # ESLint
+pnpm typecheck       # vérification TypeScript
 ```
 
 ## CI/CD
@@ -88,9 +92,9 @@ qualité (lint · types · tests) ─▶ build statique ─▶ déploiement Page
 - **Push sur `main`** : qualité + build + déploiement sur GitHub Pages.
 
 Rien n'est déployé si le lint, les types, les tests ou le build échouent. La
-version de Node vient de `.nvmrc`, les installs sont reproductibles (`npm ci`),
-et le setup commun est factorisé dans une action composite
-(`.github/actions/setup`).
+version de Node vient de `.nvmrc`, celle de pnpm de `package.json`, les installs
+sont reproductibles (`pnpm install --frozen-lockfile`), et le setup commun est
+factorisé dans une action composite (`.github/actions/setup`).
 
 ### Mise en place (une fois)
 

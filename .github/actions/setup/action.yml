@@ -1,15 +1,20 @@
 name: Setup
-description: Installe Node.js (version depuis .nvmrc) et les dépendances (npm ci).
+description: Installe pnpm, Node.js (version depuis .nvmrc) et les dépendances.
 
-# Action composite réutilisée par tous les jobs : la version de Node et la
-# stratégie d'installation ne sont définies qu'ici. Suppose le dépôt déjà
-# récupéré (actions/checkout en amont dans le job).
+# Action composite réutilisée par tous les jobs : gestionnaire de paquets,
+# version de Node et stratégie d'installation ne sont définis qu'ici.
+# Suppose le dépôt déjà récupéré (actions/checkout en amont dans le job).
 runs:
   using: composite
   steps:
+    # pnpm avant setup-node pour que le cache pnpm de setup-node fonctionne.
+    # La version de pnpm est lue depuis le champ packageManager de package.json.
+    - uses: pnpm/action-setup@v4
     - uses: actions/setup-node@v4
       with:
         node-version-file: .nvmrc
-        cache: npm
-    - run: npm ci
+        cache: pnpm
+    # --frozen-lockfile : échoue si le lock et package.json divergent
+    # (installation strictement reproductible).
+    - run: pnpm install --frozen-lockfile
       shell: bash
