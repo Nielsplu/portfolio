@@ -96,6 +96,23 @@ version de Node vient de `.nvmrc`, celle de pnpm de `package.json`, les installs
 sont reproductibles (`pnpm install --frozen-lockfile`), et le setup commun est
 factorisé dans une action composite (`.github/actions/setup`).
 
+### Contribuer
+
+La branche `main` est protégée : **toute modification passe par une pull
+request** validée par la CI, aucun push direct (règle appliquée à tout le monde,
+y compris au propriétaire). Le flux :
+
+```bash
+git switch -c ma-modif
+# … modifications …
+git commit -am "..." && git push -u origin ma-modif
+gh pr create --fill          # ouvre la PR
+gh pr merge --auto --squash  # fusionnera dès que la CI est verte
+```
+
+La PR ne peut être fusionnée que si `Qualité (lint · types · tests)` et
+`Build statique` passent.
+
 ### Mises à jour automatiques
 
 Dependabot ouvre chaque semaine des PR de mise à jour groupées. Elles sont
