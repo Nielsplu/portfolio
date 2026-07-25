@@ -5,10 +5,25 @@ import { liensNavigation } from '~/sections/registry'
 const open = ref(false)
 // Met en surbrillance le lien de la section visible à l'écran.
 const actif = useScrollSpy(liensNavigation.map(l => l.href.slice(1)))
+
+// Le burger est rendu identiquement au serveur et au client (`open` vaut
+// toujours false au premier rendu), son libellé peut donc être réactif sans
+// risque d'écart d'hydratation — contrairement à l'interrupteur de thème, dont
+// l'état dépend du visiteur.
+const libelleBurger = computed(() => (open.value ? 'Fermer le menu' : 'Ouvrir le menu'))
+
+/** Referme le menu à la touche Échap et redonne le focus au burger, pour ne pas
+ *  laisser le visiteur au clavier avec un focus perdu dans un menu replié. */
+const burger = ref<HTMLButtonElement>()
+function surEchap() {
+  if (!open.value) return
+  open.value = false
+  burger.value?.focus()
+}
 </script>
 
 <template>
-  <header class="nav">
+  <header class="nav" @keydown.esc="surEchap">
     <nav class="container nav__inner" aria-label="Navigation principale">
       <a href="#accueil" class="nav__logo">niels<span>.plu</span></a>
       <ul id="nav-links" class="nav__links" :class="{ 'nav__links--open': open }">
@@ -29,10 +44,11 @@ const actif = useScrollSpy(liensNavigation.map(l => l.href.slice(1)))
       <div class="nav__actions">
         <ThemeToggle />
         <button
+          ref="burger"
           class="nav__burger"
           :aria-expanded="open"
           aria-controls="nav-links"
-          aria-label="Ouvrir le menu"
+          :aria-label="libelleBurger"
           @click="open = !open"
         >
           <span /><span /><span />

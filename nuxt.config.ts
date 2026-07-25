@@ -17,6 +17,9 @@ export default defineNuxtConfig({
   // Nom des composants = nom de fichier, sans préfixe du dossier
   // (BaseSection, SiteNav…) : les sous-dossiers restent purement organisationnels.
   components: [{ path: '~/components', pathPrefix: false }],
+  // Exposé au client pour construire les URL absolues des données structurées
+  // (app.vue) : une seule définition de l'URL du site, ici.
+  runtimeConfig: { public: { siteUrl } },
   // 'build' : vérifie les types au build/CI sans injecter vite-plugin-checker
   // dans le serveur de dev (qui plante avec le baseURL custom ci-dessous).
   typescript: { typeCheck: 'build' },
@@ -70,5 +73,9 @@ export default defineNuxtConfig({
       ],
     },
   },
-  nitro: { prerender: { routes: ['/'] } },
+  // `/404.html` est prérendu en plus de l'accueil : GitHub Pages sert
+  // automatiquement ce fichier pour toute adresse inconnue. Sans lui, une URL
+  // erronée tombe sur la page 404 générique de GitHub et app/error.vue ne
+  // serait jamais vu (il ne couvrirait que les erreurs de navigation interne).
+  nitro: { prerender: { routes: ['/', '/404.html'] } },
 })

@@ -76,9 +76,12 @@ mémorisé. Trois pièces s'articulent :
 
 Deux détails qui ont demandé du soin, à ne pas défaire par inadvertance :
 
-- **Le bouton ne tient aucun état réactif.** Icône et libellé sont choisis en
-  CSS d'après `data-theme`. Le serveur ne pouvant pas connaître le thème du
-  visiteur, tout état rendu côté serveur provoquerait un écart d'hydratation.
+- **L'interrupteur ne tient aucun état réactif.** Position du repère et libellé
+  sont choisis en CSS d'après `data-theme`. Le serveur ne pouvant pas connaître
+  le thème du visiteur, tout état rendu côté serveur provoquerait un écart
+  d'hydratation. Les deux options restent visibles, un repère coulissant
+  marquant celle en vigueur : l'état se lit sans avoir à interpréter une icône
+  unique.
 - **Les transitions sont coupées le temps de la bascule** (`motion.css`, attribut
   `data-theme-bascule`). Sans cela, une propriété à la fois transitionnée et
   alimentée par une variable de thème reste figée sur son ancienne couleur —
@@ -88,6 +91,39 @@ Deux détails qui ont demandé du soin, à ne pas défaire par inadvertance :
 
 Les deux thèmes ont été mesurés : 21 paires texte/fond conformes au **niveau AA**
 (contraste minimum relevé 4,97:1).
+
+## Accessibilité & SEO
+
+- **Régions nommées** : chaque `<section>` porte un `aria-labelledby` pointant
+  sur son propre titre, via `useId()`. Sans nom accessible, une section est
+  exposée comme une région anonyme et la navigation par régions des lecteurs
+  d'écran devient inutilisable.
+- **Menu mobile** : le libellé du burger suit son état (« Ouvrir » / « Fermer »),
+  la touche Échap referme le menu et redonne le focus au bouton.
+- **Données structurées** `schema.org/Person` (JSON-LD, dans `app.vue`) : nom,
+  intitulé, formation, localisation, et `sameAs` vers GitHub et LinkedIn. Les
+  technologies sont dérivées des tags de projets, donc jamais désynchronisées.
+
+## Page 404
+
+`app/error.vue` couvre les erreurs, et **`/404.html` est prérendu** : GitHub
+Pages sert ce fichier pour toute adresse inconnue. Sans lui, une URL erronée
+tombait sur la page 404 générique de GitHub.
+
+Ce fichier est une coquille SPA : l'app démarre côté client puis affiche la page
+d'erreur. Le retour à l'accueil est donc un **vrai lien** et non un bouton
+appelant `clearError` — un clic arrivé avant la fin de l'hydratation échouait
+(`NUXT_E1005`), course impossible avec un lien, qui de surcroît fonctionne sans
+JavaScript et au clic milieu.
+
+## Animations d'apparition
+
+La directive `v-reveal` (`app/plugins/reveal.ts`) observe l'entrée dans la vue.
+**La classe `reveal` s'écrit dans le template**, elle n'est pas injectée par
+`getSSRProps` : injectée côté serveur seulement, elle manquait au vnode client
+et Vue signalait un écart d'hydratation sur chaque élément animé — la console se
+remplissait à chaque chargement. Le délai, absent du template, peut lui rester
+dans `getSSRProps` sans être comparé.
 
 ## Démarrer
 

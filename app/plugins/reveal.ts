@@ -2,14 +2,21 @@
 // quand il entre dans la vue. Un seul IntersectionObserver partagé pour tout le
 // site.
 //
-// Anti-flash : la classe `reveal` est rendue dès le HTML prérendu
-// (getSSRProps), et la classe `js` est posée avant le premier paint par un
-// script en <head> (voir nuxt.config). L'état masqué s'applique donc au premier
-// rendu, sans clignotement. Accessibilité : prefers-reduced-motion désactive
-// tout en CSS (assets/css/motion.css). Robustesse : sans IntersectionObserver,
-// `js` n'est jamais posée et le contenu reste visible.
+// Anti-flash : la classe `js` est posée avant le premier paint par un script en
+// <head> (voir nuxt.config), si bien que l'état masqué s'applique dès le premier
+// rendu. Accessibilité : prefers-reduced-motion désactive tout en CSS
+// (assets/css/motion.css). Robustesse : sans IntersectionObserver, `js` n'est
+// jamais posée et le contenu reste visible.
 //
-// Usage : v-reveal (délai 0) ou v-reveal="120" (délai en ms, pour échelonner).
+// Usage : class="reveal" + v-reveal (délai 0) ou v-reveal="120" (délai en ms,
+// pour échelonner).
+//
+// IMPORTANT — la classe `reveal` s'écrit dans le template, elle n'est PAS
+// injectée par getSSRProps. Injectée côté serveur seulement, elle manquait au
+// vnode côté client : Vue signalait alors un écart d'hydratation sur chaque
+// élément animé (« Hydration class mismatch »), la console se remplissant à
+// chaque chargement. Le délai, lui, peut rester dans getSSRProps : absent du
+// template, il n'est pas comparé à l'hydratation.
 export default defineNuxtPlugin((nuxtApp) => {
   let observer: IntersectionObserver | undefined
 
@@ -29,12 +36,13 @@ export default defineNuxtPlugin((nuxtApp) => {
 
   nuxtApp.vueApp.directive('reveal', {
     getSSRProps(binding) {
-      return {
-        class: 'reveal',
-        ...(binding.value ? { style: { '--reveal-delay': `${binding.value}ms` } } : {}),
-      }
+      return binding.value
+        ? { style: { '--reveal-delay': `${binding.value}ms` } }
+        : {}
     },
     mounted(el: HTMLElement, binding) {
+      // Filet de sécurité si la classe a été oubliée dans le template : ajoutée
+      // ici, elle n'entre pas dans la comparaison d'hydratation.
       el.classList.add('reveal')
       if (binding.value) el.style.setProperty('--reveal-delay', `${binding.value}ms`)
       observer?.observe(el)

@@ -8,7 +8,9 @@ defineEmits<{ 'ouvrir-demo': [] }>()
 </script>
 
 <template>
-  <article class="card project">
+  <!-- `reveal` porté ici et non injecté par la directive : voir plugins/reveal.ts
+       (la classe doit venir du template pour ne pas fausser l'hydratation). -->
+  <article class="reveal card project">
     <p class="project__kind">{{ projet.sousTitre }}</p>
     <h3 class="project__title">{{ projet.titre }}</h3>
     <p class="project__desc">{{ projet.description }}</p>
