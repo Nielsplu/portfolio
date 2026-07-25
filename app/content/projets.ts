@@ -10,9 +10,11 @@ export const projets: Projet[] = [
       "Application web de création de listes d'armées avec moteur de règles complet : validation en temps réel (règle de 3, quotas de détachement, personnages nommés), résolution automatique des armes, transports et export imprimable. Architecture Nuxt 4 en layers, TypeScript strict, tests Vitest, CI/CD GitHub Actions, Gitleaks.",
     tags: ['Nuxt 4', 'Vue 3', 'TypeScript', 'Tailwind', 'PostgreSQL', 'Prisma', 'Vitest', 'GitHub Actions'],
     categorie: 'Web',
-    // Repo actuellement privé sur GitHub : le passer en public (ou déployer
-    // une démo) avant de décommenter, sinon les visiteurs tombent sur un 404.
+    // Repo actuellement privé sur GitHub : `codePrive` l'affiche sur la carte,
+    // pour ne pas laisser croire à un lien oublié. Le passer en public (ou
+    // déployer une démo), puis retirer ce drapeau et ajouter le lien.
     // liens: [{ label: 'Code', url: 'https://github.com/Nielsplu/Warhammer' }],
+    codePrive: true,
   },
   {
     titre: 'Solution de traitement documentaire intelligent',

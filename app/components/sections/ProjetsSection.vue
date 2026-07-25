@@ -28,6 +28,14 @@ const demoOuverte = ref<DemoId | null>(null)
       </button>
     </div>
 
+    <!-- Le filtre ne disait rien de son effet : ce compteur l'annonce à l'œil
+         et, via aria-live, au lecteur d'écran qui ne voit pas les cartes
+         disparaître. -->
+    <p class="resultats" role="status" aria-live="polite">
+      {{ visibles.length }} {{ visibles.length > 1 ? 'projets' : 'projet' }}
+      <template v-if="actif !== 'Tous'">en {{ actif }}</template>
+    </p>
+
     <div class="grid">
       <ProjetCard
         v-for="(p, i) in visibles"
@@ -52,7 +60,13 @@ const demoOuverte = ref<DemoId | null>(null)
   display: flex;
   gap: 0.6rem;
   flex-wrap: wrap;
-  margin-bottom: 1.8rem;
+  margin-bottom: 1rem;
+}
+.resultats {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 0 0 1.4rem;
 }
 .filters__btn {
   border: 1.5px solid var(--line);

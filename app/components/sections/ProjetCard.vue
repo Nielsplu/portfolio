@@ -15,7 +15,7 @@ defineEmits<{ 'ouvrir-demo': [] }>()
     <h3 class="project__title">{{ projet.titre }}</h3>
     <p class="project__desc">{{ projet.description }}</p>
     <TechList :items="projet.tags" />
-    <div v-if="projet.liens?.length || projet.demo" class="project__links">
+    <div v-if="projet.liens?.length || projet.demo || projet.codePrive" class="project__links">
       <button
         v-if="projet.demo"
         class="project__link project__link--demo"
@@ -28,7 +28,10 @@ defineEmits<{ 'ouvrir-demo': [] }>()
         :href="lien.url"
         target="_blank"
         rel="noopener"
-      >{{ lien.label }} ↗</a>
+      >{{ lien.label }} <span aria-hidden="true">↗</span><span class="sr-only">(nouvel onglet)</span></a>
+      <!-- Mention plutôt qu'absence de lien : une carte sans aucune action
+           laisse penser à un oubli. -->
+      <span v-if="projet.codePrive" class="project__prive">Code privé</span>
     </div>
   </article>
 </template>
@@ -86,6 +89,16 @@ defineEmits<{ 'ouvrir-demo': [] }>()
   border-color: var(--accent);
   color: var(--on-accent);
   cursor: pointer;
+}
+/* Volontairement inerte : ce n'est pas une action, seulement une explication.
+   Bordure en tirets pour le distinguer d'un lien au premier coup d'œil. */
+.project__prive {
+  border: 1.5px dashed var(--line);
+  border-radius: var(--radius-sm);
+  padding: 0.35rem 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--muted);
 }
 .project__link--demo:hover { background: var(--accent-bright); }
 </style>
