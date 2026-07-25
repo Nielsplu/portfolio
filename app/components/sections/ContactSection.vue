@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import { profil } from '~/content'
+
+// Nomme la région d'après son titre (voir BaseSection pour le détail).
+const idTitre = useId()
 </script>
 
 <template>
-  <section id="contact" class="section">
+  <section id="contact" class="section" :aria-labelledby="idTitre">
     <div class="container">
-      <div v-reveal class="card contact">
+      <div v-reveal class="reveal card contact">
         <p class="eyebrow">contact</p>
-        <h2 class="section-title contact__title">Travaillons ensemble</h2>
+        <h2 :id="idTitre" class="section-title contact__title">Travaillons ensemble</h2>
         <p class="contact__text">
           Un projet, une question ? Je réponds rapidement.
         </p>

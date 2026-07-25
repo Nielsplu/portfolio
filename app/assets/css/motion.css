@@ -19,8 +19,14 @@
    change. Constaté sur le fond du bouton primaire (resté bleu nuit clair sur
    fond sombre, avec un texte sombre par-dessus : illisible), sur le lien de nav
    actif et sur le bouton de démo.
-   L'attribut est posé puis retiré au frame suivant par useTheme.ts. */
-:root[data-theme-bascule] *,
+   L'attribut est posé puis retiré au frame suivant par useTheme.ts.
+
+   Seule exception : le repère de l'interrupteur de thème. Il n'anime que
+   `transform`, valeur littérale jamais issue d'une variable, donc hors de
+   portée du défaut ci-dessus — et c'est le seul mouvement qu'on veuille
+   conserver pendant la bascule, sans quoi le repère sauterait d'un bord à
+   l'autre au lieu de coulisser. */
+:root[data-theme-bascule] *:not(.theme-switch__repere),
 :root[data-theme-bascule] *::before,
 :root[data-theme-bascule] *::after {
   transition: none !important;

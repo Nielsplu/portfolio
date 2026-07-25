@@ -1,24 +1,27 @@
 <script setup lang="ts">
 import { profil } from '~/content'
+
+// Nomme la région d'après le titre principal (voir BaseSection pour le détail).
+const idTitre = useId()
 </script>
 
 <template>
-  <section id="accueil" class="hero">
+  <section id="accueil" class="hero" :aria-labelledby="idTitre">
     <div class="container hero__grid">
       <div>
-        <p v-reveal class="hero__status">{{ profil.statut }}</p>
-        <h1 v-reveal="80" class="hero__name">{{ profil.nom }}</h1>
-        <p v-reveal="160" class="hero__prompt">
+        <p v-reveal class="reveal hero__status">{{ profil.statut }}</p>
+        <h1 :id="idTitre" v-reveal="80" class="reveal hero__name">{{ profil.nom }}</h1>
+        <p v-reveal="160" class="reveal hero__prompt">
           <span class="hero__prompt-symbol">&gt;</span>
           développement web · sécurité des SI
         </p>
-        <p v-reveal="240" class="hero__text">{{ profil.accroche }}</p>
-        <div v-reveal="320" class="hero__actions">
+        <p v-reveal="240" class="reveal hero__text">{{ profil.accroche }}</p>
+        <div v-reveal="320" class="reveal hero__actions">
           <a href="#projets" class="btn btn--primary">Voir mes projets</a>
           <a href="#contact" class="btn btn--ghost">Me contacter</a>
         </div>
       </div>
-      <div v-reveal="200" class="hero__photo-wrap">
+      <div v-reveal="200" class="reveal hero__photo-wrap">
         <!-- Remplace public/photo.jpg par ta photo -->
         <img class="hero__photo" src="/photo.jpg" :alt="`Portrait de ${profil.nom}`" width="320" height="320">
       </div>

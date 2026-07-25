@@ -7,13 +7,19 @@ defineProps<{
   eyebrow: string
   title: string
 }>()
+
+// Rattache la section à son propre titre : sans nom accessible, un <section>
+// est exposé comme une « région » anonyme et la navigation par régions des
+// lecteurs d'écran devient inutilisable. useId() garantit un identifiant
+// stable entre le rendu serveur et l'hydratation.
+const idTitre = useId()
 </script>
 
 <template>
-  <section :id="id" class="section">
+  <section :id="id" class="section" :aria-labelledby="idTitre">
     <div class="container">
-      <p v-reveal class="eyebrow">{{ eyebrow }}</p>
-      <h2 v-reveal="60" class="section-title">{{ title }}</h2>
+      <p v-reveal class="reveal eyebrow">{{ eyebrow }}</p>
+      <h2 :id="idTitre" v-reveal="60" class="reveal section-title">{{ title }}</h2>
       <slot />
     </div>
   </section>
