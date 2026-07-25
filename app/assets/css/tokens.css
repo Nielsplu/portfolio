@@ -43,6 +43,11 @@
   /* Texte posé sur un aplat d'accent. */
   --on-accent: #ffffff;
 
+  /* Confirmation (copie réussie…). Vert franchement sombre : mesuré à 6,7:1 sur
+     une surface blanche, là où un vert plus clair tombait à 4,5 — juste au seuil,
+     sans marge. */
+  --succes: #276749;
+
   /* ---- Ombres ----
      La couleur est isolée dans son propre token : une ombre teintée de bleu
      nuit disparaît sur un fond sombre, il faut y aller franchement au noir. */
@@ -91,6 +96,8 @@
     --accent-bright: #8cbde8;
     --accent-soft: #1a2938;
     --on-accent: #0c111a;
+    /* Vert clair : le vert sombre du thème clair serait illisible ici. */
+    --succes: #6ee7a8;
 
     --shadow-color: rgba(0, 0, 0, 0.65);
     --shadow-color-soft: rgba(0, 0, 0, 0.5);
@@ -114,6 +121,7 @@
   --accent-bright: #8cbde8;
   --accent-soft: #1a2938;
   --on-accent: #0c111a;
+  --succes: #6ee7a8;
 
   --shadow-color: rgba(0, 0, 0, 0.65);
   --shadow-color-soft: rgba(0, 0, 0, 0.5);

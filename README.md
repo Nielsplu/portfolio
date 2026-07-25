@@ -104,6 +104,26 @@ Les deux thèmes ont été mesurés : 21 paires texte/fond conformes au **niveau
   intitulé, formation, localisation, et `sameAs` vers GitHub et LinkedIn. Les
   technologies sont dérivées des tags de projets, donc jamais désynchronisées.
 
+## Détails d'expérience
+
+- **Copie de l'adresse e-mail** (`usePressePapiers`) en complément du lien
+  `mailto:`, qui ne mène à rien pour qui n'a pas de client mail configuré. Le
+  bouton garde une largeur fixe pour ne pas décaler ses voisins en changeant de
+  libellé, et l'issue — succès **comme échec** — est annoncée dans une région
+  `aria-live` : le nom accessible d'un élément déjà focalisé n'est pas réannoncé
+  de façon fiable.
+- **Retour en haut** (`RetourHaut`), un lien vers l'ancre d'accueil et non un
+  bouton : le défilement doux vient du CSS (donc neutralisé par
+  `prefers-reduced-motion`) et l'ancre reste utilisable au clavier. Masqué tant
+  qu'on n'a pas descendu un écran, avec `visibility`, `tabindex` et
+  `aria-hidden` — sinon il resterait cliquable et atteignable en étant invisible.
+- **Compteur de résultats** sous les filtres de projets, en `aria-live` : le
+  filtre ne signalait pas son effet, et un lecteur d'écran ne voit pas les
+  cartes disparaître.
+- **`codePrive`** sur un projet affiche « Code privé » au lieu de ne rien
+  afficher : une carte sans aucune action laisse croire à un lien oublié.
+- Les liens externes annoncent « (nouvel onglet) » aux lecteurs d'écran.
+
 ## Page 404
 
 `app/error.vue` couvre les erreurs, et **`/404.html` est prérendu** : GitHub

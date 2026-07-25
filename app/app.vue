@@ -49,5 +49,6 @@ useHead({
     <SiteNav />
     <NuxtPage id="contenu" />
     <SiteFooter />
+    <RetourHaut />
   </div>
 </template>

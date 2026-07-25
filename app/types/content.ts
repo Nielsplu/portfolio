@@ -47,6 +47,9 @@ export interface Projet {
   liens?: LienExterne[]
   // Identifiant d'une démo interactive embarquée (registre : app/demos).
   demo?: DemoId
+  /** Dépôt volontairement privé : la carte l'indique explicitement plutôt que
+   *  de n'afficher aucun lien, ce qui laisserait croire à un oubli. */
+  codePrive?: boolean
 }
 
 /** Une carte de compétences, groupée par sous-thème. */
