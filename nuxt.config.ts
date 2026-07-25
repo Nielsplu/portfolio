@@ -25,16 +25,30 @@ export default defineNuxtConfig({
     head: {
       htmlAttrs: { lang: 'fr' },
       title: 'Niels Plu – Portfolio',
-      // Pose la classe `js` avant le premier paint : l'état masqué des
-      // animations d'apparition s'applique dès le rendu (pas de flash). Ne
-      // s'active que si IntersectionObserver existe pour révéler ensuite.
+      // Deux réglages posés avant le premier paint, donc sans clignotement :
+      //   1. classe `js` — l'état masqué des animations d'apparition s'applique
+      //      dès le rendu. Conditionnée à IntersectionObserver, seul capable de
+      //      les révéler ensuite (sinon le contenu resterait invisible).
+      //   2. attribut `data-theme` — thème choisi par le visiteur, sinon sa
+      //      préférence système. Il sélectionne la palette sombre dans
+      //      assets/css/tokens.css. Sa présence sert aussi de test de support :
+      //      le bouton de bascule n'apparaît que si l'attribut existe (voir
+      //      ThemeToggle.vue), puisque sans JS il serait inopérant.
+      // La clé de stockage doit rester alignée avec CLE_THEME
+      // (app/composables/useTheme.ts).
       script: [{
-        innerHTML: 'window.IntersectionObserver&&document.documentElement.classList.add("js")',
+        innerHTML: `window.IntersectionObserver&&document.documentElement.classList.add("js");`
+          + `try{var t=localStorage.getItem("niels-theme");`
+          + `document.documentElement.dataset.theme=t==="light"||t==="dark"?t`
+          + `:(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")}catch(e){}`,
         tagPosition: 'head',
       }],
       meta: [
         { name: 'description', content: description },
-        { name: 'theme-color', content: '#1f4e79' },
+        // Teinte de l'interface du navigateur : suit le fond réel de la page
+        // dans chaque thème (--bg de assets/css/tokens.css).
+        { name: 'theme-color', content: '#f6f8fb', media: '(prefers-color-scheme: light)' },
+        { name: 'theme-color', content: '#0c111a', media: '(prefers-color-scheme: dark)' },
 
         // Open Graph : aperçu du lien sur LinkedIn, WhatsApp, email…
         { property: 'og:type', content: 'profile' },

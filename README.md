@@ -23,9 +23,12 @@ app/
 │   └── index.ts            Barrel : les composants importent depuis '~/content'
 ├── sections/registry.ts    SOURCE UNIQUE de l'ordre des sections ET de la nav
 ├── components/
-│   ├── base/               Primitives réutilisables (BaseSection, TagList)
-│   ├── layout/             SiteNav, SiteFooter
+│   ├── base/               Primitives réutilisables (BaseSection, TechList…)
+│   ├── layout/             SiteNav, SiteFooter, ThemeToggle
 │   └── sections/           Une section = un composant (HeroSection, …)
+├── composables/
+│   ├── useScrollSpy.ts     Surbrillance du lien de la section visible
+│   └── useTheme.ts         Bascule clair / sombre
 ├── demos/                  Démos interactives embarquées (registre + modules)
 │   ├── index.ts            Registre des démos (chargement paresseux)
 │   └── ftp/                Démo FTP : le vrai binaire Go tourne en WebAssembly
@@ -58,6 +61,33 @@ menu, **sans toucher ni la page ni la navigation**.
 `app/demos/index.ts`, puis mettre `demo: '<id>'` sur le projet concerné.
 
 **Rethemer** : tout passe par les variables de `app/assets/css/tokens.css`.
+
+## Thème clair / sombre
+
+Le site suit la **préférence système** par défaut, et le visiteur peut forcer
+l'un ou l'autre via le bouton de la barre de navigation ; son choix est
+mémorisé. Trois pièces s'articulent :
+
+| Pièce | Rôle |
+|---|---|
+| `assets/css/tokens.css` | Les deux palettes. La sombre surcharge la claire sous `:root[data-theme='dark']`, et sous `@media (prefers-color-scheme: dark)` pour les visiteurs sans JavaScript. |
+| Script en `<head>` (`nuxt.config.ts`) | Résout le thème **avant le premier paint** et le pose sur `<html data-theme>` : aucun clignotement au chargement. |
+| `composables/useTheme.ts` | Lit et écrit cet attribut au clic. |
+
+Deux détails qui ont demandé du soin, à ne pas défaire par inadvertance :
+
+- **Le bouton ne tient aucun état réactif.** Icône et libellé sont choisis en
+  CSS d'après `data-theme`. Le serveur ne pouvant pas connaître le thème du
+  visiteur, tout état rendu côté serveur provoquerait un écart d'hydratation.
+- **Les transitions sont coupées le temps de la bascule** (`motion.css`, attribut
+  `data-theme-bascule`). Sans cela, une propriété à la fois transitionnée et
+  alimentée par une variable de thème reste figée sur son ancienne couleur —
+  Chrome ne recalcule pas le point d'arrivée d'une transition quand c'est le
+  `var()` source qui change. Symptôme observé : bouton primaire resté bleu clair
+  sur fond sombre, texte sombre par-dessus, illisible.
+
+Les deux thèmes ont été mesurés : 21 paires texte/fond conformes au **niveau AA**
+(contraste minimum relevé 4,97:1).
 
 ## Démarrer
 

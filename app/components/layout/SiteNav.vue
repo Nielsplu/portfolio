@@ -11,15 +11,6 @@ const actif = useScrollSpy(liensNavigation.map(l => l.href.slice(1)))
   <header class="nav">
     <nav class="container nav__inner" aria-label="Navigation principale">
       <a href="#accueil" class="nav__logo">niels<span>.plu</span></a>
-      <button
-        class="nav__burger"
-        :aria-expanded="open"
-        aria-controls="nav-links"
-        aria-label="Ouvrir le menu"
-        @click="open = !open"
-      >
-        <span /><span /><span />
-      </button>
       <ul id="nav-links" class="nav__links" :class="{ 'nav__links--open': open }">
         <li v-for="l in liensNavigation" :key="l.href">
           <a
@@ -33,6 +24,20 @@ const actif = useScrollSpy(liensNavigation.map(l => l.href.slice(1)))
           <a :href="profil.cv" class="btn btn--primary nav__cv" download>CV</a>
         </li>
       </ul>
+      <!-- Hors du menu déroulant : la bascule de thème et le burger restent
+           accessibles dans la barre même quand le menu mobile est replié. -->
+      <div class="nav__actions">
+        <ThemeToggle />
+        <button
+          class="nav__burger"
+          :aria-expanded="open"
+          aria-controls="nav-links"
+          aria-label="Ouvrir le menu"
+          @click="open = !open"
+        >
+          <span /><span /><span />
+        </button>
+      </div>
     </nav>
   </header>
 </template>
@@ -42,17 +47,25 @@ const actif = useScrollSpy(liensNavigation.map(l => l.href.slice(1)))
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(246, 248, 251, 0.85);
+  background: var(--bg-translucent);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
 }
 .nav__inner {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding-block: 0.85rem;
+  gap: 1.5rem;
+  min-height: var(--nav-height);
+}
+.nav__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
 }
 .nav__logo {
+  /* Pousse le menu et les actions à droite : pas de `space-between` sur
+     .nav__inner, qui centrerait le menu entre le logo et les actions. */
+  margin-right: auto;
   font-family: var(--font-mono);
   font-weight: 500;
   font-size: 1.05rem;

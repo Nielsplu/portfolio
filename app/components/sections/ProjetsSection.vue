@@ -70,7 +70,7 @@ const demoOuverte = ref<DemoId | null>(null)
 .filters__btn--active {
   background: var(--accent);
   border-color: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
 }
 .grid {
   display: grid;
