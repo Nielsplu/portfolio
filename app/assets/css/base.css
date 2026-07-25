@@ -7,7 +7,8 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 84px;
+  /* Décale les ancres pour qu'elles ne se glissent pas sous la nav collante. */
+  scroll-padding-top: calc(var(--nav-height) + 1.25rem);
 }
 
 body {
@@ -28,6 +29,13 @@ a {
   color: var(--accent);
 }
 
+/* Sélection de texte accordée au thème (le bleu par défaut du navigateur
+   jurait, surtout en thème sombre). */
+::selection {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
 h1,
 h2,
 h3 {
@@ -42,6 +50,21 @@ h3 {
   border-radius: 4px;
 }
 
+/* Texte réservé aux lecteurs d'écran : retiré visuellement, conservé dans
+   l'arbre d'accessibilité. Sert notamment au libellé du sélecteur de thème,
+   dont l'état visible est porté par une icône. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* Lien d'évitement (accessibilité clavier). */
 .skip-link {
   position: absolute;
@@ -49,7 +72,7 @@ h3 {
   left: 1rem;
   z-index: 100;
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
   padding: 0.6rem 1rem;
   border-radius: var(--radius-sm);
   text-decoration: none;

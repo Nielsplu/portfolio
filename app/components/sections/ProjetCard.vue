@@ -77,12 +77,12 @@ defineEmits<{ 'ouvrir-demo': [] }>()
 .project__link:hover {
   border-color: var(--accent-bright);
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
 }
 .project__link--demo {
   background: var(--accent);
   border-color: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
   cursor: pointer;
 }
 .project__link--demo:hover { background: var(--accent-bright); }

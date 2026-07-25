@@ -12,6 +12,20 @@
   transform: none;
 }
 
+/* Coupure des transitions pendant une bascule de thème.
+   Sans cela, toute propriété à la fois TRANSITIONNÉE et alimentée par une
+   variable de thème reste figée sur son ancienne couleur : Chrome ne recalcule
+   pas le point d'arrivée d'une transition quand c'est le var() source qui
+   change. Constaté sur le fond du bouton primaire (resté bleu nuit clair sur
+   fond sombre, avec un texte sombre par-dessus : illisible), sur le lien de nav
+   actif et sur le bouton de démo.
+   L'attribut est posé puis retiré au frame suivant par useTheme.ts. */
+:root[data-theme-bascule] *,
+:root[data-theme-bascule] *::before,
+:root[data-theme-bascule] *::after {
+  transition: none !important;
+}
+
 /* Respect des préférences d'accessibilité : aucune animation. */
 @media (prefers-reduced-motion: reduce) {
   .js .reveal {

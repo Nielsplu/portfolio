@@ -1,18 +1,120 @@
-/* Design tokens : couleurs, rayons, typographies, ombres.
-   Point d'entrée unique pour reskinner le site (thème, dark mode…). */
+/* Design tokens : couleurs, ombres, rayons, rythme, typographies.
+   Point d'entrée unique pour reskinner le site.
+
+   THÈME CLAIR / SOMBRE
+   Le thème clair vit dans `:root`, le thème sombre le surcharge. La palette
+   sombre apparaît donc DEUX fois, et c'est volontaire :
+     - dans `@media (prefers-color-scheme: dark)`, pour que le visiteur sans
+       JavaScript voie tout de même un site sombre s'il en a la préférence ;
+     - dans `:root[data-theme='dark']`, pour le choix explicite fait au clic.
+   Le sélecteur `:not([data-theme='light'])` évite que la préférence système
+   reprenne le dessus sur un visiteur qui a justement demandé le thème clair.
+
+   La duplication est le prix du support sans JavaScript. `light-dark()`
+   permettrait de tout déclarer une seule fois, au prix de perdre ce repli.
+
+   Voir aussi :
+   - app/composables/useTheme.ts — bascule au clic ;
+   - le script anti-flash de nuxt.config.ts — pose `data-theme` avant le
+     premier paint ;
+   - app/assets/css/motion.css — coupure des transitions pendant la bascule,
+     sans laquelle les couleurs transitionnées restent figées. */
 :root {
+  /* Fait suivre les éléments natifs (barres de défilement, champs, menus
+     contextuels). Réaffirmé dans chaque bloc de thème ci-dessous. */
+  color-scheme: light;
+
+  /* ---- Fonds et texte ---- */
   --bg: #f6f8fb;
+  /* Fond de la barre de navigation : même teinte que --bg, opacité partielle
+     pour laisser jouer le backdrop-filter. */
+  --bg-translucent: rgba(246, 248, 251, 0.85);
   --surface: #ffffff;
+  /* Fond des éléments discrets (jetons de techno) : lisible sans crier. */
+  --surface-subtle: #eef2f7;
   --ink: #16202b;
   --muted: #5a6b7e;
   --line: #e2e9f1;
+
+  /* ---- Accent ---- */
   --accent: #1f4e79;
-  --accent-bright: #3e7cb1;
+  --accent-bright: #35709f;
   --accent-soft: #dce9f5;
+  /* Texte posé sur un aplat d'accent. */
+  --on-accent: #ffffff;
+
+  /* ---- Ombres ----
+     La couleur est isolée dans son propre token : une ombre teintée de bleu
+     nuit disparaît sur un fond sombre, il faut y aller franchement au noir. */
+  --shadow-color: rgba(22, 32, 43, 0.35);
+  --shadow-color-soft: rgba(22, 32, 43, 0.25);
+  --shadow: 0 10px 30px -18px var(--shadow-color);
+  --shadow-sm: 0 2px 10px -8px var(--shadow-color-soft);
+
+  /* ---- Formes ---- */
   --radius: 14px;
   --radius-sm: 8px;
+
+  /* ---- Rythme vertical ----
+     Une seule valeur pour toutes les sections : le hero et les sections
+     courantes respiraient différemment, ce qui se voyait au défilement. */
+  --section-pad: 5.5rem;
+  /* Hauteur de la nav collante, réutilisée par scroll-padding-top pour que les
+     ancres ne passent pas sous la barre. */
+  --nav-height: 64px;
+
+  /* ---- Typographies ---- */
   --font-display: 'Space Grotesk', sans-serif;
   --font-body: 'Inter', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
-  --shadow: 0 10px 30px -18px rgba(22, 32, 43, 0.35);
+}
+
+/* Palette sombre — bloc 1/2 : préférence système, pour les visiteurs sans
+   JavaScript (le script anti-flash n'a alors pas posé `data-theme`).
+   Toute modification ici doit être répercutée dans le bloc 2/2. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+
+    --bg: #0c111a;
+    --bg-translucent: rgba(12, 17, 26, 0.85);
+    --surface: #141b26;
+    --surface-subtle: #1a2331;
+    --ink: #e6edf5;
+    --muted: #93a4b8;
+    --line: #233040;
+
+    /* L'accent est éclairci : le bleu nuit du thème clair (#1f4e79) n'a pas un
+       contraste suffisant sur un fond sombre. Le texte posé dessus devient
+       donc sombre à son tour. */
+    --accent: #6ba3d6;
+    --accent-bright: #8cbde8;
+    --accent-soft: #1a2938;
+    --on-accent: #0c111a;
+
+    --shadow-color: rgba(0, 0, 0, 0.65);
+    --shadow-color-soft: rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* Palette sombre — bloc 2/2 : choix explicite du visiteur.
+   Doit rester identique au bloc 1/2 ci-dessus. */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --bg: #0c111a;
+  --bg-translucent: rgba(12, 17, 26, 0.85);
+  --surface: #141b26;
+  --surface-subtle: #1a2331;
+  --ink: #e6edf5;
+  --muted: #93a4b8;
+  --line: #233040;
+
+  --accent: #6ba3d6;
+  --accent-bright: #8cbde8;
+  --accent-soft: #1a2938;
+  --on-accent: #0c111a;
+
+  --shadow-color: rgba(0, 0, 0, 0.65);
+  --shadow-color-soft: rgba(0, 0, 0, 0.5);
 }

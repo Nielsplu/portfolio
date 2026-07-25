@@ -29,7 +29,9 @@ import { profil } from '~/content'
 <style scoped>
 .hero {
   position: relative;
-  padding-block: 5rem 4.5rem;
+  /* Même rythme que les autres sections (token partagé) : le hero respirait
+     légèrement différemment, ce qui se voyait au défilement. */
+  padding-block: var(--section-pad);
   overflow: hidden;
 }
 /* Fond en grille de points, estompé vers les bords : touche « technique »
