@@ -11,7 +11,7 @@ import { competences } from '~/content'
         <div class="skill__groups">
           <div v-for="g in c.groupes" :key="g.label" class="skill__group">
             <p class="skill__label">{{ g.label }}</p>
-            <TechList :items="g.items" />
+            <TechList :items="g.items" :label="`${c.titre} — ${g.label}`" />
           </div>
         </div>
       </article>

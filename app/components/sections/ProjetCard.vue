@@ -14,7 +14,7 @@ defineEmits<{ 'ouvrir-demo': [] }>()
     <p class="project__kind">{{ projet.sousTitre }}</p>
     <h3 class="project__title">{{ projet.titre }}</h3>
     <p class="project__desc">{{ projet.description }}</p>
-    <TechList :items="projet.tags" />
+    <TechList :items="projet.tags" :label="`Technologies du projet ${projet.titre}`" />
     <div v-if="projet.liens?.length || projet.demo || projet.codePrive" class="project__links">
       <button
         v-if="projet.demo"
