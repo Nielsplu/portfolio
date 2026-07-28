@@ -58,6 +58,8 @@ export const projets: Projet[] = [
     tags: ['Go', 'Concurrence', 'Réseau', 'CLI'],
     categorie: 'Réseaux & Sécurité',
     demo: 'ftp',
+    demoAccroche:
+      "Le serveur FTP écrit en Go est compilé en WebAssembly : le binaire s'exécute dans votre navigateur, sans rien installer ni contacter de serveur.",
     liens: [
       { label: 'Code', url: 'https://github.com/Nielsplu/ftp-go' },
       { label: 'Binaires', url: 'https://github.com/Nielsplu/ftp-go/releases/tag/v1.0' },

@@ -47,6 +47,10 @@ export interface Projet {
   liens?: LienExterne[]
   // Identifiant d'une démo interactive embarquée (registre : app/demos).
   demo?: DemoId
+  /** Accroche affichée dans le bandeau qui met la démo en avant, en tête de la
+   *  section projets. Sans elle, la démo n'est découvrable qu'en lisant la
+   *  sixième carte jusqu'au bout. */
+  demoAccroche?: string
   /** Dépôt volontairement privé : la carte l'indique explicitement plutôt que
    *  de n'afficher aucun lien, ce qui laisserait croire à un oubli. */
   codePrive?: boolean
