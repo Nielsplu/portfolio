@@ -22,8 +22,26 @@ const idTitre = useId()
         </div>
       </div>
       <div v-reveal="200" class="reveal hero__photo-wrap">
-        <!-- Remplace public/photo.jpg par ta photo -->
-        <img class="hero__photo" src="/photo.jpg" :alt="`Portrait de ${profil.nom}`" width="320" height="320">
+        <!-- <NuxtPicture> et non <img> : la source est une photo d'appareil de
+             plusieurs mégaoctets, réduite et réencodée au build. Le composant
+             « picture » émet des <source> en AVIF puis WebP, avec repli JPEG
+             pour les navigateurs qui ne suivent pas — un simple <NuxtImg>
+             aurait conservé le format d'origine.
+             `preload` et `loading="eager"` : l'image est au-dessus de la ligne
+             de flottaison, elle pèse donc sur le premier affichage. -->
+        <NuxtPicture
+          src="/photo.jpg"
+          :img-attrs="{ class: 'hero__photo' }"
+          :alt="`Portrait de ${profil.nom}`"
+          width="300"
+          height="300"
+          sizes="300px"
+          densities="1x 2x"
+          fit="cover"
+          format="avif,webp"
+          loading="eager"
+          preload
+        />
       </div>
     </div>
   </section>

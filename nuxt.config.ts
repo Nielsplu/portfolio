@@ -6,7 +6,14 @@ const description = "Portfolio de Niels Plu, étudiant en 3ᵉ année de BUT Inf
 export default defineNuxtConfig({
   compatibilityDate: '2026-01-01',
   devtools: { enabled: true },
-  modules: ['@nuxt/eslint', '@nuxt/fonts'],
+  modules: ['@nuxt/eslint', '@nuxt/fonts', '@nuxt/image'],
+  // Optimisation des images au build (sharp), pas à l'exécution : GitHub Pages
+  // sert des fichiers statiques et ne peut rien redimensionner à la volée. Les
+  // variantes sont donc générées pendant le prérendu et déposées dans le
+  // dossier public. Voir HeroSection pour l'usage de <NuxtImg>.
+  image: {
+    quality: 72,
+  },
   // Design system découpé : tokens → base → classes partagées.
   css: [
     '~/assets/css/tokens.css',
@@ -58,14 +65,14 @@ export default defineNuxtConfig({
         { property: 'og:title', content: 'Niels Plu – Portfolio' },
         { property: 'og:description', content: description },
         { property: 'og:url', content: siteUrl },
-        { property: 'og:image', content: `${siteUrl}photo.jpg` },
         { property: 'og:locale', content: 'fr_FR' },
+        // og:image et twitter:image sont déclarés dans app.vue : leur URL est
+        // calculée par @nuxt/image, hors de portée d'un fichier de config.
 
         // Twitter Card (repris par certains clients email/messagerie aussi)
         { name: 'twitter:card', content: 'summary' },
         { name: 'twitter:title', content: 'Niels Plu – Portfolio' },
         { name: 'twitter:description', content: description },
-        { name: 'twitter:image', content: `${siteUrl}photo.jpg` },
       ],
       link: [
         { rel: 'icon', type: 'image/svg+xml', href: `${baseURL}favicon.svg` },

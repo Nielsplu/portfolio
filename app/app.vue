@@ -11,6 +11,18 @@ const { siteUrl } = useRuntimeConfig().public
 // techniques, et la liste reste juste sans entretien quand un projet s'ajoute.
 const technologies = [...new Set(projets.flatMap(p => p.tags))]
 
+// Image de partage (Open Graph, Twitter, JSON-LD). Elle passe par la même
+// pipeline que la photo du hero plutôt que de pointer sur public/photo.jpg :
+// la source est une photo d'appareil de plusieurs mégaoctets, que chaque
+// aperçu de lien téléchargerait intégralement. useImage() garde l'URL
+// synchronisée avec la configuration du module, au lieu de figer un chemin
+// /_ipx/ que le moindre changement de réglage casserait en silence.
+const img = useImage()
+const cheminApercu = img('/photo.jpg', { width: 1200, height: 1200, fit: 'cover', quality: 75 })
+// URL absolue exigée par Open Graph. Le chemin porte déjà le baseURL, d'où la
+// résolution relative à l'origine du site plutôt qu'une concaténation.
+const urlApercu = new URL(cheminApercu, siteUrl).href
+
 const donneesStructurees = {
   '@context': 'https://schema.org',
   '@type': 'Person',
@@ -18,7 +30,7 @@ const donneesStructurees = {
   'jobTitle': profil.titre,
   'description': profil.accroche,
   'url': siteUrl,
-  'image': `${siteUrl}photo.jpg`,
+  'image': urlApercu,
   'email': `mailto:${profil.email}`,
   'address': {
     '@type': 'PostalAddress',
@@ -36,6 +48,10 @@ const donneesStructurees = {
 }
 
 useHead({
+  meta: [
+    { property: 'og:image', content: urlApercu },
+    { name: 'twitter:image', content: urlApercu },
+  ],
   script: [{
     type: 'application/ld+json',
     innerHTML: JSON.stringify(donneesStructurees),
