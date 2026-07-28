@@ -28,7 +28,12 @@ const idTitre = useId()
              pour les navigateurs qui ne suivent pas — un simple <NuxtImg>
              aurait conservé le format d'origine.
              `preload` et `loading="eager"` : l'image est au-dessus de la ligne
-             de flottaison, elle pèse donc sur le premier affichage. -->
+             de flottaison, elle pèse donc sur le premier affichage.
+             `position: attention` : la source est en 4:3 alors que l'affichage
+             est carré. Un recadrage centré par défaut coupe à l'aveugle et peut
+             trancher le sujet ; cette stratégie de sharp conserve la zone la
+             plus saillante de l'image. Basculer sur 'top' si le cadrage du
+             visage n'est pas bon. -->
         <NuxtPicture
           src="/photo.jpg"
           :img-attrs="{ class: 'hero__photo' }"
@@ -38,6 +43,7 @@ const idTitre = useId()
           sizes="300px"
           densities="1x 2x"
           fit="cover"
+          :modifiers="{ position: 'attention' }"
           format="avif,webp"
           loading="eager"
           preload
@@ -100,13 +106,33 @@ const idTitre = useId()
 .hero__text { color: var(--muted); max-width: 56ch; margin: 0 0 0.9rem; }
 .hero__actions { display: flex; gap: 0.9rem; flex-wrap: wrap; margin-top: 1.6rem; }
 .hero__photo-wrap { display: flex; justify-content: center; }
+/* <NuxtPicture> intercale un <picture> entre le conteneur et l'image. Inline
+   par défaut, il ajoutait un interligne sous la photo et décentrait le halo. */
+.hero__photo-wrap picture {
+  display: block;
+  line-height: 0;
+}
 .hero__photo {
   width: min(300px, 70vw);
+  height: auto;
   aspect-ratio: 1;
   object-fit: cover;
   border-radius: 50%;
-  border: 6px solid var(--surface);
-  box-shadow: var(--shadow), 0 0 0 2px var(--accent-soft);
+  /* Anneau fin plutôt qu'une bordure épaisse couleur surface : celle-ci était
+     blanche sur un fond quasi blanc en thème clair, donc invisible, et ne
+     laissait que le halo extérieur pour détourer la photo. Ici l'anneau reste
+     lisible dans les deux thèmes, et l'ombre porte le relief. */
+  box-shadow:
+    0 0 0 1px var(--line),
+    0 20px 45px -28px var(--shadow-color);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+/* Le survol réchauffe l'anneau sans déplacer la mise en page. */
+.hero__photo-wrap:hover .hero__photo {
+  box-shadow:
+    0 0 0 1px var(--accent-bright),
+    0 24px 50px -26px var(--shadow-color);
+  transform: translateY(-2px);
 }
 @media (max-width: 820px) {
   .hero__grid { grid-template-columns: 1fr; }
