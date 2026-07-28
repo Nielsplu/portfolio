@@ -1,0 +1,76 @@
+/* Feuille d'impression.
+   Un portfolio est régulièrement imprimé ou passé en PDF par un recruteur qui
+   veut l'annoter ou le joindre à un dossier. Sans ces règles, la sortie
+   embarque la barre de navigation collante, des aplats sombres coûteux en
+   encre, et des liens dont la destination est perdue. */
+@media print {
+  /* Toujours sur fond clair : le thème sombre vide une cartouche pour rien. */
+  :root {
+    color-scheme: light;
+
+    --bg: #ffffff;
+    --surface: #ffffff;
+    --surface-subtle: #ffffff;
+    --ink: #000000;
+    --muted: #333333;
+    --line: #999999;
+    --accent: #000000;
+    --accent-bright: #333333;
+    --accent-soft: #ffffff;
+    --on-accent: #ffffff;
+    --shadow: none;
+    --shadow-sm: none;
+  }
+
+  /* Éléments qui n'ont aucun sens sur papier : navigation, sélecteur de thème,
+     retour en haut, et les boutons d'action de la page de contact. */
+  .nav,
+  .theme-switch,
+  .retour-haut,
+  .skip-link,
+  .filters,
+  .adresse__copie {
+    display: none !important;
+  }
+
+  /* Les animations d'apparition laisseraient des blocs invisibles à l'impression :
+     tout ce qui n'a pas encore été révélé doit s'afficher malgré tout. */
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  /* Rythme resserré : l'espacement pensé pour le défilement gaspille des pages. */
+  .section,
+  .hero {
+    padding-block: 1.2rem;
+  }
+
+  /* Une carte coupée en deux entre deux pages est illisible. */
+  .card,
+  .timeline__item,
+  .skill {
+    break-inside: avoid;
+    box-shadow: none;
+  }
+
+  h2,
+  h3 {
+    break-after: avoid;
+  }
+
+  /* La destination d'un lien est perdue sur papier : on l'imprime à la suite.
+     Limité aux liens externes — expliciter chaque ancre interne (#projets)
+     alourdirait le texte sans rien apporter. */
+  a[href^='http']::after {
+    content: ' (' attr(href) ')';
+    font-family: var(--font-mono);
+    font-size: 0.75em;
+    word-break: break-all;
+  }
+}

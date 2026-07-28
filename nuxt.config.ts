@@ -20,6 +20,8 @@ export default defineNuxtConfig({
     '~/assets/css/base.css',
     '~/assets/css/components.css',
     '~/assets/css/motion.css',
+    // En dernier : ses surcharges de tokens doivent l'emporter à l'impression.
+    '~/assets/css/print.css',
   ],
   // Nom des composants = nom de fichier, sans préfixe du dossier
   // (BaseSection, SiteNav…) : les sous-dossiers restent purement organisationnels.

@@ -12,7 +12,9 @@ const idTitre = useId()
         <p v-reveal class="reveal hero__status">{{ profil.statut }}</p>
         <h1 :id="idTitre" v-reveal="80" class="reveal hero__name">{{ profil.nom }}</h1>
         <p v-reveal="160" class="reveal hero__prompt">
-          <span class="hero__prompt-symbol">&gt;</span>
+          <!-- Purement décoratif : sans aria-hidden, un lecteur d'écran
+               annonce « supérieur à » avant la phrase. -->
+          <span class="hero__prompt-symbol" aria-hidden="true">&gt;</span>
           développement web · sécurité des SI
         </p>
         <p v-reveal="240" class="reveal hero__text">{{ profil.accroche }}</p>
@@ -105,14 +107,74 @@ const idTitre = useId()
 .hero__prompt-symbol { color: var(--muted); margin-right: 0.4rem; }
 .hero__text { color: var(--muted); max-width: 56ch; margin: 0 0 0.9rem; }
 .hero__actions { display: flex; gap: 0.9rem; flex-wrap: wrap; margin-top: 1.6rem; }
-.hero__photo-wrap { display: flex; justify-content: center; }
+/* Taille de la photo, réutilisée par les décors en orbite ci-dessous. */
+.hero__photo-wrap {
+  --taille-photo: min(300px, 70vw);
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 /* <NuxtPicture> intercale un <picture> entre le conteneur et l'image. Inline
    par défaut, il ajoutait un interligne sous la photo et décentrait le halo. */
 .hero__photo-wrap picture {
   display: block;
   line-height: 0;
+  /* Au-dessus des décors, qui restent purement d'arrière-plan. */
+  position: relative;
+  z-index: 1;
 }
-.hero__photo {
+/* Anneau pointillé en orbite : reprend le vocabulaire graphique du site (la
+   grille de points du hero, les « // » des intitulés) au lieu d'un halo flou
+   générique. Décoratif, donc en pseudo-élément : rien n'entre dans le DOM ni
+   dans l'arbre d'accessibilité. */
+.hero__photo-wrap::before,
+.hero__photo-wrap::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.hero__photo-wrap::before {
+  width: calc(var(--taille-photo) + 30px);
+  aspect-ratio: 1;
+  border: 1px dashed var(--accent-bright);
+  opacity: 0.35;
+  transform: translate(-50%, -50%);
+  animation: orbite 40s linear infinite;
+}
+/* Arc plein, ouvert sur deux côtés : donne un point de repère fixe que
+   l'anneau pointillé vient croiser en tournant. */
+.hero__photo-wrap::after {
+  width: calc(var(--taille-photo) + 14px);
+  aspect-ratio: 1;
+  border: 2px solid transparent;
+  border-top-color: var(--accent);
+  border-bottom-color: var(--accent);
+  opacity: 0.5;
+  transform: translate(-50%, -50%) rotate(-24deg);
+  transition: opacity 0.25s ease, transform 0.4s ease;
+}
+.hero__photo-wrap:hover::after {
+  opacity: 0.9;
+  transform: translate(-50%, -50%) rotate(-8deg);
+}
+@keyframes orbite {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+/* La rotation continue est une animation d'ambiance : elle disparaît pour qui
+   demande moins de mouvement, l'anneau restant visible et statique. */
+@media (prefers-reduced-motion: reduce) {
+  .hero__photo-wrap::before { animation: none; }
+}
+/* :deep() indispensable — <NuxtPicture> rend le <img> depuis son propre
+   composant, qui ne reçoit donc pas l'attribut de scope de celui-ci. Sans cette
+   enveloppe, la règle ne s'appliquait à rien : la photo est restée un carré
+   sans arrondi ni cadre tant que le sélecteur est resté scopé. Le <picture>,
+   lui, porte bien l'attribut, d'où la règle non enveloppée ci-dessus. */
+.hero__photo-wrap :deep(.hero__photo) {
   width: min(300px, 70vw);
   height: auto;
   aspect-ratio: 1;
@@ -128,7 +190,7 @@ const idTitre = useId()
   transition: box-shadow 0.25s ease, transform 0.25s ease;
 }
 /* Le survol réchauffe l'anneau sans déplacer la mise en page. */
-.hero__photo-wrap:hover .hero__photo {
+.hero__photo-wrap:hover :deep(.hero__photo) {
   box-shadow:
     0 0 0 1px var(--accent-bright),
     0 24px 50px -26px var(--shadow-color);

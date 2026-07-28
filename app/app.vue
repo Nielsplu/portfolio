@@ -50,7 +50,13 @@ const donneesStructurees = {
 useHead({
   meta: [
     { property: 'og:image', content: urlApercu },
+    // Dimensions déclarées : sans elles, certaines plateformes affichent un
+    // cadre vide le temps de télécharger l'image pour la mesurer.
+    { property: 'og:image:width', content: '1200' },
+    { property: 'og:image:height', content: '1200' },
+    { property: 'og:image:alt', content: `Portrait de ${profil.nom}` },
     { name: 'twitter:image', content: urlApercu },
+    { name: 'twitter:image:alt', content: `Portrait de ${profil.nom}` },
   ],
   script: [{
     type: 'application/ld+json',
