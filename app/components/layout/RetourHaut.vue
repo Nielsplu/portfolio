@@ -58,7 +58,7 @@ onMounted(() => {
   opacity: 0;
   visibility: hidden;
   transform: translateY(8px);
-  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+  transition: opacity var(--duree-moyenne) var(--courbe), transform var(--duree-moyenne) var(--courbe), visibility var(--duree-moyenne);
 }
 
 .retour-haut--visible {

@@ -148,7 +148,7 @@ const projetDemo = computed(() => projets.find(p => p.demo && p.demoAccroche))
   font-weight: 500;
   font-size: 0.88rem;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--duree-rapide) var(--courbe);
 }
 .filters__btn:hover { border-color: var(--accent-bright); color: var(--accent); }
 .filters__btn--active {

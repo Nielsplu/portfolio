@@ -155,7 +155,7 @@ const idTitre = useId()
   border-bottom-color: var(--accent);
   opacity: 0.5;
   transform: translate(-50%, -50%) rotate(-24deg);
-  transition: opacity 0.25s ease, transform 0.4s ease;
+  transition: opacity var(--duree-moyenne) var(--courbe), transform var(--duree-moyenne) var(--courbe);
 }
 .hero__photo-wrap:hover::after {
   opacity: 0.9;
@@ -187,7 +187,7 @@ const idTitre = useId()
   box-shadow:
     0 0 0 1px var(--line),
     0 20px 45px -28px var(--shadow-color);
-  transition: box-shadow 0.25s ease, transform 0.25s ease;
+  transition: box-shadow var(--duree-moyenne) var(--courbe), transform var(--duree-moyenne) var(--courbe);
 }
 /* Le survol réchauffe l'anneau sans déplacer la mise en page. */
 .hero__photo-wrap:hover :deep(.hero__photo) {

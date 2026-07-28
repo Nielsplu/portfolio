@@ -68,6 +68,15 @@ const { basculer } = useTheme()
   border-color: var(--accent-bright);
 }
 
+/* Retour tactile : le repère se comprime légèrement à l'enfoncement, ce qui
+   donne au bouton la sensation d'un vrai interrupteur plutôt que d'une zone
+   cliquable inerte. */
+.theme-switch:active .theme-switch__repere {
+  transform: scaleX(0.88);
+}
+:root[data-theme='dark'] .theme-switch:active .theme-switch__repere {
+  transform: translateX(24px) scaleX(0.88);
+}
 .theme-switch__repere {
   position: absolute;
   top: 2px;
@@ -80,7 +89,7 @@ const { basculer } = useTheme()
   /* Seule `transform` est animée : sa valeur est littérale, jamais issue d'une
      variable de thème, donc épargnée par le défaut de recalcul décrit dans
      motion.css — où ce repère est justement exempté de la coupure. */
-  transition: transform 0.22s ease;
+  transition: transform var(--duree-moyenne) var(--courbe);
 }
 
 :root[data-theme='dark'] .theme-switch__repere {
@@ -94,7 +103,7 @@ const { basculer } = useTheme()
   place-items: center;
   flex: 1;
   color: var(--muted);
-  transition: color 0.15s ease;
+  transition: color var(--duree-rapide) var(--courbe);
 }
 
 .theme-switch__option svg {

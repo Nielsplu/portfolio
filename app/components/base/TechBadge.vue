@@ -38,13 +38,13 @@ const icon = computed<SimpleIcon | undefined>(() => techIcons[props.label])
   color: var(--ink);
   white-space: nowrap;
 }
-.tech--logo { transition: border-color 0.15s ease, transform 0.15s ease; }
+.tech--logo { transition: border-color var(--duree-rapide) var(--courbe), transform var(--duree-rapide) var(--courbe); }
 .tech__logo {
   width: 0.9rem;
   height: 0.9rem;
   fill: var(--muted);
   flex-shrink: 0;
-  transition: fill 0.15s ease;
+  transition: fill var(--duree-rapide) var(--courbe);
 }
 /* Au survol d'un badge, son logo prend sa couleur de marque. */
 .tech--logo:hover {

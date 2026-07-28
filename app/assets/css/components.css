@@ -44,7 +44,7 @@
   font-size: 0.95rem;
   text-decoration: none;
   border: 1.5px solid var(--accent);
-  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  transition: transform var(--duree-rapide) var(--courbe), box-shadow var(--duree-rapide) var(--courbe), background var(--duree-rapide) var(--courbe);
 }
 
 .btn:hover {

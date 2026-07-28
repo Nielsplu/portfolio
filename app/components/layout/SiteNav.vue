@@ -20,10 +20,29 @@ function surEchap() {
   open.value = false
   burger.value?.focus()
 }
+
+// La barre ne prend son fond, son trait et son ombre qu'une fois le défilement
+// entamé. En haut de page elle se fond dans le hero : plus de ligne qui coupe
+// l'écran en deux dès l'arrivée, et le relief n'apparaît qu'au moment où il
+// sert vraiment, quand du contenu passe dessous.
+// `defile` vaut false au rendu serveur comme au premier rendu client : aucun
+// écart d'hydratation possible.
+const defile = ref(false)
+
+onMounted(() => {
+  const surDefilement = () => {
+    defile.value = window.scrollY > 8
+  }
+  surDefilement()
+  // `passive` : l'écouteur ne fait que lire, il ne doit jamais retarder le
+  // défilement.
+  window.addEventListener('scroll', surDefilement, { passive: true })
+  onBeforeUnmount(() => window.removeEventListener('scroll', surDefilement))
+})
 </script>
 
 <template>
-  <header class="nav" @keydown.esc="surEchap">
+  <header class="nav" :class="{ 'nav--defile': defile }" @keydown.esc="surEchap">
     <nav class="container nav__inner" aria-label="Navigation principale">
       <a href="#accueil" class="nav__logo">niels<span>.plu</span></a>
       <ul id="nav-links" class="nav__links" :class="{ 'nav__links--open': open }">
@@ -63,9 +82,31 @@ function surEchap() {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: var(--bg-translucent);
+  /* Transparente en haut de page ; le fond, le trait et l'ombre n'arrivent
+     qu'au défilement (voir .nav--defile). Le trait est déclaré dès maintenant
+     en transparent : sans lui, son apparition modifierait la hauteur de la
+     barre et ferait sauter le contenu d'un pixel. */
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  /* Le flou reste actif en permanence : le basculer déclenche la création puis
+     la destruction d'une couche de composition, ce qui saccade sur mobile.
+     Sans fond derrière lui, il ne se voit pas. */
   backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--line);
+  transition:
+    background var(--duree-moyenne) var(--courbe),
+    border-color var(--duree-moyenne) var(--courbe),
+    box-shadow var(--duree-moyenne) var(--courbe);
+}
+.nav--defile {
+  background: var(--bg-translucent);
+  border-bottom-color: var(--line);
+  box-shadow: var(--shadow-sm);
+}
+/* Menu mobile déployé : la barre reprend son fond même en haut de page, sans
+   quoi les liens flotteraient au-dessus du hero sans support visuel. */
+.nav:has(.nav__links--open) {
+  background: var(--bg-translucent);
+  border-bottom-color: var(--line);
 }
 .nav__inner {
   display: flex;
@@ -103,7 +144,7 @@ function surEchap() {
   color: var(--muted);
   font-weight: 500;
   font-size: 0.95rem;
-  transition: color 0.15s ease;
+  transition: color var(--duree-rapide) var(--courbe);
 }
 .nav__links a:not(.btn):hover { color: var(--accent); }
 /* Lien de la section active : couleur d'accent + soulignement animé. */
@@ -119,7 +160,7 @@ function surEchap() {
   background: var(--accent);
   transform: scaleX(0);
   transform-origin: left;
-  transition: transform 0.2s ease;
+  transition: transform var(--duree-moyenne) var(--courbe);
 }
 .nav__links a.is-active::after { transform: scaleX(1); }
 @media (max-width: 720px) {
