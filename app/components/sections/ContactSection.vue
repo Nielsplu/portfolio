@@ -124,7 +124,7 @@ const liensSecondaires = computed(() => [
   border-radius: var(--radius-sm);
   background: var(--surface-subtle);
   overflow: hidden;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color var(--duree-rapide) var(--courbe), box-shadow var(--duree-rapide) var(--courbe);
 }
 .adresse:hover {
   border-color: var(--accent-bright);
@@ -149,7 +149,7 @@ const liensSecondaires = computed(() => [
   padding: 0.85rem 1rem;
   color: var(--ink);
   text-decoration: none;
-  transition: color 0.15s ease;
+  transition: color var(--duree-rapide) var(--courbe);
 }
 .adresse__lien:hover { color: var(--accent); }
 /* L'anneau global est géré par .adresse:focus-within. */
@@ -185,7 +185,7 @@ const liensSecondaires = computed(() => [
   background: transparent;
   color: var(--muted);
   cursor: pointer;
-  transition: color 0.15s ease, background 0.15s ease;
+  transition: color var(--duree-rapide) var(--courbe), background var(--duree-rapide) var(--courbe);
 }
 .adresse__copie:hover {
   color: var(--accent);
@@ -221,13 +221,13 @@ const liensSecondaires = computed(() => [
   font-weight: 500;
   color: var(--muted);
   text-decoration: none;
-  transition: color 0.15s ease;
+  transition: color var(--duree-rapide) var(--courbe);
 }
 .secondaires__lien:hover { color: var(--accent); }
 .secondaires__fleche {
   font-size: 0.8em;
   /* Décalage discret au survol, dans la direction de l'action. */
-  transition: transform 0.15s ease;
+  transition: transform var(--duree-rapide) var(--courbe);
 }
 .secondaires__lien:hover .secondaires__fleche { transform: translate(1px, -1px); }
 

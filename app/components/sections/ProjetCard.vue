@@ -41,7 +41,7 @@ defineEmits<{ 'ouvrir-demo': [] }>()
   padding: 1.4rem 1.5rem;
   display: flex;
   flex-direction: column;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: transform var(--duree-rapide) var(--courbe), box-shadow var(--duree-rapide) var(--courbe);
 }
 .project:hover {
   transform: translateY(-3px);
@@ -77,7 +77,7 @@ defineEmits<{ 'ouvrir-demo': [] }>()
   font-weight: 500;
   color: var(--accent);
   text-decoration: none;
-  transition: all 0.15s ease;
+  transition: all var(--duree-rapide) var(--courbe);
 }
 .project__link:hover {
   border-color: var(--accent-bright);

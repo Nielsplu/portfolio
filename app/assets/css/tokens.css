@@ -60,6 +60,21 @@
   --radius: 14px;
   --radius-sm: 8px;
 
+  /* ---- Mouvement ----
+     Trois durées seulement, et une courbe commune. Le site en comptait six,
+     toutes sur le `ease` par défaut du navigateur : des éléments voisins
+     réagissaient à des vitesses légèrement différentes, ce qui se ressent sans
+     se voir et donne une impression d'assemblage plutôt que de dessin.
+     La courbe démarre franchement et s'arrête en douceur : le survol paraît
+     instantané tout en restant fluide, là où `ease` traîne au départ. */
+  --courbe: cubic-bezier(0.32, 0.72, 0, 1);
+  /* Retours immédiats : couleur, bordure, opacité au survol. */
+  --duree-rapide: 140ms;
+  /* Déplacements et ombres, qui ont besoin d'être suivis à l'œil. */
+  --duree-moyenne: 240ms;
+  /* Apparitions au défilement, volontairement posées. */
+  --duree-lente: 600ms;
+
   /* ---- Rythme vertical ----
      Une seule valeur pour toutes les sections : le hero et les sections
      courantes respiraient différemment, ce qui se voyait au défilement. */
