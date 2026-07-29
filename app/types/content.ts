@@ -54,6 +54,11 @@ export interface Projet {
   /** Dépôt volontairement privé : la carte l'indique explicitement plutôt que
    *  de n'afficher aucun lien, ce qui laisserait croire à un oubli. */
   codePrive?: boolean
+  /** Points de détail dépliables sur la carte : contexte, décisions techniques,
+   *  difficultés rencontrées. Ce qui distingue quelqu'un qui a fait le travail
+   *  de quelqu'un qui a listé des technologies.
+   *  Absent, la carte ne propose simplement pas de dépliant. */
+  details?: string[]
 }
 
 /** Une carte de compétences, groupée par sous-thème. */

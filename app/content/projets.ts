@@ -54,7 +54,17 @@ export const projets: Projet[] = [
     titre: 'Serveur et client FTP en Go',
     sousTitre: 'Projet universitaire',
     description:
-      "Implémentation d'un protocole de transfert de fichiers : envoi par chunks pour les gros fichiers, gestion de la concurrence et des race conditions via un design pattern « Stopper » maison, timeout des connexions inactives et sécurisation de l'arborescence servie.",
+      "Implémentation complète d'un protocole de transfert de fichiers en Go, client et serveur.",
+    // Les points ci-dessous reprennent mot pour mot ce que disait la description
+    // d'origine, trop dense pour une carte : le résumé reste lisible, le détail
+    // technique attend celui qui veut creuser.
+    details: [
+      'Envoi par chunks pour les gros fichiers.',
+      'Gestion de la concurrence et des race conditions via un design pattern « Stopper » maison.',
+      'Timeout des connexions inactives.',
+      "Sécurisation de l'arborescence servie.",
+      'La démo de cette page exécute le binaire réel, compilé en WebAssembly.',
+    ],
     tags: ['Go', 'Concurrence', 'Réseau', 'CLI'],
     categorie: 'Réseaux & Sécurité',
     demo: 'ftp',
