@@ -1,17 +1,30 @@
 <script setup lang="ts">
 import type { SimpleIcon } from 'simple-icons'
 import { techIcons } from '~/content/tech'
+import { couleurLisible } from '~/utils/couleurs'
 
 const props = defineProps<{ label: string }>()
 // Logo si la techno est connue du registre, sinon simple badge texte.
 const icon = computed<SimpleIcon | undefined>(() => techIcons[props.label])
+
+// Deux variantes de la couleur de marque, l'une lisible sur fond clair, l'autre
+// sur fond sombre. Elles sont calculées ici plutôt que choisies en CSS parce
+// qu'elles dépendent de la teinte propre à chaque marque. Le calcul ne dépend
+// que des données de l'icône : identique au rendu serveur et à l'hydratation.
+const couleurs = computed(() => {
+  if (!icon.value) return undefined
+  return {
+    '--brand-clair': couleurLisible(icon.value.hex, 'clair'),
+    '--brand-sombre': couleurLisible(icon.value.hex, 'sombre'),
+  }
+})
 </script>
 
 <template>
   <li
     class="tech"
     :class="{ 'tech--logo': icon }"
-    :style="icon ? { '--brand': `#${icon.hex}` } : undefined"
+    :style="couleurs"
   >
     <svg v-if="icon" class="tech__logo" viewBox="0 0 24 24" aria-hidden="true">
       <path :d="icon.path" />
@@ -39,17 +52,29 @@ const icon = computed<SimpleIcon | undefined>(() => techIcons[props.label])
   white-space: nowrap;
 }
 .tech--logo { transition: border-color var(--duree-rapide) var(--courbe), transform var(--duree-rapide) var(--courbe); }
+/* Les logos portent leur couleur de marque en permanence : en gris, une page
+   qui en aligne plus de soixante-dix paraissait éteinte. La teinte est celle de
+   la marque, seule sa luminosité ayant été ramenée dans une plage lisible sur
+   le fond courant (voir utils/couleurs.ts). */
 .tech__logo {
   width: 0.9rem;
   height: 0.9rem;
-  fill: var(--muted);
+  fill: var(--brand-clair, var(--muted));
   flex-shrink: 0;
   transition: fill var(--duree-rapide) var(--courbe);
 }
-/* Au survol d'un badge, son logo prend sa couleur de marque. */
+:root[data-theme='dark'] .tech__logo {
+  fill: var(--brand-sombre, var(--muted));
+}
+/* Sans JavaScript, `data-theme` n'est pas posé : on suit alors la préférence
+   système, comme le fait la palette. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .tech__logo {
+    fill: var(--brand-sombre, var(--muted));
+  }
+}
 .tech--logo:hover {
   border-color: var(--accent-bright);
   transform: translateY(-1px);
 }
-.tech--logo:hover .tech__logo { fill: var(--brand, currentColor); }
 </style>
