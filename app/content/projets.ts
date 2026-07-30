@@ -65,17 +65,20 @@ export const projets: Projet[] = [
   },
   {
     titre: 'Plateforme microservices',
-    sousTitre: 'Projet universitaire',
+    sousTitre: 'Projet universitaire — équipe de 5',
     description:
       'Monorepo de quatre microservices Node.js, chacun responsable d’un maillon de la chaîne.',
-    // Dépôt hébergé sur le GitLab de l'université, donc sans README public à
-    // consulter : ces points redécoupent la description d'origine.
+    // Détails tirés du README du dépôt. Aucun lien : il est hébergé sur le
+    // GitLab de l'université, dont l'accès public n'est pas garanti — et un lien
+    // qui tombe sur une page de connexion dessert plus qu'il ne sert.
     details: [
-      'Quatre services : authentification, passerelle API faisant proxy, collecte automatique de flux RSS, et stockage.',
-      'Persistance en MongoDB.',
-      'Pipeline CI/CD GitLab.',
-      'Tests unitaires et tests d’intégration.',
-      'API documentée avec Swagger.',
+      'Quatre services séparés : auth (authentification), fetcher (collecte automatique de flux RSS), proxy (passerelle API et routage) et store (stockage des articles et des utilisateurs).',
+      'Le proxy s’authentifie auprès des autres services avec un compte administrateur dédié, plutôt que de leur faire confiance sur le réseau.',
+      'Monorepo orchestré par Turbo : une seule commande démarre les quatre services.',
+      'Persistance MongoDB, avec un seeder d’utilisateurs pour amorcer l’environnement.',
+      'Deux configurations de conteneurs, développement et production.',
+      'Pipeline CI/CD GitLab, tests unitaires et d’intégration, ESLint et Prettier.',
+      'API documentée avec Swagger, exposée sur /api-docs.',
     ],
     tags: ['Node.js', 'MongoDB', 'Docker', 'CI/CD GitLab', 'Swagger', 'Turbo'],
     categorie: 'Backend & DevOps',
