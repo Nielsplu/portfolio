@@ -5,9 +5,21 @@ import { parcours } from '~/content'
 <template>
   <BaseSection id="parcours" eyebrow="parcours" title="Formation & expérience">
     <ol class="timeline">
-      <li v-for="(etape, i) in parcours" :key="etape.titre" v-reveal="i * 70" class="reveal timeline__item">
+      <li
+        v-for="(etape, i) in parcours"
+        :key="etape.titre"
+        v-reveal="i * 70"
+        class="reveal timeline__item"
+        :class="{ 'timeline__item--encours': etape.enCours }"
+      >
         <div class="timeline__dot" aria-hidden="true" />
-        <p class="timeline__period">{{ etape.periode }}</p>
+        <p class="timeline__period">
+          {{ etape.periode }}
+          <!-- « 2024 – 2027 » se lit comme une période révolue : ce marqueur
+               dit qu'elle court toujours. Le texte porte l'information, la
+               pastille n'est qu'un rappel visuel. -->
+          <span v-if="etape.enCours" class="timeline__encours">en cours</span>
+        </p>
         <div class="card timeline__card">
           <h3>{{ etape.titre }}</h3>
           <p class="timeline__place">{{ etape.lieu }}</p>
@@ -50,10 +62,28 @@ import { parcours } from '~/content'
   border: 3px solid var(--accent);
 }
 .timeline__period {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex-wrap: wrap;
   font-family: var(--font-mono);
   font-size: 0.8rem;
   color: var(--accent-bright);
   margin: 0 0 0.4rem;
+}
+.timeline__encours {
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+/* La pastille de l'étape en cours est pleine, les autres restent creuses :
+   l'œil trouve le présent sans avoir à lire les dates. */
+.timeline__item--encours .timeline__dot {
+  background: var(--accent);
 }
 .timeline__card { padding: 1.1rem 1.3rem; }
 .timeline__card h3 { font-size: 1.05rem; }

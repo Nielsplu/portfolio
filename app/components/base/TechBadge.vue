@@ -3,7 +3,12 @@ import type { SimpleIcon } from 'simple-icons'
 import { techIcons } from '~/content/tech'
 import { couleurLisible } from '~/utils/couleurs'
 
-const props = defineProps<{ label: string }>()
+const props = defineProps<{
+  label: string
+  /** Présent, le jeton devient un lien vers la pièce justificative (certificat
+   *  PDF…), ouverte dans un nouvel onglet pour ne pas quitter le portfolio. */
+  justificatif?: string
+}>()
 // Logo si la techno est connue du registre, sinon simple badge texte.
 const icon = computed<SimpleIcon | undefined>(() => techIcons[props.label])
 
@@ -23,13 +28,28 @@ const couleurs = computed(() => {
 <template>
   <li
     class="tech"
-    :class="{ 'tech--logo': icon }"
+    :class="{ 'tech--logo': icon, 'tech--lien': justificatif }"
     :style="couleurs"
   >
-    <svg v-if="icon" class="tech__logo" viewBox="0 0 24 24" aria-hidden="true">
-      <path :d="icon.path" />
-    </svg>
-    <span>{{ label }}</span>
+    <!-- Un lien seulement s'il y a une pièce à consulter : le reste du temps le
+         jeton n'est qu'une étiquette, et un <a> sans destination tromperait
+         l'attente du visiteur comme du lecteur d'écran. -->
+    <component
+      :is="justificatif ? 'a' : 'span'"
+      v-bind="justificatif ? {
+        href: justificatif,
+        target: '_blank',
+        rel: 'noopener',
+        'aria-label': `${label} — voir le certificat (nouvel onglet)`,
+      } : {}"
+      class="tech__contenu"
+    >
+      <svg v-if="icon" class="tech__logo" viewBox="0 0 24 24" aria-hidden="true">
+        <path :d="icon.path" />
+      </svg>
+      <span>{{ label }}</span>
+      <span v-if="justificatif" class="tech__preuve" aria-hidden="true">↗</span>
+    </component>
   </li>
 </template>
 
@@ -40,16 +60,36 @@ const couleurs = computed(() => {
    ici la couleur vient du logo de marque, au survol. */
 .tech {
   display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
   font-family: var(--font-mono);
   font-size: 0.72rem;
-  padding: 0.25rem 0.6rem;
   border-radius: 6px;
   background: var(--surface-subtle);
   border: 1px solid var(--line);
   color: var(--ink);
   white-space: nowrap;
+}
+/* Le rembourrage vit sur le contenu et non sur le jeton : quand celui-ci est un
+   lien, toute la surface du badge devient cliquable, pas seulement le texte. */
+.tech__contenu {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.6rem;
+  color: inherit;
+  text-decoration: none;
+}
+/* Un jeton cliquable doit se distinguer d'une simple étiquette. */
+.tech--lien {
+  border-color: var(--accent-soft);
+  transition: border-color var(--duree-rapide) var(--courbe), transform var(--duree-rapide) var(--courbe);
+}
+.tech--lien:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+.tech__preuve {
+  color: var(--accent);
+  font-size: 0.9em;
 }
 .tech--logo { transition: border-color var(--duree-rapide) var(--courbe), transform var(--duree-rapide) var(--courbe); }
 /* Les logos portent leur couleur de marque en permanence : en gris, une page

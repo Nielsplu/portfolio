@@ -25,8 +25,11 @@ export interface Section {
 
 export const sections: Section[] = [
   { id: 'accueil', component: HeroSection },
-  { id: 'parcours', nav: 'Parcours', component: ParcoursSection },
+  // Projets avant Parcours : un recruteur veut voir ce qui a été construit
+  // avant de lire une chronologie scolaire. L'ordre de la navigation suit
+  // automatiquement, ce tableau en étant l'unique source.
   { id: 'projets', nav: 'Projets', component: ProjetsSection },
+  { id: 'parcours', nav: 'Parcours', component: ParcoursSection },
   { id: 'competences', nav: 'Compétences', component: CompetencesSection },
   { id: 'contact', nav: 'Contact', component: ContactSection },
 ]
