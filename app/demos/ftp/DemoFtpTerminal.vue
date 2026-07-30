@@ -294,27 +294,9 @@ function fermer() {
   emit('update:ouvert', false)
 }
 
-/** Bloque le défilement de la page pendant que la fenêtre est ouverte.
- *  `<dialog>` rend bien l'arrière-plan inerte au clic, mais la molette et le
- *  geste tactile continuent de faire défiler la page derrière — on se retrouve
- *  ailleurs sur le site en refermant. La largeur de la barre de défilement est
- *  compensée pour que la page ne saute pas latéralement à son retrait. */
-function verrouillerDefilement(verrouille: boolean) {
-  const corps = document.body
-  if (verrouille) {
-    const largeurBarre = window.innerWidth - document.documentElement.clientWidth
-    corps.style.overflow = 'hidden'
-    if (largeurBarre > 0) corps.style.paddingRight = `${largeurBarre}px`
-  }
-  else {
-    corps.style.removeProperty('overflow')
-    corps.style.removeProperty('padding-right')
-  }
-}
-
-// Filet de sécurité : si le composant est démonté sans repasser par la
-// fermeture, la page resterait figée.
-onBeforeUnmount(() => verrouillerDefilement(false))
+// Verrou partagé avec la fenêtre de détail des projets (voir le composable) :
+// il gère aussi le filet de déverrouillage au démontage.
+const { verrouiller: verrouillerDefilement } = useVerrouDefilement()
 
 async function ouvrir() {
   dialogue.value?.showModal()

@@ -57,11 +57,23 @@ export interface Projet {
   /** Dépôt volontairement privé : la carte l'indique explicitement plutôt que
    *  de n'afficher aucun lien, ce qui laisserait croire à un oubli. */
   codePrive?: boolean
-  /** Points de détail dépliables sur la carte : contexte, décisions techniques,
-   *  difficultés rencontrées. Ce qui distingue quelqu'un qui a fait le travail
-   *  de quelqu'un qui a listé des technologies.
-   *  Absent, la carte ne propose simplement pas de dépliant. */
+  /** Points de détail affichés dans la fenêtre du projet : contexte, décisions
+   *  techniques, difficultés rencontrées. Ce qui distingue quelqu'un qui a fait
+   *  le travail de quelqu'un qui a listé des technologies. */
   details?: string[]
+  /** Captures ou schémas montrés dans la fenêtre du projet. Une capture vaut
+   *  souvent mieux qu'un paragraphe pour prouver qu'une chose existe. */
+  images?: ImageProjet[]
+}
+
+/** Une image de la galerie d'un projet. */
+export interface ImageProjet {
+  src: string
+  /** Description pour les lecteurs d'écran. Obligatoire : une capture sans
+   *  alternative textuelle n'existe pas pour une partie des visiteurs. */
+  alt: string
+  /** Légende affichée sous l'image. */
+  legende?: string
 }
 
 /** Une entrée de compétence. Une simple chaîne dans la majorité des cas ; la
