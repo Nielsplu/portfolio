@@ -22,7 +22,7 @@ export const competences: GroupeCompetences[] = [
     titre: 'Outils & DevOps',
     groupes: [
       { label: 'Conteneurs & CI', items: ['Docker', 'Podman', 'Traefik', 'GitHub Actions', 'CI/CD GitLab'] },
-      { label: 'Qualité', items: ['Vitest', 'TDD', 'ESLint', 'Gitleaks'] },
+      { label: 'Qualité', items: ['Vitest', 'TDD', 'Stryker', 'ESLint', 'Gitleaks'] },
       { label: 'Automatisation', items: ['Make.com'] },
     ],
   },

@@ -78,9 +78,10 @@ export const projets: Projet[] = [
       'Persistance MongoDB, avec un seeder d’utilisateurs pour amorcer l’environnement.',
       'Deux configurations de conteneurs, développement et production.',
       'Pipeline CI/CD GitLab, tests unitaires et d’intégration, ESLint et Prettier.',
+      'Tests de mutation avec Stryker : des défauts sont injectés dans le code source pour vérifier que la suite de tests les détecte — la couverture dit quelles lignes sont exécutées, la mutation dit si elles sont vraiment vérifiées.',
       'API documentée avec Swagger, exposée sur /api-docs.',
     ],
-    tags: ['Node.js', 'MongoDB', 'Docker', 'CI/CD GitLab', 'Swagger', 'Turbo'],
+    tags: ['Node.js', 'MongoDB', 'Docker', 'CI/CD GitLab', 'Swagger', 'Turbo', 'Stryker'],
     categorie: 'Backend & DevOps',
   },
   {
