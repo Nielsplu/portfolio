@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { profil } from '~/content'
-import { liensNavigation } from '~/sections/registry'
+import { liensNavigation } from '~/sections/ordre'
 
 const open = ref(false)
 // Met en surbrillance le lien de la section visible à l'écran.

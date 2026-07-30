@@ -2,7 +2,9 @@
 // Coquille commune à toutes les sections : l'ancre, le conteneur centré,
 // l'eyebrow et le titre. Le corps passe par le slot par défaut. Centraliser
 // cet échafaudage garantit que toute nouvelle section est cohérente d'office.
-import { numeroSection } from '~/sections/registry'
+// Import depuis ./ordre et non depuis le registre : ce dernier importe les
+// composants de section, dont celui-ci, ce qui formerait un cycle.
+import { numeroSection } from '~/sections/ordre'
 
 const props = defineProps<{
   id: string

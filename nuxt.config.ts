@@ -1,6 +1,29 @@
+import { execSync } from 'node:child_process'
+
 // GitHub Pages : le site sera servi sur https://nielsplu.github.io/portfolio/
 const baseURL = process.env.NUXT_APP_BASE_URL || '/portfolio/'
 const siteUrl = `https://nielsplu.github.io${baseURL}`
+const depotUrl = 'https://github.com/Nielsplu/portfolio'
+
+/**
+ * Commit à partir duquel ce site est construit, en version courte.
+ *
+ * GitHub Actions expose GITHUB_SHA : c'est la source qui fait foi en CI, où le
+ * dépôt est parfois cloné sans historique. En local on interroge git. Si les
+ * deux échouent — archive téléchargée, git absent — on renvoie une chaîne vide
+ * et le pied de page masque simplement la mention, plutôt que d'afficher un
+ * identifiant faux.
+ */
+function commitCourant(): string {
+  const depuisCi = process.env.GITHUB_SHA
+  if (depuisCi) return depuisCi.slice(0, 7)
+  try {
+    return execSync('git rev-parse --short=7 HEAD', { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim()
+  }
+  catch {
+    return ''
+  }
+}
 const description = "Portfolio de Niels Plu, étudiant en 3ᵉ année de BUT Informatique à l'IUT de Nantes — développement web et sécurité des systèmes d'information."
 
 export default defineNuxtConfig({
@@ -28,7 +51,17 @@ export default defineNuxtConfig({
   components: [{ path: '~/components', pathPrefix: false }],
   // Exposé au client pour construire les URL absolues des données structurées
   // (app.vue) : une seule définition de l'URL du site, ici.
-  runtimeConfig: { public: { siteUrl } },
+  // Figées à la compilation, donc identiques au rendu serveur et au client :
+  // aucun risque d'écart d'hydratation, contrairement à une date calculée au
+  // moment de l'affichage.
+  runtimeConfig: {
+    public: {
+      siteUrl,
+      depotUrl,
+      commit: commitCourant(),
+      dateBuild: new Date().toISOString(),
+    },
+  },
   // 'build' : vérifie les types au build/CI sans injecter vite-plugin-checker
   // dans le serveur de dev (qui plante avec le baseURL custom ci-dessous).
   typescript: { typeCheck: 'build' },
