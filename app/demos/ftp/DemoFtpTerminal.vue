@@ -419,7 +419,7 @@ onBeforeUnmount(nettoyer)
 }
 .terminal__titre {
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: var(--txt-xs);
   color: #8fb4d8;
 }
 .terminal__ports { display: flex; gap: 0.4rem; }
@@ -428,7 +428,7 @@ onBeforeUnmount(nettoyer)
   background: none;
   color: #8fb4d8;
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: var(--txt-2xs);
   border-radius: var(--radius-sm);
   padding: 0.2rem 0.55rem;
   cursor: pointer;
@@ -442,7 +442,7 @@ onBeforeUnmount(nettoyer)
   border: none;
   background: none;
   color: #8fb4d8;
-  font-size: 1rem;
+  font-size: var(--txt-base);
   cursor: pointer;
   padding: 0.2rem 0.4rem;
 }
@@ -455,7 +455,7 @@ onBeforeUnmount(nettoyer)
 }
 .terminal__ligne {
   font-family: var(--font-mono);
-  font-size: 0.82rem;
+  font-size: var(--txt-xs);
   line-height: 1.55;
   margin: 0;
   white-space: pre-wrap;
@@ -473,7 +473,7 @@ onBeforeUnmount(nettoyer)
 }
 .terminal__prompt {
   font-family: var(--font-mono);
-  font-size: 0.82rem;
+  font-size: var(--txt-xs);
   color: #7ee0a3;
   white-space: nowrap;
 }
@@ -483,14 +483,14 @@ onBeforeUnmount(nettoyer)
   background: none;
   color: inherit;
   font-family: var(--font-mono);
-  font-size: 0.82rem;
+  font-size: var(--txt-xs);
   outline: none;
 }
 .terminal__champ::placeholder { color: rgba(215, 226, 236, 0.35); }
 .terminal__note {
   margin: 0;
   padding: 0.55rem 1rem 0.7rem;
-  font-size: 0.74rem;
+  font-size: var(--txt-2xs);
   color: rgba(215, 226, 236, 0.55);
 }
 .terminal__note a { color: #8fb4d8; }

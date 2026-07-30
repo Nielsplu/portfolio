@@ -125,7 +125,7 @@ onMounted(() => {
   margin-right: auto;
   font-family: var(--font-mono);
   font-weight: 500;
-  font-size: 1.05rem;
+  font-size: var(--txt-lg);
   color: var(--ink);
   text-decoration: none;
 }
@@ -143,7 +143,7 @@ onMounted(() => {
   text-decoration: none;
   color: var(--muted);
   font-weight: 500;
-  font-size: 0.95rem;
+  font-size: var(--txt-md);
   transition: color var(--duree-rapide) var(--courbe);
 }
 .nav__links a:not(.btn):hover { color: var(--accent); }

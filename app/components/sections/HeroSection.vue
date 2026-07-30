@@ -86,7 +86,7 @@ const idTitre = useId()
 }
 .hero__status {
   display: inline-block;
-  font-size: 0.82rem;
+  font-size: var(--txt-xs);
   font-weight: 600;
   color: var(--accent);
   background: var(--accent-soft);
@@ -95,13 +95,13 @@ const idTitre = useId()
   margin: 0 0 1.1rem;
 }
 .hero__name {
-  font-size: clamp(2.4rem, 6vw, 3.6rem);
+  font-size: var(--txt-3xl);
   letter-spacing: -0.01em;
 }
 .hero__prompt {
   font-family: var(--font-mono);
   color: var(--accent-bright);
-  font-size: 0.95rem;
+  font-size: var(--txt-md);
   margin: 0.7rem 0 1.1rem;
 }
 .hero__prompt-symbol { color: var(--muted); margin-right: 0.4rem; }

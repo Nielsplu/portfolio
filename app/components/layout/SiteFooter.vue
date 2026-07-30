@@ -16,7 +16,7 @@ import { profil } from '~/content'
   border-top: 1px solid var(--line);
   padding-block: 1.4rem;
   color: var(--muted);
-  font-size: 0.85rem;
+  font-size: var(--txt-sm);
 }
 .footer__inner {
   display: flex;

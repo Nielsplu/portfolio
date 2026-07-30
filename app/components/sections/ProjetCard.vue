@@ -68,16 +68,16 @@ const aDuDetail = computed(() =>
 }
 .project__kind {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: var(--txt-2xs);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--accent-bright);
   margin: 0 0 0.4rem;
 }
-.project__title { font-size: 1.12rem; margin-bottom: 0.6rem; }
+.project__title { font-size: var(--txt-lg); margin-bottom: 0.6rem; }
 .project__desc {
   color: var(--muted);
-  font-size: 0.92rem;
+  font-size: var(--txt-md);
   margin: 0 0 1rem;
   flex: 1;
 }
@@ -92,7 +92,7 @@ const aDuDetail = computed(() =>
   border-radius: var(--radius-sm);
   padding: 0.35rem 0.9rem;
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: var(--txt-xs);
   font-weight: 500;
   color: var(--accent);
   text-decoration: none;
@@ -123,7 +123,7 @@ const aDuDetail = computed(() =>
   border-radius: var(--radius-sm);
   padding: 0.35rem 0.9rem;
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: var(--txt-xs);
   color: var(--muted);
 }
 .project__link--demo:hover { background: var(--accent-bright); }

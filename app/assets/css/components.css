@@ -17,7 +17,7 @@
 /* Signature visuelle : les intitulés de section en commentaire de code. */
 .eyebrow {
   font-family: var(--font-mono);
-  font-size: 0.85rem;
+  font-size: var(--txt-sm);
   color: var(--accent-bright);
   letter-spacing: 0.04em;
   margin: 0 0 0.4rem;
@@ -29,7 +29,7 @@
 }
 
 .section-title {
-  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+  font-size: var(--txt-2xl);
   margin-bottom: 2.2rem;
 }
 
@@ -41,7 +41,7 @@
   padding: 0.7rem 1.3rem;
   border-radius: var(--radius-sm);
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: var(--txt-md);
   text-decoration: none;
   border: 1.5px solid var(--accent);
   transition: transform var(--duree-rapide) var(--courbe), box-shadow var(--duree-rapide) var(--courbe), background var(--duree-rapide) var(--courbe);
