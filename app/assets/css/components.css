@@ -15,12 +15,40 @@
 }
 
 /* Signature visuelle : les intitulés de section en commentaire de code. */
+/* Intitulé de section : numéro, filet, puis libellé. Le numéro donne un repère
+   d'avancement dans la page et le filet relie les deux — un simple mot posé
+   au-dessus du titre ne hiérarchisait rien. */
 .eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
   font-family: var(--font-mono);
   font-size: var(--txt-sm);
-  color: var(--accent-bright);
+  color: var(--muted);
   letter-spacing: 0.04em;
   margin: 0 0 0.4rem;
+}
+
+/* Le numéro porte l'accent, le libellé reste discret : sans cette différence,
+   la ligne entière tirerait l'œil autant que le titre qu'elle annonce. */
+.eyebrow__num {
+  color: var(--accent);
+  font-weight: 600;
+  /* Chiffres à chasse fixe : « 01 » et « 04 » occupent la même largeur, donc
+     les filets s'alignent verticalement d'une section à l'autre. */
+  font-variant-numeric: tabular-nums;
+}
+
+.eyebrow__trait {
+  width: 1.75rem;
+  height: 1px;
+  background: var(--line);
+  flex-shrink: 0;
+}
+
+/* La section contact est centrée : son intitulé doit l'être aussi. */
+.eyebrow--centre {
+  justify-content: center;
 }
 
 .eyebrow::before {
