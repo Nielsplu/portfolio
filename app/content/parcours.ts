@@ -3,6 +3,7 @@ import type { EtapeParcours } from '~/types/content'
 export const parcours: EtapeParcours[] = [
   {
     periode: '2024 – 2027',
+    enCours: true,
     titre: 'BUT Informatique',
     lieu: 'IUT de Nantes',
     description:

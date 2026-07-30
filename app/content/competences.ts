@@ -4,7 +4,9 @@ export const competences: GroupeCompetences[] = [
   {
     titre: 'Langages',
     groupes: [
-      { label: 'Back-end', items: ['C#', 'Go', 'PHP', 'Python', 'SQL'] },
+      // « MySQL » plutôt que « SQL » : c'est le moteur réellement pratiqué, la
+      // mention est plus précise pour un recruteur — et elle a un logo.
+      { label: 'Back-end', items: ['C#', 'Go', 'PHP', 'Python', 'MySQL'] },
       { label: 'Front-end', items: ['TypeScript', 'JavaScript', 'HTML', 'CSS'] },
     ],
   },
@@ -27,7 +29,15 @@ export const competences: GroupeCompetences[] = [
   {
     titre: 'Certifications & langues',
     groupes: [
-      { label: 'Certifications', items: ['Make Certified Expert', 'Make.com AI Agents'] },
+      {
+        label: 'Certifications',
+        items: [
+          'Make Certified Expert',
+          // Justificatif consultable : une certification invérifiable ne pèse
+          // pas lourd auprès d'un recruteur.
+          { label: 'Make.com AI Agents', justificatif: 'certifications/make-ai-agent-builder.pdf' },
+        ],
+      },
       { label: 'Langues', items: ['Français (natif)', 'Anglais', 'Espagnol'] },
       { label: 'Divers', items: ['Permis B'] },
     ],

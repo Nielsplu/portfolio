@@ -31,6 +31,9 @@ export interface EtapeParcours {
   titre: string
   lieu: string
   description: string
+  /** Étape toujours en cours. La date de fin d'un diplôme en préparation se lit
+   *  comme une date passée : ce drapeau lève l'ambiguïté d'un coup d'œil. */
+  enCours?: boolean
 }
 
 /** Catégories de projets — source unique du type et des filtres. */
@@ -61,8 +64,23 @@ export interface Projet {
   details?: string[]
 }
 
+/** Une entrée de compétence. Une simple chaîne dans la majorité des cas ; la
+ *  forme longue sert à ce qui peut être prouvé — une certification et son
+ *  justificatif consultable. */
+export type ItemCompetence = string | {
+  label: string
+  /** Chemin ou URL du justificatif. Le jeton devient alors un lien : une
+   *  certification qu'on ne peut pas vérifier ne vaut pas grand-chose. */
+  justificatif: string
+}
+
+/** Ramène une entrée à sa forme longue, pour un rendu uniforme. */
+export function normaliserItem(item: ItemCompetence): { label: string, justificatif?: string } {
+  return typeof item === 'string' ? { label: item } : item
+}
+
 /** Une carte de compétences, groupée par sous-thème. */
 export interface GroupeCompetences {
   titre: string
-  groupes: { label: string, items: string[] }[]
+  groupes: { label: string, items: ItemCompetence[] }[]
 }

@@ -13,6 +13,7 @@ import {
   siJavascript,
   siMake,
   siMongodb,
+  siMysql,
   siNextdotjs,
   siNodedotjs,
   siNuxt,
@@ -62,6 +63,7 @@ export const techIcons: Record<string, SimpleIcon> = {
 
   // Données
   'PostgreSQL': siPostgresql,
+  'MySQL': siMysql,
   'MongoDB': siMongodb,
   'Prisma': siPrisma,
 
