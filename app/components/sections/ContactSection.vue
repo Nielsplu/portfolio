@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { profil } from '~/content'
-import { numeroSection } from '~/sections/registry'
+// Voir BaseSection : import depuis ./ordre pour ne pas créer de cycle.
+import { numeroSection } from '~/sections/ordre'
 
 // Nomme la région d'après son titre (voir BaseSection pour le détail).
 const idTitre = useId()
