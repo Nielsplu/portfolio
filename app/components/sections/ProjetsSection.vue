@@ -109,7 +109,7 @@ const projetOuvert = ref<Projet | null>(null)
 .vitrine__texte { min-width: 0; }
 .vitrine__label {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: var(--txt-2xs);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--accent-bright);
@@ -117,7 +117,7 @@ const projetOuvert = ref<Projet | null>(null)
 }
 .vitrine__accroche {
   color: var(--ink);
-  font-size: 0.93rem;
+  font-size: var(--txt-md);
   margin: 0;
   max-width: 62ch;
 }
@@ -143,7 +143,7 @@ const projetOuvert = ref<Projet | null>(null)
 }
 .resultats {
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: var(--txt-xs);
   color: var(--muted);
   margin: 0 0 1.4rem;
 }
@@ -155,7 +155,7 @@ const projetOuvert = ref<Projet | null>(null)
   padding: 0.45rem 1.05rem;
   font-family: var(--font-body);
   font-weight: 500;
-  font-size: 0.88rem;
+  font-size: var(--txt-sm);
   cursor: pointer;
   transition: all var(--duree-rapide) var(--courbe);
 }

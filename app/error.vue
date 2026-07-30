@@ -64,7 +64,7 @@ const { baseURL } = useRuntimeConfig().app
   max-width: 46ch;
 }
 .erreur__titre {
-  font-size: clamp(1.8rem, 5vw, 2.6rem);
+  font-size: var(--txt-2xl);
   margin-bottom: 0.9rem;
 }
 .erreur__texte {
@@ -85,7 +85,7 @@ const { baseURL } = useRuntimeConfig().app
   background: var(--surface);
   color: var(--muted);
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: var(--txt-xs);
   text-align: left;
   white-space: pre-wrap;
   overflow-x: auto;

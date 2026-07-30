@@ -87,6 +87,23 @@
   --font-display: 'Space Grotesk', sans-serif;
   --font-body: 'Inter', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
+
+  /* ---- Échelle typographique ----
+     Le site comptait vingt-cinq tailles distinctes, dont seize entre 0,72 et
+     1,12 rem : des écarts d'un tiers de pixel, invisibles un par un, mais qui
+     empêchent tout alignement optique entre éléments voisins. C'est la même
+     maladie que les six durées d'animation d'avant.
+     Neuf paliers, resserrés dans le bas de l'échelle parce que c'est là que vit
+     l'essentiel du texte d'interface. Les titres restent fluides. */
+  --txt-2xs: 0.75rem;
+  --txt-xs: 0.8125rem;
+  --txt-sm: 0.875rem;
+  --txt-md: 0.9375rem;
+  --txt-base: 1rem;
+  --txt-lg: 1.125rem;
+  --txt-xl: clamp(1.35rem, 3vw, 1.6rem);
+  --txt-2xl: clamp(1.75rem, 4.5vw, 2.4rem);
+  --txt-3xl: clamp(2.4rem, 6vw, 3.6rem);
 }
 
 /* Palette sombre — bloc 1/2 : préférence système, pour les visiteurs sans

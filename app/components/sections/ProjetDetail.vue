@@ -122,14 +122,14 @@ watch(() => props.projet, async (projet) => {
 }
 .fiche__categorie {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: var(--txt-2xs);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--accent-bright);
   margin: 0 0 0.35rem;
 }
 .fiche__titre {
-  font-size: clamp(1.3rem, 3.5vw, 1.7rem);
+  font-size: var(--txt-xl);
   margin: 0;
 }
 .fiche__fermer {
@@ -166,7 +166,7 @@ watch(() => props.projet, async (projet) => {
 }
 .fiche__bloc { margin-bottom: 1.6rem; }
 .fiche__soustitre {
-  font-size: 0.78rem;
+  font-size: var(--txt-xs);
   font-family: var(--font-mono);
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -177,7 +177,7 @@ watch(() => props.projet, async (projet) => {
   margin: 0;
   padding-left: 1.1rem;
   color: var(--ink);
-  font-size: 0.93rem;
+  font-size: var(--txt-md);
   line-height: 1.6;
 }
 .fiche__liste li { margin-bottom: 0.4rem; }
@@ -194,7 +194,7 @@ watch(() => props.projet, async (projet) => {
   border-radius: var(--radius-sm);
   padding: 0.35rem 0.9rem;
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: var(--txt-xs);
   color: var(--muted);
 }
 
@@ -217,7 +217,7 @@ watch(() => props.projet, async (projet) => {
 }
 .galerie__legende {
   margin-top: 0.4rem;
-  font-size: 0.8rem;
+  font-size: var(--txt-xs);
   color: var(--muted);
 }
 </style>

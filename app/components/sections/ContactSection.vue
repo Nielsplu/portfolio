@@ -168,7 +168,7 @@ const liensSecondaires = computed(() => [
 .adresse__lien:hover .adresse__icone { color: currentColor; }
 .adresse__texte {
   font-family: var(--font-mono);
-  font-size: clamp(0.86rem, 2.6vw, 1rem);
+  font-size: var(--txt-md);
   /* Une adresse longue est tronquée plutôt que de déformer le champ. */
   overflow: hidden;
   text-overflow: ellipsis;
@@ -217,7 +217,7 @@ const liensSecondaires = computed(() => [
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  font-size: 0.88rem;
+  font-size: var(--txt-sm);
   font-weight: 500;
   color: var(--muted);
   text-decoration: none;
@@ -233,7 +233,7 @@ const liensSecondaires = computed(() => [
 
 .contact__meta {
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: var(--txt-xs);
   color: var(--muted);
   margin: 2rem 0 0;
 }

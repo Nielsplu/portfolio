@@ -61,7 +61,7 @@ const couleurs = computed(() => {
 .tech {
   display: inline-flex;
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: var(--txt-2xs);
   border-radius: 6px;
   background: var(--surface-subtle);
   border: 1px solid var(--line);

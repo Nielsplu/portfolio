@@ -67,7 +67,7 @@ import { parcours } from '~/content'
   gap: 0.55rem;
   flex-wrap: wrap;
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: var(--txt-xs);
   color: var(--accent-bright);
   margin: 0 0 0.4rem;
 }
@@ -76,7 +76,7 @@ import { parcours } from '~/content'
   border-radius: 999px;
   background: var(--accent-soft);
   color: var(--accent);
-  font-size: 0.72rem;
+  font-size: var(--txt-2xs);
   font-weight: 600;
   letter-spacing: 0.02em;
 }
@@ -86,12 +86,12 @@ import { parcours } from '~/content'
   background: var(--accent);
 }
 .timeline__card { padding: 1.1rem 1.3rem; }
-.timeline__card h3 { font-size: 1.05rem; }
+.timeline__card h3 { font-size: var(--txt-lg); }
 .timeline__place {
   color: var(--accent);
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: var(--txt-sm);
   margin: 0.2rem 0 0.5rem;
 }
-.timeline__desc { color: var(--muted); font-size: 0.93rem; margin: 0; }
+.timeline__desc { color: var(--muted); font-size: var(--txt-md); margin: 0; }
 </style>

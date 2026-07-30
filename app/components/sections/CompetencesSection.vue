@@ -46,7 +46,7 @@ import { competences } from '~/content'
 }
 .skill__title {
   position: relative;
-  font-size: 1.1rem;
+  font-size: var(--txt-lg);
   margin-bottom: 1.3rem;
 }
 .skill__groups {
@@ -55,7 +55,7 @@ import { competences } from '~/content'
   gap: 1.1rem;
 }
 .skill__label {
-  font-size: 0.72rem;
+  font-size: var(--txt-2xs);
   font-weight: 600;
   color: var(--muted);
   text-transform: uppercase;
