@@ -38,3 +38,18 @@ export const sections: Section[] = [
 export const liensNavigation = sections
   .filter(s => s.nav)
   .map(s => ({ href: `#${s.id}`, label: s.nav! }))
+
+/**
+ * Numéro d'ordre affiché devant l'intitulé d'une section, sur deux chiffres.
+ *
+ * Dérivé de ce tableau et non écrit en dur : réordonner les sections renumérote
+ * tout automatiquement, comme la navigation. Le hero est exclu du décompte —
+ * il n'a pas d'intitulé et numéroter une page d'accueil n'aurait pas de sens.
+ *
+ * @example
+ * numeroSection('parcours') // '02', puisque Projets vient avant
+ */
+export function numeroSection(id: string): string {
+  const rang = sections.filter(s => s.nav).findIndex(s => s.id === id)
+  return rang === -1 ? '' : String(rang + 1).padStart(2, '0')
+}

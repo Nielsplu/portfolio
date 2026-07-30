@@ -3,7 +3,7 @@ import { competences } from '~/content'
 </script>
 
 <template>
-  <BaseSection id="competences" eyebrow="competences" title="Compétences & outils">
+  <BaseSection id="competences" eyebrow="compétences" title="Compétences & outils">
     <div class="skills">
       <article v-for="(c, i) in competences" :key="c.titre" v-reveal="i * 70" class="reveal card skill">
         <span class="skill__num" aria-hidden="true">{{ String(i + 1).padStart(2, '0') }}</span>

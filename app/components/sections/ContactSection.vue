@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { profil } from '~/content'
+import { numeroSection } from '~/sections/registry'
 
 // Nomme la région d'après son titre (voir BaseSection pour le détail).
 const idTitre = useId()
@@ -40,7 +41,13 @@ const liensSecondaires = computed(() => [
   <section id="contact" class="section" :aria-labelledby="idTitre">
     <div class="container">
       <div v-reveal class="reveal card contact">
-        <p class="eyebrow">contact</p>
+        <!-- Même traitement que BaseSection : cette section a son propre
+             balisage, la numérotation ne doit pas s'arrêter à sa porte. -->
+        <p class="eyebrow eyebrow--centre">
+          <span class="eyebrow__num" aria-hidden="true">{{ numeroSection('contact') }}</span>
+          <span class="eyebrow__trait" aria-hidden="true" />
+          contact
+        </p>
         <h2 :id="idTitre" class="section-title contact__title">Travaillons ensemble</h2>
         <p class="contact__text">
           Un projet, une question ? Je réponds rapidement.
