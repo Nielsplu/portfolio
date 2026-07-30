@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { DemoId } from '~/demos'
+import type { Projet } from '~/types/content'
 import { categoriesProjet, projets } from '~/content'
 import { demos } from '~/demos'
 import { filtrerParCategorie } from '~/utils/filtres'
@@ -16,6 +17,11 @@ const demoOuverte = ref<DemoId | null>(null)
 // bandeau disparaît de lui-même si plus aucun projet n'expose de démo, et
 // suivra le premier qui en déclarera une.
 const projetDemo = computed(() => projets.find(p => p.demo && p.demoAccroche))
+
+// Projet dont la fiche est ouverte. Une seule fenêtre à la fois, gérée ici
+// plutôt que dans chaque carte : sinon six instances de la fiche coexisteraient
+// dans le DOM, et deux pourraient s'ouvrir en même temps.
+const projetOuvert = ref<Projet | null>(null)
 </script>
 
 <template>
@@ -67,8 +73,11 @@ const projetDemo = computed(() => projets.find(p => p.demo && p.demoAccroche))
         v-reveal="i * 60"
         :projet="p"
         @ouvrir-demo="demoOuverte = p.demo ?? null"
+        @ouvrir-detail="projetOuvert = p"
       />
     </div>
+
+    <ProjetDetail :projet="projetOuvert" @fermer="projetOuvert = null" />
 
     <component
       :is="demos[demoOuverte]"
