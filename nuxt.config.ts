@@ -120,6 +120,11 @@ export default defineNuxtConfig({
   // erronée tombe sur la page 404 générique de GitHub et app/error.vue ne
   // serait jamais vu (il ne couvrirait que les erreurs de navigation interne).
   nitro: {
+    // Ce préréglage dépose un `.nojekyll` à la racine du site publié. Sans lui,
+    // GitHub Pages passe la sortie à Jekyll, qui ignore tout dossier commençant
+    // par un point : /.well-known/security.txt répondait 404 en production alors
+    // qu'il était bien présent dans l'artefact.
+    preset: 'github_pages',
     prerender: {
       routes: [
         '/',
