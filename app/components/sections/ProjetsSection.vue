@@ -19,15 +19,12 @@ const demoOuverte = ref<DemoId | null>(null)
 // suivra le premier qui en déclarera une.
 const projetDemo = computed(() => projets.find(p => p.demo && p.demoAccroche))
 
-// Projet dont la fiche est ouverte. Une seule fenêtre à la fois, gérée ici
-// plutôt que dans chaque carte : sinon six instances de la fiche coexisteraient
-// dans le DOM, et deux pourraient s'ouvrir en même temps.
+// Une seule fiche à la fois, gérée ici : sinon six instances coexisteraient
+// dans le DOM.
 const projetOuvert = ref<Projet | null>(null)
 
-// ---- Fiches partageables par URL -------------------------------------------
-// Sans ça, impossible d'envoyer un lien vers un projet précis : la fiche
-// s'ouvrait au clic et l'adresse ne bougeait pas. Le préfixe évite toute
-// collision avec les ancres de section, qui sont de simples `#projets`.
+// Fiches partageables par URL. Le préfixe évite toute collision avec les
+// ancres de section, qui sont de simples `#projets`.
 const PREFIXE = '#projet/'
 
 /** Projet désigné par l'adresse courante, s'il y en a un. */
@@ -39,24 +36,21 @@ function projetDepuisUrl(): Projet | null {
   return projets.find(p => versSlug(p.titre) === slug) ?? null
 }
 
-/** Aligne l'état sur l'adresse — au chargement, et à chaque Précédent /
- *  Suivant du navigateur. */
+/** Aligne l'état sur l'adresse, au chargement comme au Précédent. */
 function synchroniser() {
   projetOuvert.value = projetDepuisUrl()
 }
 
 function ouvrirFiche(projet: Projet) {
-  // pushState et non le routeur : celui-ci ferait défiler la page vers une
-  // ancre inexistante. On veut changer l'adresse, rien d'autre.
+  // pushState et non le routeur, qui ferait défiler vers une ancre inexistante.
   history.pushState(null, '', PREFIXE + versSlug(projet.titre))
   projetOuvert.value = projet
 }
 
 function fermerFiche() {
   projetOuvert.value = null
-  // replaceState et non pushState : on remplace l'entrée de la fiche au lieu
-  // d'en empiler une. Le bouton Précédent ramène ainsi là où le visiteur était
-  // avant de l'ouvrir, sans traverser une pile de fermetures.
+  // replaceState : Précédent ramène avant l'ouverture, sans traverser une
+  // pile de fermetures.
   if (window.location.hash.startsWith(PREFIXE)) {
     history.replaceState(null, '', '#projets')
   }
@@ -64,8 +58,7 @@ function fermerFiche() {
 
 onMounted(() => {
   synchroniser()
-  // Un lien partagé arrive directement sur la fiche : encore faut-il que la
-  // section soit à l'écran derrière elle.
+  // Lien partagé : la section doit être à l'écran derrière la fiche.
   if (projetOuvert.value) {
     document.getElementById('projets')?.scrollIntoView({ block: 'start' })
   }
@@ -76,9 +69,8 @@ onMounted(() => {
 
 <template>
   <BaseSection id="projets" eyebrow="projets" title="Projets réalisés">
-    <!-- Bandeau de mise en avant : la démo était la chose la plus vérifiable du
-         portfolio — un vrai binaire exécuté dans le navigateur — et n'était
-         atteignable qu'en lisant la sixième carte jusqu'au bout. -->
+    <!-- La démo est l'élément le plus vérifiable du portfolio : elle mérite
+         mieux qu'un bouton au fond de la sixième carte. -->
     <div v-if="projetDemo" v-reveal class="reveal vitrine">
       <div class="vitrine__texte">
         <p class="vitrine__label">à essayer</p>
@@ -108,9 +100,7 @@ onMounted(() => {
       </button>
     </div>
 
-    <!-- Le filtre ne disait rien de son effet : ce compteur l'annonce à l'œil
-         et, via aria-live, au lecteur d'écran qui ne voit pas les cartes
-         disparaître. -->
+    <!-- aria-live : un lecteur d'écran ne voit pas les cartes disparaître. -->
     <p class="resultats" role="status" aria-live="polite">
       {{ visibles.length }} {{ visibles.length > 1 ? 'projets' : 'projet' }}
       <template v-if="actif !== 'Tous'">en {{ actif }}</template>
@@ -139,8 +129,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-/* Bandeau de démo : accentué pour se détacher de la grille, mais sans crier —
-   il reste un raccourci vers un projet, pas une publicité. */
+/* Accentué pour se détacher de la grille, sans crier. */
 .vitrine {
   display: flex;
   align-items: center;
@@ -150,8 +139,7 @@ onMounted(() => {
   padding: 1.1rem 1.3rem;
   margin-bottom: 1.8rem;
   border: 1px solid var(--line);
-  /* Liseré d'accent sur la tranche : marque l'élément sans remplir un aplat
-     coloré, qui jurerait au-dessus des cartes neutres. */
+  /* Liseré plutôt qu'aplat : un fond coloré jurerait sur des cartes neutres. */
   border-left: 3px solid var(--accent);
   border-radius: var(--radius-sm);
   background: var(--surface);
@@ -177,8 +165,7 @@ onMounted(() => {
   font-family: var(--font-body);
 }
 @media (max-width: 560px) {
-  /* Le bouton passe pleine largeur : coincé à droite d'un texte qui a bouclé,
-     il se retrouvait seul sur une ligne, décentré. */
+  /* Pleine largeur : sinon il se retrouve seul et décentré sur sa ligne. */
   .vitrine__action {
     width: 100%;
     justify-content: center;

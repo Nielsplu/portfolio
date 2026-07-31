@@ -7,7 +7,7 @@
 
 html {
   scroll-behavior: smooth;
-  /* Décale les ancres pour qu'elles ne se glissent pas sous la nav collante. */
+  /* Les ancres ne doivent pas se glisser sous la nav collante. */
   scroll-padding-top: calc(var(--nav-height) + 1.25rem);
 }
 
@@ -29,8 +29,7 @@ a {
   color: var(--accent);
 }
 
-/* Sélection de texte accordée au thème (le bleu par défaut du navigateur
-   jurait, surtout en thème sombre). */
+/* Le bleu de sélection par défaut jure, surtout en thème sombre. */
 ::selection {
   background: var(--accent);
   color: var(--on-accent);
@@ -50,9 +49,7 @@ h3 {
   border-radius: 4px;
 }
 
-/* Texte réservé aux lecteurs d'écran : retiré visuellement, conservé dans
-   l'arbre d'accessibilité. Sert notamment au libellé du sélecteur de thème,
-   dont l'état visible est porté par une icône. */
+/* Retiré visuellement, conservé dans l'arbre d'accessibilité. */
 .sr-only {
   position: absolute;
   width: 1px;

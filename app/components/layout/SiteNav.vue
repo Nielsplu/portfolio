@@ -6,14 +6,12 @@ const open = ref(false)
 // Met en surbrillance le lien de la section visible à l'écran.
 const actif = useScrollSpy(liensNavigation.map(l => l.href.slice(1)))
 
-// Le burger est rendu identiquement au serveur et au client (`open` vaut
-// toujours false au premier rendu), son libellé peut donc être réactif sans
-// risque d'écart d'hydratation — contrairement à l'interrupteur de thème, dont
-// l'état dépend du visiteur.
+// `open` vaut false au premier rendu des deux côtés : libellé réactif sans
+// risque d'écart d'hydratation.
 const libelleBurger = computed(() => (open.value ? 'Fermer le menu' : 'Ouvrir le menu'))
 
-/** Referme le menu à la touche Échap et redonne le focus au burger, pour ne pas
- *  laisser le visiteur au clavier avec un focus perdu dans un menu replié. */
+/** Échap referme le menu et rend le focus, sinon il reste perdu dans un menu
+ *  replié. */
 const burger = ref<HTMLButtonElement>()
 function surEchap() {
   if (!open.value) return
@@ -21,12 +19,8 @@ function surEchap() {
   burger.value?.focus()
 }
 
-// La barre ne prend son fond, son trait et son ombre qu'une fois le défilement
-// entamé. En haut de page elle se fond dans le hero : plus de ligne qui coupe
-// l'écran en deux dès l'arrivée, et le relief n'apparaît qu'au moment où il
-// sert vraiment, quand du contenu passe dessous.
-// `defile` vaut false au rendu serveur comme au premier rendu client : aucun
-// écart d'hydratation possible.
+// La barre ne prend fond, trait et ombre qu'au défilement : en haut de page
+// elle se fond dans le hero.
 const defile = ref(false)
 
 onMounted(() => {
@@ -34,8 +28,7 @@ onMounted(() => {
     defile.value = window.scrollY > 8
   }
   surDefilement()
-  // `passive` : l'écouteur ne fait que lire, il ne doit jamais retarder le
-  // défilement.
+  // `passive` : l'écouteur ne fait que lire.
   window.addEventListener('scroll', surDefilement, { passive: true })
   onBeforeUnmount(() => window.removeEventListener('scroll', surDefilement))
 })
@@ -58,8 +51,7 @@ onMounted(() => {
           <a :href="profil.cv" class="btn btn--primary nav__cv" download>CV</a>
         </li>
       </ul>
-      <!-- Hors du menu déroulant : la bascule de thème et le burger restent
-           accessibles dans la barre même quand le menu mobile est replié. -->
+      <!-- Hors du menu : restent accessibles quand il est replié. -->
       <div class="nav__actions">
         <ThemeToggle />
         <button
@@ -82,15 +74,12 @@ onMounted(() => {
   position: sticky;
   top: 0;
   z-index: 50;
-  /* Transparente en haut de page ; le fond, le trait et l'ombre n'arrivent
-     qu'au défilement (voir .nav--defile). Le trait est déclaré dès maintenant
-     en transparent : sans lui, son apparition modifierait la hauteur de la
-     barre et ferait sauter le contenu d'un pixel. */
+  /* Trait déclaré transparent dès maintenant : son apparition changerait
+     sinon la hauteur de la barre et ferait sauter le contenu d'un pixel. */
   background: transparent;
   border-bottom: 1px solid transparent;
-  /* Le flou reste actif en permanence : le basculer déclenche la création puis
-     la destruction d'une couche de composition, ce qui saccade sur mobile.
-     Sans fond derrière lui, il ne se voit pas. */
+  /* Flou permanent : le basculer crée puis détruit une couche de composition,
+     ce qui saccade sur mobile. */
   backdrop-filter: blur(10px);
   transition:
     background var(--duree-moyenne) var(--courbe),
@@ -102,8 +91,7 @@ onMounted(() => {
   border-bottom-color: var(--line);
   box-shadow: var(--shadow-sm);
 }
-/* Menu mobile déployé : la barre reprend son fond même en haut de page, sans
-   quoi les liens flotteraient au-dessus du hero sans support visuel. */
+/* Menu déployé : la barre reprend son fond même en haut de page. */
 .nav:has(.nav__links--open) {
   background: var(--bg-translucent);
   border-bottom-color: var(--line);
@@ -120,8 +108,7 @@ onMounted(() => {
   gap: 0.7rem;
 }
 .nav__logo {
-  /* Pousse le menu et les actions à droite : pas de `space-between` sur
-     .nav__inner, qui centrerait le menu entre le logo et les actions. */
+  /* Pousse menu et actions à droite ; `space-between` centrerait le menu. */
   margin-right: auto;
   font-family: var(--font-mono);
   font-weight: 500;

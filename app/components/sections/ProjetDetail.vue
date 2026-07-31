@@ -1,12 +1,8 @@
 <script setup lang="ts">
 import type { Projet } from '~/types/content'
 
-// Fenêtre de détail d'un projet.
-//
-// Un <dialog> ouvert par showModal() plutôt qu'une div stylée : le navigateur
-// fournit alors gratuitement le piégeage du focus, la fermeture par Échap et
-// l'inertie de l'arrière-plan — trois choses qu'une réimplémentation manuelle
-// rate presque toujours. Même parti pris que la démo FTP, par cohérence.
+// <dialog> + showModal() plutôt qu'une div stylée : le navigateur fournit le
+// piégeage du focus, la fermeture par Échap et l'inertie de l'arrière-plan.
 const props = defineProps<{ projet: Projet | null }>()
 const emit = defineEmits<{ fermer: [] }>()
 
@@ -20,8 +16,7 @@ watch(() => props.projet, async (projet) => {
     dialogue.value?.showModal()
     verrouiller(true)
     await nextTick()
-    // Le contenu peut être long : on repart du haut à chaque ouverture, sinon
-    // la fenêtre garde la position de défilement du projet précédent.
+    // Sinon la fiche garde la position de défilement du projet précédent.
     corps.value?.scrollTo({ top: 0 })
   }
   else {
@@ -53,13 +48,10 @@ watch(() => props.projet, async (projet) => {
 
       <p class="fiche__resume">{{ projet.description }}</p>
 
-      <!-- Galerie : une capture prouve mieux qu'un paragraphe qu'une chose
-           existe. Absente, la section entière disparaît plutôt que de laisser
-           un cadre vide. -->
+      <!-- Absente, la section disparaît plutôt que de laisser un cadre vide. -->
       <section v-if="projet.images?.length" class="galerie" aria-label="Captures du projet">
         <figure v-for="img in projet.images" :key="img.src" class="galerie__item">
-          <!-- `loading="lazy"` : la fenêtre n'est montée qu'à l'ouverture, mais
-               une galerie longue ne doit pas tout télécharger d'un coup. -->
+          <!-- Une galerie longue ne doit pas tout télécharger d'un coup. -->
           <img :src="img.src" :alt="img.alt" class="galerie__image" loading="lazy">
           <figcaption v-if="img.legende" class="galerie__legende">{{ img.legende }}</figcaption>
         </figure>
@@ -136,7 +128,7 @@ watch(() => props.projet, async (projet) => {
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  /* 40 px : au-dessus du minimum recommandé pour une cible tactile. */
+  /* 40 px : au-dessus du minimum tactile recommandé. */
   width: 40px;
   height: 40px;
   padding: 0;
@@ -201,8 +193,7 @@ watch(() => props.projet, async (projet) => {
 /* ---- Galerie ---- */
 .galerie {
   display: grid;
-  /* Une seule colonne tant que la place manque : une capture d'interface
-     illisible ne prouve rien. */
+  /* Une seule colonne si la place manque : une capture illisible ne prouve rien. */
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1rem;
   margin-bottom: 1.6rem;

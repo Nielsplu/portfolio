@@ -1,36 +1,20 @@
-/* Design tokens : couleurs, ombres, rayons, rythme, typographies.
-   Point d'entrée unique pour reskinner le site.
+/* Design tokens — point d'entrée unique pour reskinner le site.
 
-   THÈME CLAIR / SOMBRE
-   Le thème clair vit dans `:root`, le thème sombre le surcharge. La palette
-   sombre apparaît donc DEUX fois, et c'est volontaire :
-     - dans `@media (prefers-color-scheme: dark)`, pour que le visiteur sans
-       JavaScript voie tout de même un site sombre s'il en a la préférence ;
-     - dans `:root[data-theme='dark']`, pour le choix explicite fait au clic.
-   Le sélecteur `:not([data-theme='light'])` évite que la préférence système
-   reprenne le dessus sur un visiteur qui a justement demandé le thème clair.
-
-   La duplication est le prix du support sans JavaScript. `light-dark()`
-   permettrait de tout déclarer une seule fois, au prix de perdre ce repli.
-
-   Voir aussi :
-   - app/composables/useTheme.ts — bascule au clic ;
-   - le script anti-flash de nuxt.config.ts — pose `data-theme` avant le
-     premier paint ;
-   - app/assets/css/motion.css — coupure des transitions pendant la bascule,
-     sans laquelle les couleurs transitionnées restent figées. */
+   Le thème clair vit dans `:root`, le sombre le surcharge deux fois : sous
+   `prefers-color-scheme` pour les visiteurs sans JavaScript, et sous
+   `[data-theme='dark']` pour le choix explicite. `light-dark()` éviterait la
+   duplication mais ferait perdre ce repli.
+   Voir useTheme.ts, le script anti-flash de nuxt.config.ts et motion.css. */
 :root {
-  /* Fait suivre les éléments natifs (barres de défilement, champs, menus
-     contextuels). Réaffirmé dans chaque bloc de thème ci-dessous. */
+  /* Fait suivre les éléments natifs : barres de défilement, champs, menus. */
   color-scheme: light;
 
   /* ---- Fonds et texte ---- */
   --bg: #f6f8fb;
-  /* Fond de la barre de navigation : même teinte que --bg, opacité partielle
-     pour laisser jouer le backdrop-filter. */
+  /* Même teinte que --bg, opacité partielle pour le backdrop-filter. */
   --bg-translucent: rgba(246, 248, 251, 0.85);
   --surface: #ffffff;
-  /* Fond des éléments discrets (jetons de techno) : lisible sans crier. */
+  /* Éléments discrets : jetons de techno. */
   --surface-subtle: #eef2f7;
   --ink: #16202b;
   --muted: #5a6b7e;
@@ -43,14 +27,12 @@
   /* Texte posé sur un aplat d'accent. */
   --on-accent: #ffffff;
 
-  /* Confirmation (copie réussie…). Vert franchement sombre : mesuré à 6,7:1 sur
-     une surface blanche, là où un vert plus clair tombait à 4,5 — juste au seuil,
-     sans marge. */
+  /* Confirmation. Vert sombre : 6,7:1 sur blanc, là où un vert plus clair
+     tombait à 4,5 — juste au seuil. */
   --succes: #276749;
 
   /* ---- Ombres ----
-     La couleur est isolée dans son propre token : une ombre teintée de bleu
-     nuit disparaît sur un fond sombre, il faut y aller franchement au noir. */
+     Couleur isolée : une ombre teintée de bleu nuit disparaît sur fond sombre. */
   --shadow-color: rgba(22, 32, 43, 0.35);
   --shadow-color-soft: rgba(22, 32, 43, 0.25);
   --shadow: 0 10px 30px -18px var(--shadow-color);
@@ -61,26 +43,20 @@
   --radius-sm: 8px;
 
   /* ---- Mouvement ----
-     Trois durées seulement, et une courbe commune. Le site en comptait six,
-     toutes sur le `ease` par défaut du navigateur : des éléments voisins
-     réagissaient à des vitesses légèrement différentes, ce qui se ressent sans
-     se voir et donne une impression d'assemblage plutôt que de dessin.
-     La courbe démarre franchement et s'arrête en douceur : le survol paraît
-     instantané tout en restant fluide, là où `ease` traîne au départ. */
+     Trois durées et une courbe commune. Le site en comptait six, toutes sur le
+     `ease` par défaut : des éléments voisins réagissaient à des vitesses
+     différentes. La courbe démarre franchement et s'arrête en douceur. */
   --courbe: cubic-bezier(0.32, 0.72, 0, 1);
-  /* Retours immédiats : couleur, bordure, opacité au survol. */
+  /* Survol : couleur, bordure, opacité. */
   --duree-rapide: 140ms;
-  /* Déplacements et ombres, qui ont besoin d'être suivis à l'œil. */
+  /* Déplacements et ombres, suivis à l'œil. */
   --duree-moyenne: 240ms;
-  /* Apparitions au défilement, volontairement posées. */
+  /* Apparitions au défilement. */
   --duree-lente: 600ms;
 
-  /* ---- Rythme vertical ----
-     Une seule valeur pour toutes les sections : le hero et les sections
-     courantes respiraient différemment, ce qui se voyait au défilement. */
+  /* Une seule valeur pour toutes les sections. */
   --section-pad: 5.5rem;
-  /* Hauteur de la nav collante, réutilisée par scroll-padding-top pour que les
-     ancres ne passent pas sous la barre. */
+  /* Réutilisée par scroll-padding-top : les ancres ne passent pas dessous. */
   --nav-height: 64px;
 
   /* ---- Typographies ---- */
@@ -89,12 +65,9 @@
   --font-mono: 'JetBrains Mono', monospace;
 
   /* ---- Échelle typographique ----
-     Le site comptait vingt-cinq tailles distinctes, dont seize entre 0,72 et
-     1,12 rem : des écarts d'un tiers de pixel, invisibles un par un, mais qui
-     empêchent tout alignement optique entre éléments voisins. C'est la même
-     maladie que les six durées d'animation d'avant.
-     Neuf paliers, resserrés dans le bas de l'échelle parce que c'est là que vit
-     l'essentiel du texte d'interface. Les titres restent fluides. */
+     Le site comptait vingt-cinq tailles, dont seize entre 0,72 et 1,12 rem —
+     des écarts d'un tiers de pixel qui empêchent tout alignement optique.
+     Neuf paliers, resserrés en bas où vit l'essentiel du texte d'interface. */
   --txt-2xs: 0.75rem;
   --txt-xs: 0.8125rem;
   --txt-sm: 0.875rem;
@@ -106,8 +79,7 @@
   --txt-3xl: clamp(2.4rem, 6vw, 3.6rem);
 }
 
-/* Palette sombre — bloc 1/2 : préférence système, pour les visiteurs sans
-   JavaScript (le script anti-flash n'a alors pas posé `data-theme`).
+/* Palette sombre 1/2 : préférence système, sans JavaScript.
    Toute modification ici doit être répercutée dans le bloc 2/2. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
@@ -121,14 +93,12 @@
     --muted: #93a4b8;
     --line: #233040;
 
-    /* L'accent est éclairci : le bleu nuit du thème clair (#1f4e79) n'a pas un
-       contraste suffisant sur un fond sombre. Le texte posé dessus devient
-       donc sombre à son tour. */
+    /* Accent éclairci : le bleu nuit du thème clair manque de contraste ici. */
     --accent: #6ba3d6;
     --accent-bright: #8cbde8;
     --accent-soft: #1a2938;
     --on-accent: #0c111a;
-    /* Vert clair : le vert sombre du thème clair serait illisible ici. */
+    /* Le vert sombre du thème clair serait illisible ici. */
     --succes: #6ee7a8;
 
     --shadow-color: rgba(0, 0, 0, 0.65);
@@ -136,8 +106,7 @@
   }
 }
 
-/* Palette sombre — bloc 2/2 : choix explicite du visiteur.
-   Doit rester identique au bloc 1/2 ci-dessus. */
+/* Palette sombre 2/2 : choix explicite. Identique au bloc 1/2. */
 :root[data-theme='dark'] {
   color-scheme: dark;
 

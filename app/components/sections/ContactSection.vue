@@ -8,9 +8,6 @@ const idTitre = useId()
 
 const { copier, etat } = usePressePapiers()
 
-// L'état part de 'attente' au rendu serveur comme au premier rendu client :
-// ces libellés réactifs ne peuvent donc pas provoquer d'écart d'hydratation,
-// contrairement à l'interrupteur de thème dont l'état dépend du visiteur.
 
 /** Nom accessible du bouton de copie, qui reflète aussi son issue. */
 const libelleCopie = computed(() => ({
@@ -19,18 +16,16 @@ const libelleCopie = computed(() => ({
   echec: 'Copie impossible',
 }[etat.value]))
 
-/** Annonce vocale de l'issue. En cas d'échec on redonne l'adresse, qui reste
- *  de toute façon affichée juste à côté. */
+/** En cas d'échec, on redonne l'adresse — affichée juste à côté de toute façon. */
 const annonceCopie = computed(() => ({
   attente: '',
   copie: 'Adresse copiée dans le presse-papiers',
   echec: `Copie impossible. L'adresse est ${profil.email}`,
 }[etat.value]))
 
-/** Liens secondaires : même forme pour les trois, afin qu'ils se lisent comme
- *  un seul rang homogène et non comme trois actions concurrentes.
- *  Le nom accessible est écrit en clair et non composé, une concaténation
- *  donnant des tournures bancales (« Télécharger Mon CV »). */
+/** Même forme pour les trois : un rang homogène, pas trois actions
+ *  concurrentes. Noms accessibles écrits en clair, une concaténation donnant
+ *  « Télécharger Mon CV ». */
 const liensSecondaires = computed(() => [
   { label: 'GitHub', url: profil.github, externe: true, nomAccessible: 'Mon profil GitHub (nouvel onglet)' },
   { label: 'LinkedIn', url: profil.linkedin, externe: true, nomAccessible: 'Mon profil LinkedIn (nouvel onglet)' },
@@ -42,8 +37,7 @@ const liensSecondaires = computed(() => [
   <section id="contact" class="section" :aria-labelledby="idTitre">
     <div class="container">
       <div v-reveal class="reveal card contact">
-        <!-- Même traitement que BaseSection : cette section a son propre
-             balisage, la numérotation ne doit pas s'arrêter à sa porte. -->
+        <!-- Balisage propre à cette section, mais même traitement. -->
         <p class="eyebrow eyebrow--centre">
           <span class="eyebrow__num" aria-hidden="true">{{ numeroSection('contact') }}</span>
           <span class="eyebrow__trait" aria-hidden="true" />
@@ -54,10 +48,9 @@ const liensSecondaires = computed(() => [
           Un projet, une question ? Je réponds rapidement.
         </p>
 
-        <!-- L'adresse est l'action principale de la section : elle porte le lien
-             mailto et occupe le centre, au lieu d'être noyée parmi cinq boutons
-             de même apparence. Le bouton de copie est une icône adjacente — et
-             non imbriquée, un bouton dans un lien étant invalide. -->
+        <!-- L'adresse est l'action principale, au lieu d'être noyée parmi cinq
+             boutons identiques. Le bouton de copie est adjacent et non imbriqué,
+             un bouton dans un lien étant invalide. -->
         <div class="adresse">
           <a :href="`mailto:${profil.email}`" class="adresse__lien">
             <svg class="adresse__icone" viewBox="0 0 24 24" aria-hidden="true">
@@ -84,16 +77,14 @@ const liensSecondaires = computed(() => [
           </button>
         </div>
 
-        <!-- Le libellé du bouton change, mais le nom accessible d'un élément
-             déjà focalisé n'est pas réannoncé de façon fiable : cette région
-             annonce l'issue, succès COMME échec. -->
+        <!-- Le nom accessible d'un élément déjà focalisé n'est pas réannoncé
+             de façon fiable : cette région annonce l'issue, succès comme échec. -->
         <p class="sr-only" role="status" aria-live="polite">{{ annonceCopie }}</p>
 
         <ul class="secondaires">
           <li v-for="l in liensSecondaires" :key="l.url">
-            <!-- aria-label plutôt qu'un <span class="sr-only"> : le texte masqué
-                 serait invisible mais embarqué dans tout copier-coller de la
-                 page, ce qui donnait « GitHub(nouvel onglet) » au collage. -->
+            <!-- aria-label et non un span masqué, qui se retrouvait dans tout
+                 copier-coller : « GitHub(nouvel onglet) ». -->
             <a
               :href="l.url"
               :target="l.externe ? '_blank' : undefined"
@@ -138,11 +129,9 @@ const liensSecondaires = computed(() => [
   border-color: var(--accent-bright);
   box-shadow: var(--shadow-sm);
 }
-/* Le focus est porté par les enfants, mais `overflow: hidden` ci-dessus
-   rognerait leur anneau : on le remonte donc sur le conteneur, où il entoure le
-   champ entier. `outline` plutôt que `box-shadow` — un outline se dessine hors
-   de la boîte (jamais rogné), reprend le style de focus global du site, et
-   reste visible en mode contrastes forcés, où les ombres sont ignorées. */
+/* `overflow: hidden` rognerait l'anneau des enfants : on le remonte sur le
+   conteneur. `outline` et non `box-shadow` — jamais rogné, et visible en mode
+   contrastes forcés où les ombres sont ignorées. */
 .adresse:focus-within {
   border-color: var(--accent);
   outline: 2px solid var(--accent-bright);
@@ -177,7 +166,7 @@ const liensSecondaires = computed(() => [
 .adresse__texte {
   font-family: var(--font-mono);
   font-size: var(--txt-md);
-  /* Une adresse longue est tronquée plutôt que de déformer le champ. */
+  /* Tronquée plutôt que de déformer le champ. */
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -211,7 +200,7 @@ const liensSecondaires = computed(() => [
   stroke-linejoin: round;
 }
 
-/* ---- Liens secondaires : un rang homogène, visiblement subordonné ---- */
+/* ---- Liens secondaires ---- */
 .secondaires {
   display: flex;
   justify-content: center;
@@ -234,7 +223,7 @@ const liensSecondaires = computed(() => [
 .secondaires__lien:hover { color: var(--accent); }
 .secondaires__fleche {
   font-size: 0.8em;
-  /* Décalage discret au survol, dans la direction de l'action. */
+  /* Décalage dans la direction de l'action. */
   transition: transform var(--duree-rapide) var(--courbe);
 }
 .secondaires__lien:hover .secondaires__fleche { transform: translate(1px, -1px); }

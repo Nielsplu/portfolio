@@ -1,17 +1,12 @@
 <script setup lang="ts">
 // Interrupteur clair / sombre.
 //
-// Les DEUX options restent visibles, un repère coulissant marquant celle en
-// vigueur : l'état se lit sans avoir à déduire quoi que ce soit d'une icône
-// unique (un soleil signifie-t-il « thème clair actif » ou « cliquer pour
-// éclaircir » ? — ambiguïté classique que ce dessin supprime).
+// Les deux options restent visibles : un soleil seul serait ambigu — thème
+// clair actif, ou clic pour éclaircir ?
 //
-// Particularité assumée : ce composant ne tient AUCUN état réactif. La position
-// du repère et le libellé lu par les lecteurs d'écran sont sélectionnés en CSS
-// d'après `data-theme` sur <html>. Deux bénéfices :
-//   - le HTML prérendu et l'hydratation sont identiques (pas de mismatch,
-//     alors que le serveur ne peut pas connaître le thème du visiteur) ;
-//   - le bon état s'affiche dès le premier paint, sans clignotement.
+// Aucun état réactif : position du repère et libellé viennent du CSS, d'après
+// `data-theme`. Le serveur ne peut pas connaître le thème du visiteur, donc
+// tout état rendu provoquerait un écart d'hydratation.
 const { basculer } = useTheme()
 </script>
 
@@ -33,18 +28,15 @@ const { basculer } = useTheme()
       </svg>
     </span>
 
-    <!-- Nom accessible du bouton : décrit l'action disponible, et non l'état.
-         Une seule des deux variantes est rendue (l'autre est en display:none,
-         donc exclue de l'arbre d'accessibilité). -->
+    <!-- Décrit l'action, pas l'état. Une seule variante est rendue, l'autre
+         étant en display:none donc hors de l'arbre d'accessibilité. -->
     <span class="sr-only theme-switch__libelle--vers-sombre">Passer au thème sombre</span>
     <span class="sr-only theme-switch__libelle--vers-clair">Passer au thème clair</span>
   </button>
 </template>
 
 <style scoped>
-/* Sans JavaScript, `data-theme` n'est jamais posé : l'interrupteur serait
-   inopérant et son repère mensonger. On le masque donc, et la palette suit la
-   préférence système (voir tokens.css). */
+/* Sans JS, `data-theme` n'est jamais posé : l'interrupteur serait inopérant. */
 .theme-switch {
   display: none;
   position: relative;
@@ -53,8 +45,7 @@ const { basculer } = useTheme()
   height: 28px;
   padding: 0;
   border: 1px solid var(--line);
-  /* Piste anguleuse plutôt que pilule : reste dans le registre graphique du
-     site (coins courts, familles mono) au lieu du switch générique. */
+  /* Piste anguleuse plutôt que pilule, comme le reste du site. */
   border-radius: var(--radius-sm);
   background: var(--surface-subtle);
   cursor: pointer;
@@ -68,9 +59,7 @@ const { basculer } = useTheme()
   border-color: var(--accent-bright);
 }
 
-/* Retour tactile : le repère se comprime légèrement à l'enfoncement, ce qui
-   donne au bouton la sensation d'un vrai interrupteur plutôt que d'une zone
-   cliquable inerte. */
+/* Le repère se comprime à l'enfoncement : sensation d'interrupteur. */
 .theme-switch:active .theme-switch__repere {
   transform: scaleX(0.88);
 }
@@ -116,8 +105,7 @@ const { basculer } = useTheme()
   stroke-linejoin: round;
 }
 
-/* L'icône posée sur le repère passe en couleur « sur accent » pour rester
-   lisible ; l'option inactive reste discrète. */
+/* L'icône sur le repère passe en couleur « sur accent ». */
 :root[data-theme='light'] .theme-switch__option--clair,
 :root[data-theme='dark'] .theme-switch__option--sombre {
   color: var(--on-accent);

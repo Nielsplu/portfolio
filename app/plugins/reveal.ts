@@ -1,22 +1,13 @@
-// Directive `v-reveal` : fait apparaître un élément (fondu + léger glissement)
-// quand il entre dans la vue. Un seul IntersectionObserver partagé pour tout le
-// site.
+// Directive `v-reveal` : fait apparaître un élément à son entrée dans la vue.
+// Un seul IntersectionObserver pour tout le site.
 //
-// Anti-flash : la classe `js` est posée avant le premier paint par un script en
-// <head> (voir nuxt.config), si bien que l'état masqué s'applique dès le premier
-// rendu. Accessibilité : prefers-reduced-motion désactive tout en CSS
-// (assets/css/motion.css). Robustesse : sans IntersectionObserver, `js` n'est
-// jamais posée et le contenu reste visible.
+// Usage : class="reveal" + v-reveal, ou v-reveal="120" pour échelonner (ms).
+// Sans IntersectionObserver, la classe `js` n'est jamais posée et le contenu
+// reste visible ; prefers-reduced-motion neutralise tout en CSS.
 //
-// Usage : class="reveal" + v-reveal (délai 0) ou v-reveal="120" (délai en ms,
-// pour échelonner).
-//
-// IMPORTANT — la classe `reveal` s'écrit dans le template, elle n'est PAS
-// injectée par getSSRProps. Injectée côté serveur seulement, elle manquait au
-// vnode côté client : Vue signalait alors un écart d'hydratation sur chaque
-// élément animé (« Hydration class mismatch »), la console se remplissant à
-// chaque chargement. Le délai, lui, peut rester dans getSSRProps : absent du
-// template, il n'est pas comparé à l'hydratation.
+// La classe `reveal` s'écrit dans le template et non dans getSSRProps :
+// injectée côté serveur seulement, elle manquait au vnode client et Vue
+// signalait un écart d'hydratation sur chaque élément animé.
 export default defineNuxtPlugin((nuxtApp) => {
   let observer: IntersectionObserver | undefined
 
@@ -41,8 +32,7 @@ export default defineNuxtPlugin((nuxtApp) => {
         : {}
     },
     mounted(el: HTMLElement, binding) {
-      // Filet de sécurité si la classe a été oubliée dans le template : ajoutée
-      // ici, elle n'entre pas dans la comparaison d'hydratation.
+      // Filet si la classe a été oubliée dans le template.
       el.classList.add('reveal')
       if (binding.value) el.style.setProperty('--reveal-delay', `${binding.value}ms`)
       observer?.observe(el)
