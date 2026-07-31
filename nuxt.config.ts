@@ -119,5 +119,15 @@ export default defineNuxtConfig({
   // automatiquement ce fichier pour toute adresse inconnue. Sans lui, une URL
   // erronée tombe sur la page 404 générique de GitHub et app/error.vue ne
   // serait jamais vu (il ne couvrirait que les erreurs de navigation interne).
-  nitro: { prerender: { routes: ['/', '/404.html'] } },
+  nitro: {
+    prerender: {
+      routes: [
+        '/',
+        '/404.html',
+        // Route Nitro rendue en fichier statique : GitHub Pages n'exécute rien
+        // côté serveur (voir server/routes/.well-known/security.txt.get.ts).
+        '/.well-known/security.txt',
+      ],
+    },
+  },
 })

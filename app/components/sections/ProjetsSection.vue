@@ -4,6 +4,7 @@ import type { Projet } from '~/types/content'
 import { categoriesProjet, projets } from '~/content'
 import { demos } from '~/demos'
 import { filtrerParCategorie } from '~/utils/filtres'
+import { versSlug } from '~/utils/slug'
 
 const filtres = ['Tous', ...categoriesProjet] as const
 const actif = ref<(typeof filtres)[number]>('Tous')
@@ -22,6 +23,55 @@ const projetDemo = computed(() => projets.find(p => p.demo && p.demoAccroche))
 // plutôt que dans chaque carte : sinon six instances de la fiche coexisteraient
 // dans le DOM, et deux pourraient s'ouvrir en même temps.
 const projetOuvert = ref<Projet | null>(null)
+
+// ---- Fiches partageables par URL -------------------------------------------
+// Sans ça, impossible d'envoyer un lien vers un projet précis : la fiche
+// s'ouvrait au clic et l'adresse ne bougeait pas. Le préfixe évite toute
+// collision avec les ancres de section, qui sont de simples `#projets`.
+const PREFIXE = '#projet/'
+
+/** Projet désigné par l'adresse courante, s'il y en a un. */
+function projetDepuisUrl(): Projet | null {
+  if (import.meta.server) return null
+  const hash = window.location.hash
+  if (!hash.startsWith(PREFIXE)) return null
+  const slug = hash.slice(PREFIXE.length)
+  return projets.find(p => versSlug(p.titre) === slug) ?? null
+}
+
+/** Aligne l'état sur l'adresse — au chargement, et à chaque Précédent /
+ *  Suivant du navigateur. */
+function synchroniser() {
+  projetOuvert.value = projetDepuisUrl()
+}
+
+function ouvrirFiche(projet: Projet) {
+  // pushState et non le routeur : celui-ci ferait défiler la page vers une
+  // ancre inexistante. On veut changer l'adresse, rien d'autre.
+  history.pushState(null, '', PREFIXE + versSlug(projet.titre))
+  projetOuvert.value = projet
+}
+
+function fermerFiche() {
+  projetOuvert.value = null
+  // replaceState et non pushState : on remplace l'entrée de la fiche au lieu
+  // d'en empiler une. Le bouton Précédent ramène ainsi là où le visiteur était
+  // avant de l'ouvrir, sans traverser une pile de fermetures.
+  if (window.location.hash.startsWith(PREFIXE)) {
+    history.replaceState(null, '', '#projets')
+  }
+}
+
+onMounted(() => {
+  synchroniser()
+  // Un lien partagé arrive directement sur la fiche : encore faut-il que la
+  // section soit à l'écran derrière elle.
+  if (projetOuvert.value) {
+    document.getElementById('projets')?.scrollIntoView({ block: 'start' })
+  }
+  window.addEventListener('hashchange', synchroniser)
+  onBeforeUnmount(() => window.removeEventListener('hashchange', synchroniser))
+})
 </script>
 
 <template>
@@ -73,11 +123,11 @@ const projetOuvert = ref<Projet | null>(null)
         v-reveal="i * 60"
         :projet="p"
         @ouvrir-demo="demoOuverte = p.demo ?? null"
-        @ouvrir-detail="projetOuvert = p"
+        @ouvrir-detail="ouvrirFiche(p)"
       />
     </div>
 
-    <ProjetDetail :projet="projetOuvert" @fermer="projetOuvert = null" />
+    <ProjetDetail :projet="projetOuvert" @fermer="fermerFiche" />
 
     <component
       :is="demos[demoOuverte]"
