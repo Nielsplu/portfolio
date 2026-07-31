@@ -1,5 +1,5 @@
-/* Animations d'apparition (directive v-reveal). Progressive enhancement :
-   le masquage initial n'est appliqué que si JS est actif (classe .js). */
+/* Animations d'apparition (v-reveal). Le masquage initial n'est appliqué que
+   si JS est actif (classe .js). */
 .js .reveal {
   opacity: 0;
   transform: translateY(18px);
@@ -12,27 +12,19 @@
   transform: none;
 }
 
-/* Coupure des transitions pendant une bascule de thème.
-   Sans cela, toute propriété à la fois TRANSITIONNÉE et alimentée par une
-   variable de thème reste figée sur son ancienne couleur : Chrome ne recalcule
-   pas le point d'arrivée d'une transition quand c'est le var() source qui
-   change. Constaté sur le fond du bouton primaire (resté bleu nuit clair sur
-   fond sombre, avec un texte sombre par-dessus : illisible), sur le lien de nav
-   actif et sur le bouton de démo.
-   L'attribut est posé puis retiré au frame suivant par useTheme.ts.
-
-   Seule exception : le repère de l'interrupteur de thème. Il n'anime que
-   `transform`, valeur littérale jamais issue d'une variable, donc hors de
-   portée du défaut ci-dessus — et c'est le seul mouvement qu'on veuille
-   conserver pendant la bascule, sans quoi le repère sauterait d'un bord à
-   l'autre au lieu de coulisser. */
+/* Transitions coupées pendant une bascule de thème : Chrome ne recalcule pas
+   le point d'arrivée d'une transition quand c'est le var() source qui change,
+   et la propriété reste figée sur son ancienne couleur. Attribut posé puis
+   retiré par useTheme.ts.
+   Le repère de l'interrupteur est exempté : il n'anime que `transform`, valeur
+   littérale, et c'est le seul mouvement à conserver pendant la bascule. */
 :root[data-theme-bascule] *:not(.theme-switch__repere),
 :root[data-theme-bascule] *::before,
 :root[data-theme-bascule] *::after {
   transition: none !important;
 }
 
-/* Respect des préférences d'accessibilité : aucune animation. */
+/* prefers-reduced-motion : aucune animation. */
 @media (prefers-reduced-motion: reduce) {
   .js .reveal {
     opacity: 1;

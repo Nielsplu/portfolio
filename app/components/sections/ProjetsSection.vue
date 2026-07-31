@@ -4,6 +4,7 @@ import type { Projet } from '~/types/content'
 import { categoriesProjet, projets } from '~/content'
 import { demos } from '~/demos'
 import { filtrerParCategorie } from '~/utils/filtres'
+import { versSlug } from '~/utils/slug'
 
 const filtres = ['Tous', ...categoriesProjet] as const
 const actif = ref<(typeof filtres)[number]>('Tous')
@@ -18,17 +19,58 @@ const demoOuverte = ref<DemoId | null>(null)
 // suivra le premier qui en déclarera une.
 const projetDemo = computed(() => projets.find(p => p.demo && p.demoAccroche))
 
-// Projet dont la fiche est ouverte. Une seule fenêtre à la fois, gérée ici
-// plutôt que dans chaque carte : sinon six instances de la fiche coexisteraient
-// dans le DOM, et deux pourraient s'ouvrir en même temps.
+// Une seule fiche à la fois, gérée ici : sinon six instances coexisteraient
+// dans le DOM.
 const projetOuvert = ref<Projet | null>(null)
+
+// Fiches partageables par URL. Le préfixe évite toute collision avec les
+// ancres de section, qui sont de simples `#projets`.
+const PREFIXE = '#projet/'
+
+/** Projet désigné par l'adresse courante, s'il y en a un. */
+function projetDepuisUrl(): Projet | null {
+  if (import.meta.server) return null
+  const hash = window.location.hash
+  if (!hash.startsWith(PREFIXE)) return null
+  const slug = hash.slice(PREFIXE.length)
+  return projets.find(p => versSlug(p.titre) === slug) ?? null
+}
+
+/** Aligne l'état sur l'adresse, au chargement comme au Précédent. */
+function synchroniser() {
+  projetOuvert.value = projetDepuisUrl()
+}
+
+function ouvrirFiche(projet: Projet) {
+  // pushState et non le routeur, qui ferait défiler vers une ancre inexistante.
+  history.pushState(null, '', PREFIXE + versSlug(projet.titre))
+  projetOuvert.value = projet
+}
+
+function fermerFiche() {
+  projetOuvert.value = null
+  // replaceState : Précédent ramène avant l'ouverture, sans traverser une
+  // pile de fermetures.
+  if (window.location.hash.startsWith(PREFIXE)) {
+    history.replaceState(null, '', '#projets')
+  }
+}
+
+onMounted(() => {
+  synchroniser()
+  // Lien partagé : la section doit être à l'écran derrière la fiche.
+  if (projetOuvert.value) {
+    document.getElementById('projets')?.scrollIntoView({ block: 'start' })
+  }
+  window.addEventListener('hashchange', synchroniser)
+  onBeforeUnmount(() => window.removeEventListener('hashchange', synchroniser))
+})
 </script>
 
 <template>
   <BaseSection id="projets" eyebrow="projets" title="Projets réalisés">
-    <!-- Bandeau de mise en avant : la démo était la chose la plus vérifiable du
-         portfolio — un vrai binaire exécuté dans le navigateur — et n'était
-         atteignable qu'en lisant la sixième carte jusqu'au bout. -->
+    <!-- La démo est l'élément le plus vérifiable du portfolio : elle mérite
+         mieux qu'un bouton au fond de la sixième carte. -->
     <div v-if="projetDemo" v-reveal class="reveal vitrine">
       <div class="vitrine__texte">
         <p class="vitrine__label">à essayer</p>
@@ -58,9 +100,7 @@ const projetOuvert = ref<Projet | null>(null)
       </button>
     </div>
 
-    <!-- Le filtre ne disait rien de son effet : ce compteur l'annonce à l'œil
-         et, via aria-live, au lecteur d'écran qui ne voit pas les cartes
-         disparaître. -->
+    <!-- aria-live : un lecteur d'écran ne voit pas les cartes disparaître. -->
     <p class="resultats" role="status" aria-live="polite">
       {{ visibles.length }} {{ visibles.length > 1 ? 'projets' : 'projet' }}
       <template v-if="actif !== 'Tous'">en {{ actif }}</template>
@@ -73,11 +113,11 @@ const projetOuvert = ref<Projet | null>(null)
         v-reveal="i * 60"
         :projet="p"
         @ouvrir-demo="demoOuverte = p.demo ?? null"
-        @ouvrir-detail="projetOuvert = p"
+        @ouvrir-detail="ouvrirFiche(p)"
       />
     </div>
 
-    <ProjetDetail :projet="projetOuvert" @fermer="projetOuvert = null" />
+    <ProjetDetail :projet="projetOuvert" @fermer="fermerFiche" />
 
     <component
       :is="demos[demoOuverte]"
@@ -89,8 +129,7 @@ const projetOuvert = ref<Projet | null>(null)
 </template>
 
 <style scoped>
-/* Bandeau de démo : accentué pour se détacher de la grille, mais sans crier —
-   il reste un raccourci vers un projet, pas une publicité. */
+/* Accentué pour se détacher de la grille, sans crier. */
 .vitrine {
   display: flex;
   align-items: center;
@@ -100,8 +139,7 @@ const projetOuvert = ref<Projet | null>(null)
   padding: 1.1rem 1.3rem;
   margin-bottom: 1.8rem;
   border: 1px solid var(--line);
-  /* Liseré d'accent sur la tranche : marque l'élément sans remplir un aplat
-     coloré, qui jurerait au-dessus des cartes neutres. */
+  /* Liseré plutôt qu'aplat : un fond coloré jurerait sur des cartes neutres. */
   border-left: 3px solid var(--accent);
   border-radius: var(--radius-sm);
   background: var(--surface);
@@ -127,8 +165,7 @@ const projetOuvert = ref<Projet | null>(null)
   font-family: var(--font-body);
 }
 @media (max-width: 560px) {
-  /* Le bouton passe pleine largeur : coincé à droite d'un texte qui a bouclé,
-     il se retrouvait seul sur une ligne, décentré. */
+  /* Pleine largeur : sinon il se retrouve seul et décentré sur sa ligne. */
   .vitrine__action {
     width: 100%;
     justify-content: center;

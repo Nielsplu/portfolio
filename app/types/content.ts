@@ -1,9 +1,4 @@
-// ============================================================
-// Schéma du contenu du portfolio.
-// Les interfaces vivent ici, les données dans app/content/.
-// Séparer les deux garde chaque fichier de contenu court et permet de faire
-// évoluer le schéma (nouveau champ, nouvelle section) sans toucher au contenu.
-// ============================================================
+// Schéma du contenu. Les interfaces ici, les données dans app/content/.
 import type { DemoId } from '~/demos'
 
 /** Un lien externe (code, démo en ligne, rapport…). */
@@ -31,8 +26,7 @@ export interface EtapeParcours {
   titre: string
   lieu: string
   description: string
-  /** Étape toujours en cours. La date de fin d'un diplôme en préparation se lit
-   *  comme une date passée : ce drapeau lève l'ambiguïté d'un coup d'œil. */
+  /** « 2024 – 2027 » se lit comme une période révolue : ce drapeau l'évite. */
   enCours?: boolean
 }
 
@@ -50,43 +44,34 @@ export interface Projet {
   liens?: LienExterne[]
   // Identifiant d'une démo interactive embarquée (registre : app/demos).
   demo?: DemoId
-  /** Accroche affichée dans le bandeau qui met la démo en avant, en tête de la
-   *  section projets. Sans elle, la démo n'est découvrable qu'en lisant la
-   *  sixième carte jusqu'au bout. */
+  /** Accroche du bandeau qui met la démo en avant, en tête de section. */
   demoAccroche?: string
-  /** Dépôt volontairement privé : la carte l'indique explicitement plutôt que
-   *  de n'afficher aucun lien, ce qui laisserait croire à un oubli. */
+  /** Dépôt privé : la carte l'indique, plutôt que de n'afficher aucun lien. */
   codePrive?: boolean
-  /** Points de détail affichés dans la fenêtre du projet : contexte, décisions
-   *  techniques, difficultés rencontrées. Ce qui distingue quelqu'un qui a fait
-   *  le travail de quelqu'un qui a listé des technologies. */
+  /** Détails montrés dans la fiche : contexte, décisions, difficultés. */
   details?: string[]
-  /** Captures ou schémas montrés dans la fenêtre du projet. Une capture vaut
-   *  souvent mieux qu'un paragraphe pour prouver qu'une chose existe. */
+  /** Captures montrées dans la fiche. */
   images?: ImageProjet[]
 }
 
 /** Une image de la galerie d'un projet. */
 export interface ImageProjet {
   src: string
-  /** Description pour les lecteurs d'écran. Obligatoire : une capture sans
-   *  alternative textuelle n'existe pas pour une partie des visiteurs. */
+  /** Obligatoire : sans elle la capture n'existe pas pour une partie des
+   *  visiteurs. */
   alt: string
   /** Légende affichée sous l'image. */
   legende?: string
 }
 
-/** Une entrée de compétence. Une simple chaîne dans la majorité des cas ; la
- *  forme longue sert à ce qui peut être prouvé — une certification et son
- *  justificatif consultable. */
+/** Une chaîne suffit ; la forme longue sert aux certifications prouvables. */
 export type ItemCompetence = string | {
   label: string
-  /** Chemin ou URL du justificatif. Le jeton devient alors un lien : une
-   *  certification qu'on ne peut pas vérifier ne vaut pas grand-chose. */
+  /** Chemin du justificatif : le jeton devient alors un lien. */
   justificatif: string
 }
 
-/** Ramène une entrée à sa forme longue, pour un rendu uniforme. */
+/** Ramène une entrée à sa forme longue. */
 export function normaliserItem(item: ItemCompetence): { label: string, justificatif?: string } {
   return typeof item === 'string' ? { label: item } : item
 }

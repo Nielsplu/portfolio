@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { profil } from '~/content'
 
-// Nomme la région d'après le titre principal (voir BaseSection pour le détail).
+// Nomme la région d'après le titre (voir BaseSection).
 const idTitre = useId()
 </script>
 
@@ -12,8 +12,7 @@ const idTitre = useId()
         <p v-reveal class="reveal hero__status">{{ profil.statut }}</p>
         <h1 :id="idTitre" v-reveal="80" class="reveal hero__name">{{ profil.nom }}</h1>
         <p v-reveal="160" class="reveal hero__prompt">
-          <!-- Purement décoratif : sans aria-hidden, un lecteur d'écran
-               annonce « supérieur à » avant la phrase. -->
+          <!-- Sinon un lecteur d'écran annonce « supérieur à ». -->
           <span class="hero__prompt-symbol" aria-hidden="true">&gt;</span>
           développement web · sécurité des SI
         </p>
@@ -24,18 +23,12 @@ const idTitre = useId()
         </div>
       </div>
       <div v-reveal="200" class="reveal hero__photo-wrap">
-        <!-- <NuxtPicture> et non <img> : la source est une photo d'appareil de
-             plusieurs mégaoctets, réduite et réencodée au build. Le composant
-             « picture » émet des <source> en AVIF puis WebP, avec repli JPEG
-             pour les navigateurs qui ne suivent pas — un simple <NuxtImg>
-             aurait conservé le format d'origine.
-             `preload` et `loading="eager"` : l'image est au-dessus de la ligne
-             de flottaison, elle pèse donc sur le premier affichage.
-             `position: attention` : la source est en 4:3 alors que l'affichage
-             est carré. Un recadrage centré par défaut coupe à l'aveugle et peut
-             trancher le sujet ; cette stratégie de sharp conserve la zone la
-             plus saillante de l'image. Basculer sur 'top' si le cadrage du
-             visage n'est pas bon. -->
+        <!-- <NuxtPicture> émet AVIF puis WebP avec repli JPEG ; <NuxtImg>
+             aurait gardé le format d'origine. `preload` car l'image est
+             au-dessus de la ligne de flottaison.
+             `position: attention` : source en 4:3 pour un affichage carré, un
+             recadrage centré trancherait le sujet. Basculer sur 'top' si le
+             cadrage du visage ne convient pas. -->
         <NuxtPicture
           src="/photo.jpg"
           :img-attrs="{ class: 'hero__photo' }"
@@ -58,13 +51,11 @@ const idTitre = useId()
 <style scoped>
 .hero {
   position: relative;
-  /* Même rythme que les autres sections (token partagé) : le hero respirait
-     légèrement différemment, ce qui se voyait au défilement. */
+  /* Même rythme que les autres sections. */
   padding-block: var(--section-pad);
   overflow: hidden;
 }
-/* Fond en grille de points, estompé vers les bords : touche « technique »
-   discrète, sans image ni requête réseau. */
+/* Grille de points estompée : touche technique, sans image ni requête. */
 .hero::before {
   content: '';
   position: absolute;
@@ -115,8 +106,7 @@ const idTitre = useId()
   justify-content: center;
   align-items: center;
 }
-/* <NuxtPicture> intercale un <picture> entre le conteneur et l'image. Inline
-   par défaut, il ajoutait un interligne sous la photo et décentrait le halo. */
+/* <picture> est inline par défaut : interligne sous la photo, halo décentré. */
 .hero__photo-wrap picture {
   display: block;
   line-height: 0;
@@ -124,10 +114,8 @@ const idTitre = useId()
   position: relative;
   z-index: 1;
 }
-/* Anneau pointillé en orbite : reprend le vocabulaire graphique du site (la
-   grille de points du hero, les « // » des intitulés) au lieu d'un halo flou
-   générique. Décoratif, donc en pseudo-élément : rien n'entre dans le DOM ni
-   dans l'arbre d'accessibilité. */
+/* Anneau en orbite, dans le vocabulaire graphique du site. Pseudo-éléments :
+   rien n'entre dans le DOM ni dans l'arbre d'accessibilité. */
 .hero__photo-wrap::before,
 .hero__photo-wrap::after {
   content: '';
@@ -145,8 +133,7 @@ const idTitre = useId()
   transform: translate(-50%, -50%);
   animation: orbite 40s linear infinite;
 }
-/* Arc plein, ouvert sur deux côtés : donne un point de repère fixe que
-   l'anneau pointillé vient croiser en tournant. */
+/* Repère fixe que l'anneau pointillé croise en tournant. */
 .hero__photo-wrap::after {
   width: calc(var(--taille-photo) + 14px);
   aspect-ratio: 1;
@@ -164,32 +151,27 @@ const idTitre = useId()
 @keyframes orbite {
   to { transform: translate(-50%, -50%) rotate(360deg); }
 }
-/* La rotation continue est une animation d'ambiance : elle disparaît pour qui
-   demande moins de mouvement, l'anneau restant visible et statique. */
+/* Rotation d'ambiance : retirée sous prefers-reduced-motion. */
 @media (prefers-reduced-motion: reduce) {
   .hero__photo-wrap::before { animation: none; }
 }
-/* :deep() indispensable — <NuxtPicture> rend le <img> depuis son propre
-   composant, qui ne reçoit donc pas l'attribut de scope de celui-ci. Sans cette
-   enveloppe, la règle ne s'appliquait à rien : la photo est restée un carré
-   sans arrondi ni cadre tant que le sélecteur est resté scopé. Le <picture>,
-   lui, porte bien l'attribut, d'où la règle non enveloppée ci-dessus. */
+/* :deep() indispensable : <NuxtPicture> rend le <img> depuis son propre
+   composant, qui ne reçoit pas l'attribut de scope. Sans ça la photo restait
+   un carré sans arrondi. */
 .hero__photo-wrap :deep(.hero__photo) {
   width: min(300px, 70vw);
   height: auto;
   aspect-ratio: 1;
   object-fit: cover;
   border-radius: 50%;
-  /* Anneau fin plutôt qu'une bordure épaisse couleur surface : celle-ci était
-     blanche sur un fond quasi blanc en thème clair, donc invisible, et ne
-     laissait que le halo extérieur pour détourer la photo. Ici l'anneau reste
-     lisible dans les deux thèmes, et l'ombre porte le relief. */
+  /* Anneau fin : une bordure couleur surface était blanche sur fond blanc,
+     donc invisible en thème clair. */
   box-shadow:
     0 0 0 1px var(--line),
     0 20px 45px -28px var(--shadow-color);
   transition: box-shadow var(--duree-moyenne) var(--courbe), transform var(--duree-moyenne) var(--courbe);
 }
-/* Le survol réchauffe l'anneau sans déplacer la mise en page. */
+/* Survol : sans déplacer la mise en page. */
 .hero__photo-wrap:hover :deep(.hero__photo) {
   box-shadow:
     0 0 0 1px var(--accent-bright),

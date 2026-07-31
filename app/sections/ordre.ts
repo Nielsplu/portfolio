@@ -1,16 +1,8 @@
-// ============================================================
-// Ordre des sections et libellés de navigation — SOURCE UNIQUE.
+// Ordre des sections et libellés de navigation — source unique.
 //
-// Ce module ne connaît volontairement aucun composant. Le registre
-// (registry.ts) y associe les composants Vue ; les composants de section, eux,
-// n'importent que ce fichier pour connaître leur numéro d'ordre.
-//
-// Sans cette séparation, BaseSection importerait le registre, qui importe les
-// sections, qui importent BaseSection : un cycle qui casse au chargement
-// (« Cannot access CompetencesSection before initialization »).
-// ============================================================
+// N'importe aucun composant, volontairement : les sections y lisent leur numéro
+// sans créer le cycle BaseSection → registre → sections.
 
-/** Une entrée d'ordre : l'ancre, et le libellé de navigation s'il y en a un. */
 export interface OrdreSection {
   /** Ancre de la section ; doit correspondre à l'id rendu par le composant. */
   id: string
@@ -18,34 +10,28 @@ export interface OrdreSection {
   nav?: string
 }
 
-/**
- * Ordre d'affichage des sections. Déplacer une entrée ici réordonne la page,
- * la navigation et la numérotation d'un seul coup.
- */
+/** Déplacer une entrée réordonne la page, la navigation et la numérotation. */
 export const ordreSections: OrdreSection[] = [
   { id: 'accueil' },
-  // Projets avant Parcours : un recruteur veut voir ce qui a été construit
-  // avant de lire une chronologie scolaire.
+  // Projets avant Parcours : montrer ce qui a été construit avant la
+  // chronologie scolaire.
   { id: 'projets', nav: 'Projets' },
   { id: 'parcours', nav: 'Parcours' },
   { id: 'competences', nav: 'Compétences' },
   { id: 'contact', nav: 'Contact' },
 ]
 
-/** Liens dérivés pour la navigation (sections portant un libellé `nav`). */
+/** Liens dérivés pour la navigation. */
 export const liensNavigation = ordreSections
   .filter(s => s.nav)
   .map(s => ({ href: `#${s.id}`, label: s.nav! }))
 
 /**
- * Numéro d'ordre affiché devant l'intitulé d'une section, sur deux chiffres.
- *
- * Dérivé de la liste ci-dessus et non écrit en dur : réordonner renumérote tout
- * automatiquement. Le hero est exclu du décompte — il n'a pas d'intitulé, et
- * numéroter une page d'accueil n'aurait pas de sens.
+ * Numéro affiché devant l'intitulé, sur deux chiffres. Le hero est exclu : il
+ * n'a pas d'intitulé.
  *
  * @example
- * numeroSection('parcours') // '02', puisque Projets vient avant
+ * numeroSection('parcours') // '02'
  */
 export function numeroSection(id: string): string {
   const rang = ordreSections.filter(s => s.nav).findIndex(s => s.id === id)

@@ -12,10 +12,8 @@ const props = defineProps<{
 // Logo si la techno est connue du registre, sinon simple badge texte.
 const icon = computed<SimpleIcon | undefined>(() => techIcons[props.label])
 
-// Deux variantes de la couleur de marque, l'une lisible sur fond clair, l'autre
-// sur fond sombre. Elles sont calculées ici plutôt que choisies en CSS parce
-// qu'elles dépendent de la teinte propre à chaque marque. Le calcul ne dépend
-// que des données de l'icône : identique au rendu serveur et à l'hydratation.
+// Calculées ici et non en CSS : elles dépendent de la teinte de chaque marque.
+// Ne dépend que des données de l'icône, donc stable à l'hydratation.
 const couleurs = computed(() => {
   if (!icon.value) return undefined
   return {
@@ -31,9 +29,7 @@ const couleurs = computed(() => {
     :class="{ 'tech--logo': icon, 'tech--lien': justificatif }"
     :style="couleurs"
   >
-    <!-- Un lien seulement s'il y a une pièce à consulter : le reste du temps le
-         jeton n'est qu'une étiquette, et un <a> sans destination tromperait
-         l'attente du visiteur comme du lecteur d'écran. -->
+    <!-- Un lien seulement s'il y a une pièce à consulter. -->
     <component
       :is="justificatif ? 'a' : 'span'"
       v-bind="justificatif ? {
@@ -54,10 +50,8 @@ const couleurs = computed(() => {
 </template>
 
 <style scoped>
-/* Jeton neutre volontairement : une page de projets aligne plus de 70 badges,
-   et les remplir d'aplats d'accent noyait le reste (titres, boutons, liens).
-   L'accent est réservé aux éléments qui portent une action ou une hiérarchie ;
-   ici la couleur vient du logo de marque, au survol. */
+/* Neutre volontairement : plus de 70 badges en aplat d'accent noyaient
+   titres, boutons et liens. */
 .tech {
   display: inline-flex;
   font-family: var(--font-mono);
@@ -68,8 +62,7 @@ const couleurs = computed(() => {
   color: var(--ink);
   white-space: nowrap;
 }
-/* Le rembourrage vit sur le contenu et non sur le jeton : quand celui-ci est un
-   lien, toute la surface du badge devient cliquable, pas seulement le texte. */
+/* Rembourrage sur le contenu : toute la surface du badge devient cliquable. */
 .tech__contenu {
   display: inline-flex;
   align-items: center;
@@ -92,10 +85,8 @@ const couleurs = computed(() => {
   font-size: 0.9em;
 }
 .tech--logo { transition: border-color var(--duree-rapide) var(--courbe), transform var(--duree-rapide) var(--courbe); }
-/* Les logos portent leur couleur de marque en permanence : en gris, une page
-   qui en aligne plus de soixante-dix paraissait éteinte. La teinte est celle de
-   la marque, seule sa luminosité ayant été ramenée dans une plage lisible sur
-   le fond courant (voir utils/couleurs.ts). */
+/* Couleur de marque en permanence : en gris, la page paraissait éteinte.
+   Seule la luminosité est ajustée au fond (voir utils/couleurs.ts). */
 .tech__logo {
   width: 0.9rem;
   height: 0.9rem;
@@ -106,8 +97,7 @@ const couleurs = computed(() => {
 :root[data-theme='dark'] .tech__logo {
   fill: var(--brand-sombre, var(--muted));
 }
-/* Sans JavaScript, `data-theme` n'est pas posé : on suit alors la préférence
-   système, comme le fait la palette. */
+/* Sans JS, `data-theme` n'est pas posé : on suit la préférence système. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) .tech__logo {
     fill: var(--brand-sombre, var(--muted));

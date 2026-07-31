@@ -2,21 +2,17 @@
 import type { Projet } from '~/types/content'
 
 const props = defineProps<{ projet: Projet }>()
-// La démo et la fiche détaillée sont toutes deux montées par la section
-// parente : une seule fenêtre à la fois, et le composant lourd n'est chargé
-// qu'à l'ouverture (voir ProjetsSection).
+// Démo et fiche sont montées par la section parente (voir ProjetsSection).
 defineEmits<{ 'ouvrir-demo': [], 'ouvrir-detail': [] }>()
 
-// La fiche ne s'ouvre que s'il y a matière à montrer — des points de détail ou
-// des captures. Sans cela, le bouton promettrait une fenêtre vide.
+// Pas de bouton sans matière à montrer : il promettrait une fenêtre vide.
 const aDuDetail = computed(() =>
   Boolean(props.projet.details?.length || props.projet.images?.length),
 )
 </script>
 
 <template>
-  <!-- `reveal` porté ici et non injecté par la directive : voir plugins/reveal.ts
-       (la classe doit venir du template pour ne pas fausser l'hydratation). -->
+  <!-- `reveal` dans le template et non injecté : voir plugins/reveal.ts. -->
   <article class="reveal card project">
     <p class="project__kind">{{ projet.sousTitre }}</p>
     <h3 class="project__title">{{ projet.titre }}</h3>
@@ -31,8 +27,7 @@ const aDuDetail = computed(() =>
         @click="$emit('ouvrir-detail')"
       >
         En savoir plus
-        <!-- Suffixe masqué : sans lui, une page qui aligne plusieurs cartes
-             présente autant de boutons au nom identique. -->
+        <!-- Sans ce suffixe, six boutons porteraient le même nom. -->
         <span class="sr-only">— {{ projet.titre }}</span>
       </button>
       <button
@@ -48,8 +43,7 @@ const aDuDetail = computed(() =>
         target="_blank"
         rel="noopener"
       >{{ lien.label }} <span aria-hidden="true">↗</span><span class="sr-only">(nouvel onglet)</span></a>
-      <!-- Mention plutôt qu'absence de lien : une carte sans aucune action
-           laisse penser à un oubli. -->
+      <!-- Une carte sans aucune action laisse penser à un oubli. -->
       <span v-if="projet.codePrive" class="project__prive">Code privé</span>
     </div>
   </article>
@@ -109,15 +103,13 @@ const aDuDetail = computed(() =>
   color: var(--on-accent);
   cursor: pointer;
 }
-/* Action de lecture, pas de sortie : bordée d'accent mais non remplie, elle se
-   distingue des liens externes sans concurrencer le bouton de démo. */
+/* Bordée mais non remplie : ne concurrence pas le bouton de démo. */
 .project__link--detail {
   border-color: var(--accent);
   cursor: pointer;
   font-family: var(--font-mono);
 }
-/* Volontairement inerte : ce n'est pas une action, seulement une explication.
-   Bordure en tirets pour le distinguer d'un lien au premier coup d'œil. */
+/* Inerte : tirets pour le distinguer d'un lien au premier coup d'œil. */
 .project__prive {
   border: 1.5px dashed var(--line);
   border-radius: var(--radius-sm);
