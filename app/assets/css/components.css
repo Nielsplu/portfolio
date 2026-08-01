@@ -2,9 +2,10 @@
    par plusieurs sections. Les styles propres à une section restent scoped
    dans son composant. */
 
-/* Conteneur centré. */
+/* Conteneur centré. Les marges latérales se resserrent sur petit écran : à
+   320 px, 2,5rem fixes mangeaient 40 px de largeur utile sur 320. */
 .container {
-  width: min(1080px, 100% - 2.5rem);
+  width: min(1080px, 100% - clamp(1.5rem, 6vw, 2.5rem));
   margin-inline: auto;
 }
 
@@ -55,6 +56,55 @@
 .section-title {
   font-size: var(--txt-2xl);
   margin-bottom: 2.2rem;
+}
+
+/* Cibles tactiles : 44 px est le minimum recommandé pour un doigt. À la souris
+   ces éléments faisaient 26 à 35 px de haut, ce qui est confortable au pointeur
+   mais frustrant au pouce. On ne les agrandit donc que sur écran tactile, pour
+   ne pas alourdir le rendu au clavier et à la souris.
+   `inline-flex` est nécessaire : `min-height` n'a aucun effet sur un élément
+   resté inline. */
+@media (pointer: coarse) {
+  .btn,
+  .filters__btn,
+  .project__link,
+  .project__prive,
+  .secondaires__lien,
+  .nav__burger,
+  .nav__links a:not(.btn),
+  .footer__commit,
+  .footer__source {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+  }
+
+  /* Le burger, l'interrupteur et les croix de fermeture sont carrés : il leur
+     faut aussi la largeur. Une croix de 26 px se rate une fois sur deux. */
+  .nav__burger,
+  .theme-switch,
+  .fiche__fermer,
+  .terminal__fermer {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* iOS zoome la page entière dès qu'on touche un champ dont la police fait
+     moins de 16 px. Le terminal en affichait 13 : le site sautait au premier
+     appui sur la zone de saisie. La chasse fixe reste, seule la taille change. */
+  .terminal__champ,
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
+
+  /* Les jetons de techno ne sont pas cliquables, sauf s'ils portent un
+     justificatif : seuls ceux-là doivent grandir. */
+  .tech--lien .tech__contenu {
+    min-height: 44px;
+  }
 }
 
 /* Boutons. */
