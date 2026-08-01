@@ -204,7 +204,10 @@ onMounted(() => {
 }
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  /* `min(310px, 100%)` et non `310px` : sur un écran de 320 px le conteneur
+     n'offre que 280 px, et un minimum rigide faisait déborder la page de 10 px
+     — défilement horizontal sur toute la grille. */
+  grid-template-columns: repeat(auto-fill, minmax(min(310px, 100%), 1fr));
   gap: 1.4rem;
 }
 </style>

@@ -54,8 +54,10 @@
   /* Apparitions au défilement. */
   --duree-lente: 600ms;
 
-  /* Une seule valeur pour toutes les sections. */
-  --section-pad: 5.5rem;
+  /* Une seule valeur pour toutes les sections, mais proportionnée à l'écran :
+     5,5rem fixes obligeaient à faire défiler du vide entre chaque section sur
+     un téléphone. */
+  --section-pad: clamp(3rem, 9vw, 5.5rem);
   /* Réutilisée par scroll-padding-top : les ancres ne passent pas dessous. */
   --nav-height: 64px;
 
