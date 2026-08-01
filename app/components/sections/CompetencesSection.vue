@@ -23,12 +23,12 @@ import { competences } from '~/content'
 .skills {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
-  gap: 1.4rem;
+  gap: var(--esp-6);
 }
 .skill {
   position: relative;
   overflow: hidden;
-  padding: 1.6rem 1.7rem;
+  padding: var(--esp-6) var(--esp-6);
 }
 /* Grand chiffre filigrane : signature visuelle en fond. */
 .skill__num {
@@ -47,12 +47,12 @@ import { competences } from '~/content'
 .skill__title {
   position: relative;
   font-size: var(--txt-lg);
-  margin-bottom: 1.3rem;
+  margin-bottom: var(--esp-5);
 }
 .skill__groups {
   display: flex;
   flex-direction: column;
-  gap: 1.1rem;
+  gap: var(--esp-5);
 }
 .skill__label {
   font-size: var(--txt-2xs);
@@ -60,6 +60,6 @@ import { competences } from '~/content'
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  margin: 0 0 0.55rem;
+  margin: 0 0 var(--esp-2);
 }
 </style>

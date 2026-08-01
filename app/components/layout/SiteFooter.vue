@@ -55,7 +55,7 @@ const annee = computed(() => new Date(dateBuild).getFullYear())
 <style scoped>
 .footer {
   border-top: 1px solid var(--line);
-  padding-block: 1.4rem;
+  padding-block: var(--esp-6);
   color: var(--muted);
   font-size: var(--txt-sm);
 }
@@ -63,13 +63,13 @@ const annee = computed(() => new Date(dateBuild).getFullYear())
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 1rem;
+  gap: var(--esp-4);
   flex-wrap: wrap;
 }
 .footer__build {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--esp-2);
   flex-wrap: wrap;
   font-family: var(--font-mono);
   font-size: var(--txt-xs);

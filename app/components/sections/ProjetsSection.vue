@@ -134,10 +134,10 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1.4rem;
+  gap: var(--esp-6);
   flex-wrap: wrap;
-  padding: 1.1rem 1.3rem;
-  margin-bottom: 1.8rem;
+  padding: var(--esp-5) var(--esp-5);
+  margin-bottom: var(--esp-7);
   border: 1px solid var(--line);
   /* Liseré plutôt qu'aplat : un fond coloré jurerait sur des cartes neutres. */
   border-left: 3px solid var(--accent);
@@ -151,7 +151,7 @@ onMounted(() => {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--accent-bright);
-  margin: 0 0 0.3rem;
+  margin: 0 0 var(--esp-1);
 }
 .vitrine__accroche {
   color: var(--ink);
@@ -174,22 +174,22 @@ onMounted(() => {
 
 .filters {
   display: flex;
-  gap: 0.6rem;
+  gap: var(--esp-3);
   flex-wrap: wrap;
-  margin-bottom: 1rem;
+  margin-bottom: var(--esp-4);
 }
 .resultats {
   font-family: var(--font-mono);
   font-size: var(--txt-xs);
   color: var(--muted);
-  margin: 0 0 1.4rem;
+  margin: 0 0 var(--esp-6);
 }
 .filters__btn {
   border: 1.5px solid var(--line);
   background: var(--surface);
   color: var(--muted);
   border-radius: var(--radius-sm);
-  padding: 0.45rem 1.05rem;
+  padding: var(--esp-2) var(--esp-4);
   font-family: var(--font-body);
   font-weight: 500;
   font-size: var(--txt-sm);
@@ -208,6 +208,6 @@ onMounted(() => {
      n'offre que 280 px, et un minimum rigide faisait déborder la page de 10 px
      — défilement horizontal sur toute la grille. */
   grid-template-columns: repeat(auto-fill, minmax(min(310px, 100%), 1fr));
-  gap: 1.4rem;
+  gap: var(--esp-6);
 }
 </style>

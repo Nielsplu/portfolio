@@ -48,8 +48,8 @@ import { parcours } from '~/content'
 }
 .timeline__item {
   position: relative;
-  padding-left: 2.2rem;
-  margin-bottom: 1.8rem;
+  padding-left: var(--esp-7);
+  margin-bottom: var(--esp-7);
 }
 .timeline__dot {
   position: absolute;
@@ -64,15 +64,15 @@ import { parcours } from '~/content'
 .timeline__period {
   display: flex;
   align-items: center;
-  gap: 0.55rem;
+  gap: var(--esp-2);
   flex-wrap: wrap;
   font-family: var(--font-mono);
   font-size: var(--txt-xs);
   color: var(--accent-bright);
-  margin: 0 0 0.4rem;
+  margin: 0 0 var(--esp-2);
 }
 .timeline__encours {
-  padding: 0.1rem 0.5rem;
+  padding: var(--esp-1) var(--esp-2);
   border-radius: 999px;
   background: var(--accent-soft);
   color: var(--accent);
@@ -85,13 +85,13 @@ import { parcours } from '~/content'
 .timeline__item--encours .timeline__dot {
   background: var(--accent);
 }
-.timeline__card { padding: 1.1rem 1.3rem; }
+.timeline__card { padding: var(--esp-5) var(--esp-5); }
 .timeline__card h3 { font-size: var(--txt-lg); }
 .timeline__place {
   color: var(--accent);
   font-weight: 600;
   font-size: var(--txt-sm);
-  margin: 0.2rem 0 0.5rem;
+  margin: var(--esp-1) 0 var(--esp-2);
 }
 .timeline__desc { color: var(--muted); font-size: var(--txt-md); margin: 0; }
 </style>

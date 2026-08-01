@@ -65,21 +65,21 @@ const { baseURL } = useRuntimeConfig().app
 }
 .erreur__titre {
   font-size: var(--txt-2xl);
-  margin-bottom: 0.9rem;
+  margin-bottom: var(--esp-4);
 }
 .erreur__texte {
   color: var(--muted);
-  margin: 0 0 2rem;
+  margin: 0 0 var(--esp-7);
 }
 .erreur__actions {
   display: flex;
   justify-content: center;
-  gap: 0.9rem;
+  gap: var(--esp-4);
   flex-wrap: wrap;
 }
 .erreur__details {
-  margin-top: 2.5rem;
-  padding: 0.9rem 1.1rem;
+  margin-top: var(--esp-8);
+  padding: var(--esp-4) var(--esp-5);
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   background: var(--surface);

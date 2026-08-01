@@ -72,7 +72,7 @@ const idTitre = useId()
   z-index: 1;
   display: grid;
   grid-template-columns: 1.4fr 1fr;
-  gap: 3rem;
+  gap: var(--esp-9);
   align-items: center;
 }
 .hero__status {
@@ -82,8 +82,8 @@ const idTitre = useId()
   color: var(--accent);
   background: var(--accent-soft);
   border-radius: var(--radius-sm);
-  padding: 0.35rem 0.9rem;
-  margin: 0 0 1.1rem;
+  padding: var(--esp-2) var(--esp-4);
+  margin: 0 0 var(--esp-5);
 }
 .hero__name {
   font-size: var(--txt-3xl);
@@ -93,11 +93,11 @@ const idTitre = useId()
   font-family: var(--font-mono);
   color: var(--accent-bright);
   font-size: var(--txt-md);
-  margin: 0.7rem 0 1.1rem;
+  margin: var(--esp-3) 0 var(--esp-5);
 }
-.hero__prompt-symbol { color: var(--muted); margin-right: 0.4rem; }
-.hero__text { color: var(--muted); max-width: 56ch; margin: 0 0 0.9rem; }
-.hero__actions { display: flex; gap: 0.9rem; flex-wrap: wrap; margin-top: 1.6rem; }
+.hero__prompt-symbol { color: var(--muted); margin-right: var(--esp-2); }
+.hero__text { color: var(--muted); max-width: 56ch; margin: 0 0 var(--esp-4); }
+.hero__actions { display: flex; gap: var(--esp-4); flex-wrap: wrap; margin-top: var(--esp-6); }
 /* Taille de la photo, réutilisée par les décors en orbite ci-dessous. */
 .hero__photo-wrap {
   --taille-photo: min(300px, 70vw);

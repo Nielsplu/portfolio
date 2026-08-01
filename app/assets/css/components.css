@@ -20,12 +20,12 @@
 .eyebrow {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: var(--esp-3);
   font-family: var(--font-mono);
   font-size: var(--txt-sm);
   color: var(--muted);
   letter-spacing: 0.04em;
-  margin: 0 0 0.4rem;
+  margin: 0 0 var(--esp-2);
 }
 
 /* Accent sur le numéro seul : sinon la ligne concurrence le titre. */
@@ -55,7 +55,7 @@
 
 .section-title {
   font-size: var(--txt-2xl);
-  margin-bottom: 2.2rem;
+  margin-bottom: var(--esp-7);
 }
 
 /* Cibles tactiles : 44 px est le minimum recommandé pour un doigt. À la souris
@@ -111,8 +111,8 @@
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.7rem 1.3rem;
+  gap: var(--esp-2);
+  padding: var(--esp-3) var(--esp-5);
   border-radius: var(--radius-sm);
   font-weight: 600;
   font-size: var(--txt-md);
