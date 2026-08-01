@@ -51,7 +51,7 @@ const aDuDetail = computed(() =>
 
 <style scoped>
 .project {
-  padding: 1.4rem 1.5rem;
+  padding: var(--esp-6) var(--esp-6);
   display: flex;
   flex-direction: column;
   transition: transform var(--duree-rapide) var(--courbe), box-shadow var(--duree-rapide) var(--courbe);
@@ -66,25 +66,25 @@ const aDuDetail = computed(() =>
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--accent-bright);
-  margin: 0 0 0.4rem;
+  margin: 0 0 var(--esp-2);
 }
-.project__title { font-size: var(--txt-lg); margin-bottom: 0.6rem; }
+.project__title { font-size: var(--txt-lg); margin-bottom: var(--esp-3); }
 .project__desc {
   color: var(--muted);
   font-size: var(--txt-md);
-  margin: 0 0 1rem;
+  margin: 0 0 var(--esp-4);
   flex: 1;
 }
 .project__links {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.6rem;
-  margin-top: 1rem;
+  gap: var(--esp-3);
+  margin-top: var(--esp-4);
 }
 .project__link {
   border: 1.5px solid var(--line);
   border-radius: var(--radius-sm);
-  padding: 0.35rem 0.9rem;
+  padding: var(--esp-2) var(--esp-4);
   font-family: var(--font-mono);
   font-size: var(--txt-xs);
   font-weight: 500;
@@ -113,7 +113,7 @@ const aDuDetail = computed(() =>
 .project__prive {
   border: 1.5px dashed var(--line);
   border-radius: var(--radius-sm);
-  padding: 0.35rem 0.9rem;
+  padding: var(--esp-2) var(--esp-4);
   font-family: var(--font-mono);
   font-size: var(--txt-xs);
   color: var(--muted);

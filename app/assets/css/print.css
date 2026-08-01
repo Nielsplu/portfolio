@@ -48,7 +48,7 @@
   /* Rythme resserré : l'espacement pensé pour le défilement gaspille des pages. */
   .section,
   .hero {
-    padding-block: 1.2rem;
+    padding-block: var(--esp-5);
   }
 
   /* Une carte coupée en deux entre deux pages est illisible. */

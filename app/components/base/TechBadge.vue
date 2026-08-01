@@ -66,8 +66,8 @@ const couleurs = computed(() => {
 .tech__contenu {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.25rem 0.6rem;
+  gap: var(--esp-2);
+  padding: var(--esp-1) var(--esp-3);
   color: inherit;
   text-decoration: none;
 }

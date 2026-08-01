@@ -109,8 +109,8 @@ watch(() => props.projet, async (projet) => {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1.2rem;
+  gap: var(--esp-4);
+  margin-bottom: var(--esp-5);
 }
 .fiche__categorie {
   font-family: var(--font-mono);
@@ -118,7 +118,7 @@ watch(() => props.projet, async (projet) => {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--accent-bright);
-  margin: 0 0 0.35rem;
+  margin: 0 0 var(--esp-2);
 }
 .fiche__titre {
   font-size: var(--txt-xl);
@@ -153,38 +153,38 @@ watch(() => props.projet, async (projet) => {
 }
 .fiche__resume {
   color: var(--muted);
-  margin: 0 0 1.6rem;
+  margin: 0 0 var(--esp-6);
   max-width: 68ch;
 }
-.fiche__bloc { margin-bottom: 1.6rem; }
+.fiche__bloc { margin-bottom: var(--esp-6); }
 .fiche__soustitre {
   font-size: var(--txt-xs);
   font-family: var(--font-mono);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--muted);
-  margin: 0 0 0.7rem;
+  margin: 0 0 var(--esp-3);
 }
 .fiche__liste {
   margin: 0;
-  padding-left: 1.1rem;
+  padding-left: var(--esp-5);
   color: var(--ink);
   font-size: var(--txt-md);
   line-height: 1.6;
 }
-.fiche__liste li { margin-bottom: 0.4rem; }
+.fiche__liste li { margin-bottom: var(--esp-2); }
 .fiche__liste li::marker { color: var(--accent); }
 .fiche__actions {
   display: flex;
-  gap: 0.8rem;
+  gap: var(--esp-3);
   flex-wrap: wrap;
   align-items: center;
-  padding-top: 0.4rem;
+  padding-top: var(--esp-2);
 }
 .fiche__prive {
   border: 1.5px dashed var(--line);
   border-radius: var(--radius-sm);
-  padding: 0.35rem 0.9rem;
+  padding: var(--esp-2) var(--esp-4);
   font-family: var(--font-mono);
   font-size: var(--txt-xs);
   color: var(--muted);
@@ -195,8 +195,8 @@ watch(() => props.projet, async (projet) => {
   display: grid;
   /* Une seule colonne si la place manque : une capture illisible ne prouve rien. */
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.6rem;
+  gap: var(--esp-4);
+  margin-bottom: var(--esp-6);
 }
 .galerie__item { margin: 0; }
 .galerie__image {
@@ -207,7 +207,7 @@ watch(() => props.projet, async (projet) => {
   background: var(--surface-subtle);
 }
 .galerie__legende {
-  margin-top: 0.4rem;
+  margin-top: var(--esp-2);
   font-size: var(--txt-xs);
   color: var(--muted);
 }

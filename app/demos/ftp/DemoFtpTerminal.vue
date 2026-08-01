@@ -412,9 +412,9 @@ onBeforeUnmount(nettoyer)
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.6rem;
+  gap: var(--esp-3);
   flex-wrap: wrap;
-  padding: 0.6rem 1rem;
+  padding: var(--esp-3) var(--esp-4);
   border-bottom: 1px solid rgba(226, 233, 241, 0.12);
 }
 .terminal__titre {
@@ -422,7 +422,7 @@ onBeforeUnmount(nettoyer)
   font-size: var(--txt-xs);
   color: #8fb4d8;
 }
-.terminal__ports { display: flex; gap: 0.4rem; }
+.terminal__ports { display: flex; gap: var(--esp-2); }
 .terminal__port {
   border: 1px solid rgba(143, 180, 216, 0.35);
   background: none;
@@ -430,7 +430,7 @@ onBeforeUnmount(nettoyer)
   font-family: var(--font-mono);
   font-size: var(--txt-2xs);
   border-radius: var(--radius-sm);
-  padding: 0.2rem 0.55rem;
+  padding: var(--esp-1) var(--esp-2);
   cursor: pointer;
 }
 .terminal__port--actif {
@@ -444,13 +444,13 @@ onBeforeUnmount(nettoyer)
   color: #8fb4d8;
   font-size: var(--txt-base);
   cursor: pointer;
-  padding: 0.2rem 0.4rem;
+  padding: var(--esp-1) var(--esp-2);
 }
 .terminal__fermer:hover { color: #fff; }
 .terminal__sortie {
   height: min(46vh, 380px);
   overflow-y: auto;
-  padding: 0.9rem 1rem;
+  padding: var(--esp-4) var(--esp-4);
   cursor: text;
 }
 .terminal__ligne {
@@ -466,9 +466,9 @@ onBeforeUnmount(nettoyer)
 .terminal__ligne--srv { color: #f6a96e; }
 .terminal__invite {
   display: flex;
-  gap: 0.5rem;
+  gap: var(--esp-2);
   align-items: center;
-  padding: 0.55rem 1rem;
+  padding: var(--esp-2) var(--esp-4);
   border-top: 1px solid rgba(226, 233, 241, 0.12);
 }
 .terminal__prompt {
@@ -489,7 +489,7 @@ onBeforeUnmount(nettoyer)
 .terminal__champ::placeholder { color: rgba(215, 226, 236, 0.35); }
 .terminal__note {
   margin: 0;
-  padding: 0.55rem 1rem 0.7rem;
+  padding: var(--esp-2) var(--esp-4) var(--esp-3);
   font-size: var(--txt-2xs);
   color: rgba(215, 226, 236, 0.55);
 }

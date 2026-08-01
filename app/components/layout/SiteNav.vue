@@ -99,13 +99,13 @@ onMounted(() => {
 .nav__inner {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: var(--esp-6);
   min-height: var(--nav-height);
 }
 .nav__actions {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
+  gap: var(--esp-3);
 }
 .nav__logo {
   /* Pousse menu et actions à droite ; `space-between` centrerait le menu. */
@@ -120,7 +120,7 @@ onMounted(() => {
 .nav__links {
   display: flex;
   align-items: center;
-  gap: 1.6rem;
+  gap: var(--esp-6);
   list-style: none;
   margin: 0;
   padding: 0;
@@ -153,7 +153,7 @@ onMounted(() => {
 @media (max-width: 720px) {
   .nav__links a:not(.btn)::after { display: none; }
 }
-.nav__cv { padding: 0.4rem 1rem; }
+.nav__cv { padding: var(--esp-2) var(--esp-4); }
 .nav__burger {
   display: none;
   flex-direction: column;
@@ -177,7 +177,7 @@ onMounted(() => {
     flex-direction: column;
     background: var(--surface);
     border-bottom: 1px solid var(--line);
-    padding: 1.2rem;
+    padding: var(--esp-5);
     display: none;
   }
   .nav__links--open { display: flex; }

@@ -33,7 +33,7 @@ const entrees = computed(() => props.items.map(normaliserItem))
 .tech-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.45rem;
+  gap: var(--esp-2);
   list-style: none;
   margin: 0;
   padding: 0;

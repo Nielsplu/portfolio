@@ -70,7 +70,7 @@ h3 {
   z-index: 100;
   background: var(--accent);
   color: var(--on-accent);
-  padding: 0.6rem 1rem;
+  padding: var(--esp-3) var(--esp-4);
   border-radius: var(--radius-sm);
   text-decoration: none;
   font-weight: 600;

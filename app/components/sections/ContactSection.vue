@@ -110,8 +110,8 @@ const liensSecondaires = computed(() => [
   padding: 3rem clamp(1.5rem, 5vw, 3.5rem);
   text-align: center;
 }
-.contact__title { margin-bottom: 0.8rem; }
-.contact__text { color: var(--muted); margin: 0 0 2rem; }
+.contact__title { margin-bottom: var(--esp-3); }
+.contact__text { color: var(--muted); margin: 0 0 var(--esp-7); }
 
 /* ---- Adresse e-mail : l'élément central ---- */
 .adresse {
@@ -140,10 +140,10 @@ const liensSecondaires = computed(() => [
 .adresse__lien {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
+  gap: var(--esp-3);
   flex: 1;
   min-width: 0;
-  padding: 0.85rem 1rem;
+  padding: var(--esp-4) var(--esp-4);
   color: var(--ink);
   text-decoration: none;
   transition: color var(--duree-rapide) var(--courbe);
@@ -204,16 +204,16 @@ const liensSecondaires = computed(() => [
 .secondaires {
   display: flex;
   justify-content: center;
-  gap: 1.6rem;
+  gap: var(--esp-6);
   flex-wrap: wrap;
   list-style: none;
-  margin: 1.6rem 0 0;
+  margin: var(--esp-6) 0 0;
   padding: 0;
 }
 .secondaires__lien {
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: var(--esp-1);
   font-size: var(--txt-sm);
   font-weight: 500;
   color: var(--muted);
@@ -232,10 +232,10 @@ const liensSecondaires = computed(() => [
   font-family: var(--font-mono);
   font-size: var(--txt-xs);
   color: var(--muted);
-  margin: 2rem 0 0;
+  margin: var(--esp-7) 0 0;
 }
 
 @media (max-width: 420px) {
-  .secondaires { gap: 1.1rem; }
+  .secondaires { gap: var(--esp-5); }
 }
 </style>
