@@ -91,7 +91,11 @@ const { dialogue, attributs } = useModale({
   background: rgb(0 0 0 / 0.55);
   backdrop-filter: blur(3px);
 }
+/* Même nom que la carte d'origine : le navigateur déplie l'une en l'autre.
+   Sans conflit d'unicité, la fiche n'étant dans le DOM que lorsque la carte a
+   déjà rendu le nom. */
 .fiche__corps {
+  view-transition-name: fiche-projet;
   max-height: inherit;
   overflow-y: auto;
   padding: clamp(1.4rem, 4vw, 2.2rem);

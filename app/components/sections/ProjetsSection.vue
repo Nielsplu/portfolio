@@ -52,19 +52,38 @@ function synchroniser() {
   demoOuverte.value = demoDepuisUrl()
 }
 
-function ouvrirFiche(projet: Projet) {
-  // pushState et non le routeur, qui ferait défiler vers une ancre inexistante.
-  history.pushState(null, '', PREFIXE + versSlug(projet.titre))
-  projetOuvert.value = projet
+// Carte que la fenêtre doit prolonger visuellement. Un `view-transition-name`
+// doit être unique dans la page à tout instant : la carte le porte tant que la
+// fiche est fermée, la fenêtre le reprend dès qu'elle s'ouvre.
+const carteMorphee = ref<string | null>(null)
+
+/** Vrai pour la seule carte que la fiche doit prolonger, fiche encore fermée. */
+function estMorphee(projet: Projet): boolean {
+  return carteMorphee.value === projet.titre && !projetOuvert.value
 }
 
-function fermerFiche() {
-  projetOuvert.value = null
-  // replaceState : Précédent ramène avant l'ouverture, sans traverser une
-  // pile de fermetures.
-  if (window.location.hash.startsWith(PREFIXE)) {
-    history.replaceState(null, '', '#projets')
-  }
+async function ouvrirFiche(projet: Projet) {
+  carteMorphee.value = projet.titre
+  // La carte doit porter le nom avant que l'instantané « avant » soit pris.
+  await nextTick()
+
+  await transitionner(() => {
+    // pushState et non le routeur, qui ferait défiler vers une ancre inexistante.
+    history.pushState(null, '', PREFIXE + versSlug(projet.titre))
+    projetOuvert.value = projet
+  })
+}
+
+async function fermerFiche() {
+  await transitionner(() => {
+    projetOuvert.value = null
+    // replaceState : Précédent ramène avant l'ouverture, sans traverser une
+    // pile de fermetures.
+    if (window.location.hash.startsWith(PREFIXE)) {
+      history.replaceState(null, '', '#projets')
+    }
+  })
+  carteMorphee.value = null
 }
 
 function ouvrirDemo(id: DemoId | undefined) {
@@ -136,6 +155,7 @@ onMounted(() => {
         :key="p.titre"
         v-reveal="i * 60"
         :projet="p"
+        :morphe="estMorphee(p)"
         @ouvrir-demo="ouvrirDemo(p.demo)"
         @ouvrir-detail="ouvrirFiche(p)"
       />
