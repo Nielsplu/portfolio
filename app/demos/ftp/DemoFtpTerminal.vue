@@ -14,6 +14,8 @@ const lignes = ref<{ texte: string, classe?: string }[]>([])
 const saisie = ref('')
 const connecte = ref(false)
 const chargement = ref(false)
+/** Avancement du téléchargement du binaire, `null` si la taille est inconnue. */
+const progression = ref<number | null>(null)
 // 'reel' : le vrai client/serveur Go tournent en WebAssembly.
 // 'simulation' : repli TypeScript si le wasm ne charge pas.
 const mode = ref<'reel' | 'simulation'>('reel')
@@ -195,7 +197,20 @@ async function ouvrirSession() {
   chargement.value = true
   try {
     ecrire('Chargement du binaire Go (4,4 Mo, WebAssembly)…', 'terminal__ligne--sys')
-    await demarrerFtpWasm(baseURL)
+    // La ligne est réécrite à chaque morceau reçu plutôt que dupliquée : le
+    // terminal afficherait sinon des centaines de lignes de progression.
+    const ligneChargement = lignes.value.length - 1
+    await demarrerFtpWasm(baseURL, (fraction, recus, total) => {
+      progression.value = fraction
+      const mo = (octets: number) => (octets / 1048576).toFixed(1)
+      const ligne = lignes.value[ligneChargement]
+      if (!ligne) return
+      ligne.texte = fraction === null
+        // Sans Content-Length, on ne peut annoncer qu'un volume reçu.
+        ? `Chargement du binaire Go… ${mo(recus)} Mo`
+        : `Chargement du binaire Go… ${Math.round(fraction * 100)} % (${mo(recus)} / ${mo(total!)} Mo)`
+    })
+    progression.value = null
     mode.value = 'reel'
     ecrire('Serveur FTP démarré dans la page — code réel de Nielsplu/ftp-go.', 'terminal__ligne--sys')
     ecrire('Tapez "help" pour la liste des commandes.', 'terminal__ligne--sys')
@@ -361,6 +376,25 @@ onBeforeUnmount(nettoyer)
       <button class="terminal__fermer" aria-label="Fermer la démo" @click="fermer">✕</button>
     </div>
 
+    <!-- Une ligne de texte ne suffisait pas : sur une connexion mobile, rien
+         ne distinguait un téléchargement lent d'un blocage. La barre est
+         indéterminée quand le serveur n'annonce pas la taille. -->
+    <div
+      v-if="chargement"
+      class="terminal__progression"
+      role="progressbar"
+      aria-label="Chargement du binaire WebAssembly"
+      :aria-valuenow="progression === null ? undefined : Math.round(progression * 100)"
+      :aria-valuemin="progression === null ? undefined : 0"
+      :aria-valuemax="progression === null ? undefined : 100"
+    >
+      <div
+        class="terminal__progression-barre"
+        :class="{ 'terminal__progression-barre--indeterminee': progression === null }"
+        :style="progression === null ? undefined : { width: `${progression * 100}%` }"
+      />
+    </div>
+
     <div ref="sortie" class="terminal__sortie" @click="champ?.focus()">
       <p v-for="(l, i) in lignes" :key="i" class="terminal__ligne" :class="l.classe">{{ l.texte }}</p>
     </div>
@@ -447,6 +481,30 @@ onBeforeUnmount(nettoyer)
   padding: var(--esp-1) var(--esp-2);
 }
 .terminal__fermer:hover { color: #fff; }
+
+.terminal__progression {
+  height: 2px;
+  background: rgba(143, 180, 216, 0.18);
+  overflow: hidden;
+}
+.terminal__progression-barre {
+  height: 100%;
+  width: 0;
+  background: #8fb4d8;
+  transition: width var(--duree-rapide) linear;
+}
+/* Taille inconnue : un va-et-vient plutôt qu'une largeur mensongère. */
+.terminal__progression-barre--indeterminee {
+  width: 35%;
+  animation: va-et-vient 1.1s ease-in-out infinite;
+}
+@keyframes va-et-vient {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(340%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .terminal__progression-barre--indeterminee { animation: none; width: 100%; opacity: 0.5; }
+}
 .terminal__sortie {
   height: min(46vh, 380px);
   overflow-y: auto;
