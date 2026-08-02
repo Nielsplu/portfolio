@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import type { EntreesDossier } from '~/demos/ftp/completion'
 import type { EtatDemo, Telechargement } from '~/demos/ftp/simulation'
-import { SEUIL_GROS_FICHIER, creerEtat, executerCommande, formatTaille, invite } from '~/demos/ftp/simulation'
-import { connecterFtpWasm, deconnecterFtpWasm, demarrerFtpWasm, lireFichierVirtuel } from '~/demos/ftp/wasm'
+import { COMMANDES_ADMIN, COMMANDES_CLIENT, COMMANDES_SIMULATION, completer } from '~/demos/ftp/completion'
+import { SEUIL_GROS_FICHIER, creerEtat, entreesPourCompletion, executerCommande, formatTaille, invite } from '~/demos/ftp/simulation'
+import { connecterFtpWasm, deconnecterFtpWasm, demarrerFtpWasm, lireFichierVirtuel, listerDossierVirtuel, listerMasquesVirtuels } from '~/demos/ftp/wasm'
 
 const props = defineProps<{ ouvert: boolean }>()
 const emit = defineEmits<{ 'update:ouvert': [valeur: boolean] }>()
@@ -89,6 +91,52 @@ function historiqueSuivant() {
 }
 
 // ------------------------------------------------------------------
+// Complétion Tab : commandes, puis contenu du dossier courant.
+// ------------------------------------------------------------------
+
+/**
+ * Contenu du dossier courant vu par le serveur. En mode réel il est lu dans le
+ * FS virtuel que pilote le binaire Go, donc il suit les Hide et Reveal déjà
+ * passés dans la session.
+ */
+function entreesDuDossier(): EntreesDossier {
+  if (mode.value === 'simulation') return entreesPourCompletion(etatSimulation)
+
+  // Le serveur exprime son dossier courant relativement à data/ (vide à la
+  // racine, puis « /important ») alors que le FS virtuel le monte sous /data.
+  const relatif = cheminCourant.value
+  const { dossiers, fichiers } = listerDossierVirtuel(`/data${relatif}`)
+  // hiddenFile.txt emploie la même origine : on ne retient que les entrées
+  // directes du dossier courant.
+  const prefixe = `${relatif}/`
+  const masques = listerMasquesVirtuels()
+    .filter(chemin => chemin.startsWith(prefixe))
+    .map(chemin => chemin.slice(prefixe.length))
+    .filter(nom => nom !== '' && !nom.includes('/'))
+
+  const visible = (nom: string) => !masques.includes(nom)
+  return { dossiers: dossiers.filter(visible), fichiers: fichiers.filter(visible), masques }
+}
+
+function commandesDisponibles(): readonly string[] {
+  if (mode.value === 'simulation') return COMMANDES_SIMULATION
+  return port.value === '4444' ? COMMANDES_ADMIN : COMMANDES_CLIENT
+}
+
+// Tab reste la touche de navigation clavier : on ne la détourne que dans une
+// session ouverte, et jamais combinée à Maj — sinon on ne pourrait plus sortir
+// du champ pour atteindre les boutons de la fenêtre.
+function completerSaisie(evenement: KeyboardEvent) {
+  if (chargement.value || !connecte.value) return
+  evenement.preventDefault()
+
+  const { saisie: complete, candidats } = completer(saisie.value, entreesDuDossier(), commandesDisponibles())
+  saisie.value = complete
+  // Comme un shell : la liste n'apparaît qu'au Tab qui n'ajoute plus rien.
+  if (candidats.length > 0) ecrire(candidats.join('  '))
+}
+
+// ------------------------------------------------------------------
 // Mode réel : pilotage du binaire wasm compilé depuis Nielsplu/ftp-go.
 // ------------------------------------------------------------------
 
@@ -130,6 +178,7 @@ function aideReelle() {
     for (const l of [...communes.slice(0, 2), '  Hide <fichier>    masque un fichier côté serveur', '  Reveal <fichier>  ré-affiche un fichier masqué', '  Terminate         arrêt gracieux du serveur (Stoppers)', communes[2]!]) ecrire(l)
     ecrire('Port client (3333) : Get.', 'terminal__ligne--sys')
   }
+  ecrire('Tab complète la commande ou le nom de fichier, ↑ et ↓ rappellent l\'historique.', 'terminal__ligne--sys')
 }
 
 function connecterReel() {
@@ -416,6 +465,7 @@ onBeforeUnmount(nettoyer)
         :placeholder="connecte ? 'Entrez une commande' : 'Entrée pour se reconnecter'"
         @keydown.up.prevent="historiquePrecedent"
         @keydown.down.prevent="historiqueSuivant"
+        @keydown.tab.exact="completerSaisie"
       >
     </form>
 

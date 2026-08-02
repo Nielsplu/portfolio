@@ -104,6 +104,27 @@ export function lireFichierVirtuel(chemin: string): Uint8Array | undefined {
   return noeud.donnees.subarray(0, noeud.taille)
 }
 
+/** Noms des entrées d'un dossier du FS virtuel, séparés dossiers / fichiers. */
+export function listerDossierVirtuel(chemin: string): { dossiers: string[], fichiers: string[] } {
+  const noeud = trouver(chemin)
+  const dossiers: string[] = []
+  const fichiers: string[] = []
+  if (!noeud?.dossier) return { dossiers, fichiers }
+  for (const [nom, enfant] of noeud.enfants) (enfant.dossier ? dossiers : fichiers).push(nom)
+  return { dossiers, fichiers }
+}
+
+/**
+ * Chemins masqués côté serveur, relatifs à `data/`. Lus dans hiddenFile.txt,
+ * le fichier que le vrai serveur Go relit à chaque Hide / Reveal : la liste
+ * reflète donc l'état courant et non celui du démarrage.
+ */
+export function listerMasquesVirtuels(): string[] {
+  const brut = lireFichierVirtuel('/hiddenFile.txt')
+  if (!brut) return []
+  return new TextDecoder().decode(brut).split(/\r?\n/).filter(Boolean)
+}
+
 function lireSynthetique(destination: Uint8Array, position: number, longueur: number): void {
   for (let i = 0; i < longueur; i++)
     destination[i] = MOTIF_SYNTHETIQUE[(position + i) % MOTIF_SYNTHETIQUE.length]!

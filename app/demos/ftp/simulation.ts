@@ -4,6 +4,8 @@
 // Module pur (aucune I/O) : l'affichage, les téléchargements et le timeout
 // d'inactivité sont gérés par le composant DemoFtpTerminal.
 
+import type { EntreesDossier } from '~/demos/ftp/completion'
+
 export type EntreeDemo =
   | { type: 'fichier', taille: number, contenu?: string, cache?: boolean }
   | { type: 'dossier', enfants: Record<string, EntreeDemo> }
@@ -38,6 +40,8 @@ export const AIDE = [
   '  Reveal <fichier>  ré-affiche un fichier masqué',
   '  End               ferme la session',
   '  Terminate         arrête le serveur (arrêt gracieux via les Stoppers)',
+  '',
+  'Tab complète la commande ou le nom de fichier, ↑ et ↓ rappellent l\'historique.',
 ]
 
 // Copie de l'arborescence data/ réellement servie par le binaire de la
@@ -87,6 +91,17 @@ function dossierCourant(etat: EtatDemo): Extract<EntreeDemo, { type: 'dossier' }
 
 export function invite(etat: EtatDemo): string {
   return `data/${etat.chemin.map(s => `${s}/`).join('')}`
+}
+
+/** Contenu du dossier courant, réparti pour la complétion Tab. */
+export function entreesPourCompletion(etat: EtatDemo): EntreesDossier {
+  const entrees: EntreesDossier = { dossiers: [], fichiers: [], masques: [] }
+  for (const [nom, e] of Object.entries(dossierCourant(etat).enfants)) {
+    if (e.type === 'dossier') entrees.dossiers.push(nom)
+    else if (e.cache) entrees.masques.push(nom)
+    else entrees.fichiers.push(nom)
+  }
+  return entrees
 }
 
 export function executerCommande(etat: EtatDemo, saisie: string): ResultatCommande {
