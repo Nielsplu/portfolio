@@ -50,6 +50,35 @@ describe('telechargerAvecProgression', () => {
     expect(fractions).toEqual([null, null])
   })
 
+  it('ignore Content-Length quand la réponse est compressée', async () => {
+    // GitHub Pages sert le binaire en gzip : Content-Length porte la taille
+    // transférée (1,2 Mo) alors que le flux livre du décompressé (4,4 Mo).
+    simulerFetch(reponseEnFlux([[1, 2, 3, 4]], { 'content-length': '2', 'content-encoding': 'gzip' }))
+    const releves: Array<[number | null, number, number | null]> = []
+
+    await telechargerAvecProgression('/demos/ftp/ftp.wasm', (f, recus, total) => releves.push([f, recus, total]))
+
+    expect(releves).toEqual([[null, 4, null]])
+  })
+
+  it('accepte Content-Length quand l\'encodage est identity', async () => {
+    simulerFetch(reponseEnFlux([[1, 2]], { 'content-length': '4', 'content-encoding': 'identity' }))
+    const fractions: Array<number | null> = []
+
+    await telechargerAvecProgression('/demos/ftp/ftp.wasm', f => fractions.push(f))
+
+    expect(fractions).toEqual([0.5])
+  })
+
+  it('ignore un Content-Length inexploitable', async () => {
+    simulerFetch(reponseEnFlux([[1, 2]], { 'content-length': '0' }))
+    const fractions: Array<number | null> = []
+
+    await telechargerAvecProgression('/demos/ftp/ftp.wasm', f => fractions.push(f))
+
+    expect(fractions).toEqual([null])
+  })
+
   it('plafonne la fraction à 1 si le serveur annonce moins qu\'il n\'envoie', async () => {
     simulerFetch(reponseEnFlux([[1, 2, 3, 4]], { 'content-length': '2' }))
     const fractions: Array<number | null> = []

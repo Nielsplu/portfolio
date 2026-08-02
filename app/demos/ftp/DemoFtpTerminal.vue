@@ -205,10 +205,11 @@ async function ouvrirSession() {
       const mo = (octets: number) => (octets / 1048576).toFixed(1)
       const ligne = lignes.value[ligneChargement]
       if (!ligne) return
+      // Le gabarit d'annonce est conservé : réécrire la ligne entière ferait
+      // perdre la taille de référence, seul repère quand elle est indéterminée.
       ligne.texte = fraction === null
-        // Sans Content-Length, on ne peut annoncer qu'un volume reçu.
-        ? `Chargement du binaire Go… ${mo(recus)} Mo`
-        : `Chargement du binaire Go… ${Math.round(fraction * 100)} % (${mo(recus)} / ${mo(total!)} Mo)`
+        ? `Chargement du binaire Go (4,4 Mo, WebAssembly)… ${mo(recus)} Mo`
+        : `Chargement du binaire Go (WebAssembly)… ${Math.round(fraction * 100)} % (${mo(recus)} / ${mo(total!)} Mo)`
     })
     progression.value = null
     mode.value = 'reel'
