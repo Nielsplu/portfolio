@@ -23,9 +23,10 @@ const projetDemo = computed(() => projets.find(p => p.demo && p.demoAccroche))
 // dans le DOM.
 const projetOuvert = ref<Projet | null>(null)
 
-// Fiches partageables par URL. Le préfixe évite toute collision avec les
-// ancres de section, qui sont de simples `#projets`.
+// Fiches et démos partageables par URL. Les préfixes évitent toute collision
+// avec les ancres de section, qui sont de simples `#projets`.
 const PREFIXE = '#projet/'
+const PREFIXE_DEMO = '#demo/'
 
 /** Projet désigné par l'adresse courante, s'il y en a un. */
 function projetDepuisUrl(): Projet | null {
@@ -36,9 +37,19 @@ function projetDepuisUrl(): Projet | null {
   return projets.find(p => versSlug(p.titre) === slug) ?? null
 }
 
+/** Démo désignée par l'adresse courante, si elle existe au registre. */
+function demoDepuisUrl(): DemoId | null {
+  if (import.meta.server) return null
+  const hash = window.location.hash
+  if (!hash.startsWith(PREFIXE_DEMO)) return null
+  const id = hash.slice(PREFIXE_DEMO.length)
+  return id in demos ? id as DemoId : null
+}
+
 /** Aligne l'état sur l'adresse, au chargement comme au Précédent. */
 function synchroniser() {
   projetOuvert.value = projetDepuisUrl()
+  demoOuverte.value = demoDepuisUrl()
 }
 
 function ouvrirFiche(projet: Projet) {
@@ -56,10 +67,23 @@ function fermerFiche() {
   }
 }
 
+function ouvrirDemo(id: DemoId | undefined) {
+  if (!id) return
+  history.pushState(null, '', PREFIXE_DEMO + id)
+  demoOuverte.value = id
+}
+
+function fermerDemo() {
+  demoOuverte.value = null
+  if (window.location.hash.startsWith(PREFIXE_DEMO)) {
+    history.replaceState(null, '', '#projets')
+  }
+}
+
 onMounted(() => {
   synchroniser()
-  // Lien partagé : la section doit être à l'écran derrière la fiche.
-  if (projetOuvert.value) {
+  // Lien partagé : la section doit être à l'écran derrière la fenêtre.
+  if (projetOuvert.value || demoOuverte.value) {
     document.getElementById('projets')?.scrollIntoView({ block: 'start' })
   }
   window.addEventListener('hashchange', synchroniser)
@@ -79,7 +103,7 @@ onMounted(() => {
       <button
         class="btn btn--primary vitrine__action"
         type="button"
-        @click="demoOuverte = projetDemo.demo ?? null"
+        @click="ouvrirDemo(projetDemo.demo)"
       >
         <span aria-hidden="true">▶</span>
         Lancer la démo
@@ -112,7 +136,7 @@ onMounted(() => {
         :key="p.titre"
         v-reveal="i * 60"
         :projet="p"
-        @ouvrir-demo="demoOuverte = p.demo ?? null"
+        @ouvrir-demo="ouvrirDemo(p.demo)"
         @ouvrir-detail="ouvrirFiche(p)"
       />
     </div>
@@ -123,7 +147,7 @@ onMounted(() => {
       :is="demos[demoOuverte]"
       v-if="demoOuverte"
       :ouvert="true"
-      @update:ouvert="(valeur: boolean) => { if (!valeur) demoOuverte = null }"
+      @update:ouvert="(valeur: boolean) => { if (!valeur) fermerDemo() }"
     />
   </BaseSection>
 </template>
