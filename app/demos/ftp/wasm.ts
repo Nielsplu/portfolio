@@ -6,6 +6,9 @@
 // fichiers du repo, et les écritures du client dans downloads/ restent
 // récupérables pour déclencher un téléchargement navigateur.
 
+import type { SurProgression } from '~/utils/telechargement'
+import { telechargerAvecProgression } from '~/utils/telechargement'
+
 interface FichierManifeste {
   chemin: string
   b64?: string
@@ -362,7 +365,7 @@ function chargerScript(url: string): Promise<void> {
 }
 
 /** Charge le manifeste + le binaire wasm, démarre le serveur Go. Idempotent. */
-export async function demarrerFtpWasm(base: string): Promise<PontFtp> {
+export async function demarrerFtpWasm(base: string, surProgression?: SurProgression): Promise<PontFtp> {
   if (window.__ftpgo?.ready) return window.__ftpgo
 
   const reponseManifeste = await fetch(`${base}demos/ftp/data.json`)
@@ -372,9 +375,8 @@ export async function demarrerFtpWasm(base: string): Promise<PontFtp> {
 
   await chargerScript(`${base}demos/ftp/wasm_exec.js`)
   const go = new window.Go!()
-  const reponseWasm = await fetch(`${base}demos/ftp/ftp.wasm`)
-  if (!reponseWasm.ok) throw new Error('binaire wasm introuvable')
-  const { instance } = await WebAssembly.instantiate(await reponseWasm.arrayBuffer(), go.importObject)
+  const binaire = await telechargerAvecProgression(`${base}demos/ftp/ftp.wasm`, surProgression)
+  const { instance } = await WebAssembly.instantiate(binaire, go.importObject)
   void go.run(instance)
 
   for (let essai = 0; essai < 100; essai++) {

@@ -51,10 +51,35 @@ const aDuDetail = computed(() =>
 
 <style scoped>
 .project {
+  position: relative;
   padding: var(--esp-6) var(--esp-6);
   display: flex;
   flex-direction: column;
   transition: transform var(--duree-rapide) var(--courbe), box-shadow var(--duree-rapide) var(--courbe);
+}
+
+/* Carte entièrement cliquable : on attend de pouvoir taper n'importe où, pas
+   seulement sur un petit bouton — au pouce surtout.
+   Le bouton « En savoir plus » projette un calque sur toute la carte plutôt que
+   d'envelopper celle-ci dans un élément interactif : imbriquer les liens de
+   projet et le bouton de démo dans un autre bouton serait invalide, et les
+   rendrait inatteignables au clavier. */
+.project:has(.project__link--detail) { cursor: pointer; }
+
+.project__link--detail::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* Les autres actions repassent au-dessus du calque, sinon le clic sur « Code »
+   ouvrirait la fiche au lieu du dépôt. */
+.project__link:not(.project__link--detail),
+.project__prive,
+:deep(.tech--lien) {
+  position: relative;
+  z-index: 2;
 }
 .project:hover {
   transform: translateY(-3px);
