@@ -84,6 +84,7 @@
      faut aussi la largeur. Une croix de 26 px se rate une fois sur deux. */
   .nav__burger,
   .theme-switch,
+  .nav__palette,
   .fiche__fermer,
   .terminal__fermer {
     min-width: 44px;

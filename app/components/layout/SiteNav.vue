@@ -19,11 +19,20 @@ function surEchap() {
   burger.value?.focus()
 }
 
+const { ouvrir: ouvrirPalette } = usePalette()
+
+// Libellé du raccourci. « Ctrl K » au premier rendu des deux côtés, corrigé
+// après montage sur Mac : détecter la plateforme pendant le rendu créerait un
+// écart d'hydratation.
+const raccourci = ref('Ctrl K')
+
 // La barre ne prend fond, trait et ombre qu'au défilement : en haut de page
 // elle se fond dans le hero.
 const defile = ref(false)
 
 onMounted(() => {
+  if (/Mac|iPhone|iPad/.test(navigator.platform)) raccourci.value = '⌘ K'
+
   const surDefilement = () => {
     defile.value = window.scrollY > 8
   }
@@ -53,6 +62,13 @@ onMounted(() => {
       </ul>
       <!-- Hors du menu : restent accessibles quand il est replié. -->
       <div class="nav__actions">
+        <button class="nav__palette" type="button" :aria-keyshortcuts="raccourci" @click="ouvrirPalette">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" />
+          </svg>
+          <span class="sr-only">Ouvrir la palette de commandes</span>
+          <kbd class="nav__raccourci" aria-hidden="true">{{ raccourci }}</kbd>
+        </button>
         <ThemeToggle />
         <button
           ref="burger"
@@ -106,6 +122,45 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: var(--esp-3);
+}
+
+/* Un raccourci que personne ne voit n'existe pas : le bouton ouvre la palette
+   et affiche du même coup la combinaison de touches. */
+.nav__palette {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  padding: var(--esp-2) var(--esp-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+  transition: border-color var(--duree-rapide) var(--courbe), color var(--duree-rapide) var(--courbe);
+}
+.nav__palette:hover {
+  border-color: var(--accent-bright);
+  color: var(--accent);
+}
+.nav__palette svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+.nav__raccourci {
+  font-family: var(--font-mono);
+  font-size: var(--txt-2xs);
+  letter-spacing: 0.02em;
+  color: inherit;
+}
+/* Sous 640 px la barre est déjà chargée : on ne garde que la loupe, le
+   raccourci n'ayant de toute façon pas de sens sans clavier. */
+@media (max-width: 640px) {
+  .nav__raccourci { display: none; }
+  .nav__palette { padding: var(--esp-2); }
 }
 .nav__logo {
   /* Pousse menu et actions à droite ; `space-between` centrerait le menu. */
