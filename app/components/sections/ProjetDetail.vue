@@ -6,23 +6,14 @@ import type { Projet } from '~/types/content'
 const props = defineProps<{ projet: Projet | null }>()
 const emit = defineEmits<{ fermer: [] }>()
 
-const dialogue = ref<HTMLDialogElement>()
 const corps = ref<HTMLElement>()
-const { verrouiller } = useVerrouDefilement()
 const idTitre = useId()
 
-watch(() => props.projet, async (projet) => {
-  if (projet) {
-    dialogue.value?.showModal()
-    verrouiller(true)
-    await nextTick()
-    // Sinon la fiche garde la position de défilement du projet précédent.
-    corps.value?.scrollTo({ top: 0 })
-  }
-  else {
-    dialogue.value?.close()
-    verrouiller(false)
-  }
+const { dialogue, attributs } = useModale({
+  ouverte: () => props.projet !== null,
+  fermer: () => emit('fermer'),
+  // Sinon la fiche garde la position de défilement du projet précédent.
+  surOuverture: () => corps.value?.scrollTo({ top: 0 }),
 })
 </script>
 
@@ -31,7 +22,7 @@ watch(() => props.projet, async (projet) => {
     ref="dialogue"
     class="fiche"
     :aria-labelledby="idTitre"
-    @close="emit('fermer')"
+    v-bind="attributs"
   >
     <div v-if="projet" ref="corps" class="fiche__corps">
       <header class="fiche__entete">
