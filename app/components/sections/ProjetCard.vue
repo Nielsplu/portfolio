@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import type { Projet } from '~/types/content'
 
-const props = defineProps<{ projet: Projet }>()
+const props = defineProps<{
+  projet: Projet
+  /** La section le pose sur la seule carte qui se déplie en fiche. */
+  morphe?: boolean
+}>()
 // Démo et fiche sont montées par la section parente (voir ProjetsSection).
 defineEmits<{ 'ouvrir-demo': [], 'ouvrir-detail': [] }>()
 
@@ -13,7 +17,10 @@ const aDuDetail = computed(() =>
 
 <template>
   <!-- `reveal` dans le template et non injecté : voir plugins/reveal.ts. -->
-  <article class="reveal card project">
+  <!-- Classe et non `:style` : la directive `v-reveal` écrit dans l'attribut
+       `style` au rendu serveur, qu'une liaison réactive écraserait — les
+       délais d'apparition en cascade disparaissaient à l'hydratation. -->
+  <article class="reveal card project" :class="{ 'project--morphe': morphe }">
     <p class="project__kind">{{ projet.sousTitre }}</p>
     <h3 class="project__title">{{ projet.titre }}</h3>
     <p class="project__desc">{{ projet.description }}</p>
@@ -50,6 +57,11 @@ const aDuDetail = computed(() =>
 </template>
 
 <style scoped>
+/* Relie la carte à la fiche pendant la transition de vue. Le nom doit rester
+   unique dans la page : la section ne le pose que sur une carte à la fois, et
+   seulement tant que la fiche est fermée. */
+.project--morphe { view-transition-name: fiche-projet; }
+
 .project {
   position: relative;
   padding: var(--esp-6) var(--esp-6);

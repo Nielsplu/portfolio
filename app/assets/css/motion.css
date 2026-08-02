@@ -32,3 +32,31 @@
     transition: none;
   }
 }
+
+/* ---- Transitions de vue (fiche projet) ----
+   La carte se déplie en fenêtre au lieu d'apparaître en fondu. Le navigateur
+   relie les deux par leur `view-transition-name`, posé côté composant.
+   Voir composables/useTransitionVue.ts. */
+::view-transition-old(fiche-projet),
+::view-transition-new(fiche-projet) {
+  /* Hauteur libre : les deux blocs n'ont pas le même contenu, une hauteur
+     imposée écraserait le plus long. */
+  height: 100%;
+  animation-duration: var(--duree-moyenne);
+  animation-timing-function: var(--courbe);
+}
+
+/* Le reste de la page ne doit pas clignoter : seul le bloc nommé bouge. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--duree-rapide);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Filet : la transition est déjà court-circuitée en amont. */
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
