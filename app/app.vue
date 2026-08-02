@@ -72,5 +72,6 @@ useHead({
     <NuxtPage id="contenu" />
     <SiteFooter />
     <RetourHaut />
+    <TechSprite />
   </div>
 </template>

@@ -40,8 +40,9 @@ const couleurs = computed(() => {
       } : {}"
       class="tech__contenu"
     >
-      <svg v-if="icon" class="tech__logo" viewBox="0 0 24 24" aria-hidden="true">
-        <path :d="icon.path" />
+      <!-- Le tracé vit une seule fois dans TechSprite, monté par app.vue. -->
+      <svg v-if="icon" class="tech__logo" aria-hidden="true" focusable="false">
+        <use :href="`#tech-${icon.slug}`" />
       </svg>
       <span>{{ label }}</span>
       <span v-if="justificatif" class="tech__preuve" aria-hidden="true">↗</span>
