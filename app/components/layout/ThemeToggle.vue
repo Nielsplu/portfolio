@@ -42,7 +42,7 @@ const { basculer } = useTheme()
   position: relative;
   align-items: center;
   width: 54px;
-  height: 28px;
+  height: var(--controle-hauteur);
   padding: 0;
   border: 1px solid var(--line);
   /* Piste anguleuse plutôt que pilule, comme le reste du site. */
@@ -64,14 +64,18 @@ const { basculer } = useTheme()
   transform: scaleX(0.88);
 }
 :root[data-theme='dark'] .theme-switch:active .theme-switch__repere {
-  transform: translateX(24px) scaleX(0.88);
+  transform: translateX(100%) scaleX(0.88);
 }
+
+/* Dimensions relatives à la piste, jamais en pixels fixes : sur un écran
+   tactile la règle de cible de 44 px étire la piste, et un repère de 22 px
+   ancré en haut s'y retrouvait à flotter — 3 px au-dessus, 19 px en dessous. */
 .theme-switch__repere {
   position: absolute;
   top: 2px;
+  bottom: 2px;
   left: 2px;
-  width: 24px;
-  height: 22px;
+  width: calc(50% - 2px);
   border-radius: 6px;
   background: var(--accent);
   box-shadow: var(--shadow-sm);
@@ -81,8 +85,10 @@ const { basculer } = useTheme()
   transition: transform var(--duree-moyenne) var(--courbe);
 }
 
+/* 100 % de sa propre largeur : la course reste symétrique quelle que soit
+   celle de la piste. */
 :root[data-theme='dark'] .theme-switch__repere {
-  transform: translateX(24px);
+  transform: translateX(100%);
 }
 
 .theme-switch__option {

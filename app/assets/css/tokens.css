@@ -75,6 +75,11 @@
   --section-pad: clamp(3rem, 9vw, 5.5rem);
   /* Réutilisée par scroll-padding-top: les ancres ne passent pas dessous. */
   --nav-height: 64px;
+  /* Hauteur commune aux commandes de la barre — recherche, thème, menu. Elles
+     mesuraient 32, 28 et 26 px côte à côte, avec trois lignes de base
+     différentes. Sur pointeur grossier, la règle de cible tactile prend le
+     relais (voir components.css). */
+  --controle-hauteur: 32px;
 
   /* ---- Typographies ---- */
   --font-display: 'Space Grotesk', sans-serif;

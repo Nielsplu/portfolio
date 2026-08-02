@@ -30,6 +30,22 @@ const raccourci = ref('Ctrl K')
 // elle se fond dans le hero.
 const defile = ref(false)
 
+// Le menu déroulant recouvre la page : un clic à côté doit le refermer, comme
+// tout menu. `pointerdown` et non `click`, pour qu'il disparaisse dès l'appui
+// plutôt qu'au relâchement.
+const barre = ref<HTMLElement>()
+function surClicExterieur(evenement: PointerEvent) {
+  if (!open.value) return
+  if (barre.value?.contains(evenement.target as Node)) return
+  open.value = false
+}
+
+// Repasser en paysage franchit le point de bascule : le menu déroulant
+// resterait ouvert par-dessus la navigation horizontale.
+function surRedimensionnement() {
+  if (open.value && window.innerWidth > 720) open.value = false
+}
+
 onMounted(() => {
   if (/Mac|iPhone|iPad/.test(navigator.platform)) raccourci.value = '⌘ K'
 
@@ -37,14 +53,20 @@ onMounted(() => {
     defile.value = window.scrollY > 8
   }
   surDefilement()
-  // `passive` : l'écouteur ne fait que lire.
+  // `passive` : les écouteurs ne font que lire.
   window.addEventListener('scroll', surDefilement, { passive: true })
-  onBeforeUnmount(() => window.removeEventListener('scroll', surDefilement))
+  window.addEventListener('resize', surRedimensionnement, { passive: true })
+  document.addEventListener('pointerdown', surClicExterieur)
+  onBeforeUnmount(() => {
+    window.removeEventListener('scroll', surDefilement)
+    window.removeEventListener('resize', surRedimensionnement)
+    document.removeEventListener('pointerdown', surClicExterieur)
+  })
 })
 </script>
 
 <template>
-  <header class="nav" :class="{ 'nav--defile': defile }" @keydown.esc="surEchap">
+  <header ref="barre" class="nav" :class="{ 'nav--defile': defile }" @keydown.esc="surEchap">
     <nav class="container nav__inner" aria-label="Navigation principale">
       <a href="#accueil" class="nav__logo">niels<span>.plu</span></a>
       <ul id="nav-links" class="nav__links" :class="{ 'nav__links--open': open }">
@@ -129,8 +151,10 @@ onMounted(() => {
 .nav__palette {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: var(--esp-2);
-  padding: var(--esp-2) var(--esp-3);
+  height: var(--controle-hauteur);
+  padding: 0 var(--esp-3);
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   background: var(--surface);
@@ -160,7 +184,7 @@ onMounted(() => {
    raccourci n'ayant de toute façon pas de sens sans clavier. */
 @media (max-width: 640px) {
   .nav__raccourci { display: none; }
-  .nav__palette { padding: var(--esp-2); }
+  .nav__palette { width: var(--controle-hauteur); padding: 0; }
 }
 .nav__logo {
   /* Pousse menu et actions à droite ; `space-between` centrerait le menu. */
@@ -212,11 +236,15 @@ onMounted(() => {
 .nav__burger {
   display: none;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: 4px;
+  width: var(--controle-hauteur);
+  height: var(--controle-hauteur);
   background: none;
   border: none;
   cursor: pointer;
-  padding: 6px;
+  padding: 0;
 }
 .nav__burger span {
   width: 22px;
@@ -230,11 +258,40 @@ onMounted(() => {
     position: absolute;
     inset: 100% 0 auto 0;
     flex-direction: column;
+    /* Alignés à gauche : centrés, les libellés de longueurs inégales ne
+       donnaient aucune ligne de lecture. */
+    align-items: stretch;
+    gap: 0;
     background: var(--surface);
     border-bottom: 1px solid var(--line);
-    padding: var(--esp-5);
+    padding: var(--esp-3);
     display: none;
+    box-shadow: var(--shadow);
   }
   .nav__links--open { display: flex; }
+
+  /* Le menu occupe toute la largeur : la zone tapable doit en faire autant.
+     Chaque entrée mesurait la largeur de son texte — 49 px pour « Projets » —
+     et il fallait viser les lettres. */
+  .nav__links li { display: flex; }
+  .nav__links a:not(.btn) {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 var(--esp-3);
+    border-radius: var(--radius-sm);
+  }
+  .nav__links a:not(.btn):hover,
+  .nav__links a.is-active {
+    background: var(--surface-subtle);
+  }
+  /* Détaché du groupe : c'est une action, pas une destination. */
+  .nav__cv {
+    flex: 1;
+    margin-top: var(--esp-2);
+    justify-content: center;
+    min-height: 44px;
+  }
 }
 </style>
