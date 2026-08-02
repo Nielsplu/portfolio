@@ -7,7 +7,6 @@ import { filtrerParPertinence } from '~/utils/recherche'
 // Palette de commandes (Ctrl/⌘ + K) : atteindre une section, ouvrir une fiche
 // projet, lancer la démo ou déclencher une action sans quitter le clavier.
 
-const dialogue = ref<HTMLDialogElement>()
 const champ = ref<HTMLInputElement>()
 const liste = ref<HTMLElement>()
 
@@ -18,7 +17,20 @@ const indexActif = ref(0)
 const baseURL = useRuntimeConfig().app.baseURL
 const { basculer: basculerTheme } = useTheme()
 const { copier } = usePressePapiers()
-const { verrouiller: verrouillerDefilement } = useVerrouDefilement()
+
+const { dialogue, attributs } = useModale({
+  ouverte: () => ouverte.value,
+  fermer: demanderFermeture,
+  surOuverture: () => champ.value?.focus(),
+})
+
+// Champ vidé à la fermeture plutôt qu'à l'ouverture : la liste ne se réorganise
+// pas sous les yeux au moment où la fenêtre apparaît.
+watch(ouverte, (visible) => {
+  if (visible) return
+  requete.value = ''
+  indexActif.value = 0
+})
 
 const toutes = construireCommandes(projets, profil)
 
@@ -50,30 +62,6 @@ const idOptionActive = computed(() => {
 })
 
 // ------------------------------------------------------------------
-
-// `ouverte` est la seule source de vérité, et ce watch le seul endroit qui
-// touche au DOM. Tout le reste — Ctrl+K, le bouton de la barre, Échap, le clic
-// hors cadre, le choix d'une commande — ne fait que poser l'état. Faire fermer
-// le dialogue depuis plusieurs endroits déphasait l'un par rapport à l'autre :
-// Échap laissait la page verrouillée et il fallait deux Ctrl+K pour rouvrir.
-//
-// Échap est intercepté avant la fermeture native (voir le gabarit) plutôt que
-// via l'événement `close` : celui-ci ne suffit pas seul, l'état resterait
-// désynchronisé partout où il n'est pas émis.
-watch(ouverte, (visible) => {
-  if (visible) {
-    requete.value = ''
-    indexActif.value = 0
-    dialogue.value?.showModal()
-    verrouillerDefilement(true)
-    nextTick(() => champ.value?.focus())
-  }
-  else {
-    // Sans effet si Échap a déjà refermé nativement.
-    dialogue.value?.close()
-    verrouillerDefilement(false)
-  }
-})
 
 function executer(action: Action) {
   demanderFermeture()
@@ -141,8 +129,6 @@ function surRaccourci(evenement: KeyboardEvent) {
 onMounted(() => {
   window.addEventListener('keydown', surRaccourci)
   onBeforeUnmount(() => window.removeEventListener('keydown', surRaccourci))
-  // Déjà demandée avant le montage : le watch ne se déclencherait pas.
-  if (ouverte.value) dialogue.value?.showModal()
 })
 </script>
 
@@ -151,9 +137,7 @@ onMounted(() => {
     ref="dialogue"
     class="palette"
     aria-label="Palette de commandes"
-    @keydown.esc.prevent="demanderFermeture"
-    @close="demanderFermeture"
-    @click.self="demanderFermeture"
+    v-bind="attributs"
   >
     <div class="palette__cadre">
       <div class="palette__saisie">

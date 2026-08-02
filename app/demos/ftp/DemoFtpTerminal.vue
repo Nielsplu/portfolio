@@ -8,7 +8,7 @@ import { connecterFtpWasm, deconnecterFtpWasm, demarrerFtpWasm, lireFichierVirtu
 const props = defineProps<{ ouvert: boolean }>()
 const emit = defineEmits<{ 'update:ouvert': [valeur: boolean] }>()
 
-const dialogue = ref<HTMLDialogElement>()
+// `dialogue` vient de useModale, plus bas.
 const sortie = ref<HTMLElement>()
 const champ = ref<HTMLInputElement>()
 
@@ -360,13 +360,16 @@ function fermer() {
   emit('update:ouvert', false)
 }
 
-// Verrou partagé avec la fenêtre de détail des projets (voir le composable) :
-// il gère aussi le filet de déverrouillage au démontage.
-const { verrouiller: verrouillerDefilement } = useVerrouDefilement()
+const { dialogue, attributs } = useModale({
+  ouverte: () => props.ouvert,
+  fermer,
+  surOuverture: () => void ouvrir(),
+  // Un clic à côté fermerait la session en cours : le binaire wasm serait à
+  // retélécharger et l'arborescence explorée, perdue.
+  fermerAuClicExterieur: false,
+})
 
 async function ouvrir() {
-  dialogue.value?.showModal()
-  verrouillerDefilement(true)
   lignes.value = []
   cheminCourant.value = ''
   await ouvrirSession()
@@ -386,28 +389,17 @@ function nettoyer() {
   connecte.value = false
 }
 
+// La fenêtre elle-même est pilotée par useModale ; il ne reste ici que la
+// session à couper.
 watch(() => props.ouvert, (ouvert) => {
-  if (ouvert) {
-    void ouvrir()
-  }
-  else {
-    nettoyer()
-    dialogue.value?.close()
-    verrouillerDefilement(false)
-  }
-})
-
-onMounted(() => {
-  // Monté à la demande par le registre des démos, souvent avec ouvert déjà à
-  // true : le watch seul ne suffirait pas.
-  if (props.ouvert) void ouvrir()
+  if (!ouvert) nettoyer()
 })
 
 onBeforeUnmount(nettoyer)
 </script>
 
 <template>
-  <dialog ref="dialogue" class="terminal" aria-label="Démo interactive du client FTP" @close="fermer">
+  <dialog ref="dialogue" class="terminal" aria-label="Démo interactive du client FTP" v-bind="attributs">
     <div class="terminal__barre">
       <span class="terminal__titre">ftp-client — {{ mode === 'reel' ? 'vrai binaire Go en WebAssembly' : 'démo simulée' }}</span>
       <span v-if="mode === 'reel'" class="terminal__ports" role="group" aria-label="Port du serveur">
