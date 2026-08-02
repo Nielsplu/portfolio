@@ -202,7 +202,8 @@ async function ouvrirSession() {
     const ligneChargement = lignes.value.length - 1
     await demarrerFtpWasm(baseURL, (fraction, recus, total) => {
       progression.value = fraction
-      const mo = (octets: number) => (octets / 1048576).toFixed(1)
+      // Virgule décimale : « 4.2 Mo » jurait à côté du « 4,4 Mo » annoncé.
+      const mo = (octets: number) => (octets / 1048576).toFixed(1).replace('.', ',')
       const ligne = lignes.value[ligneChargement]
       if (!ligne) return
       // Le gabarit d'annonce est conservé : réécrire la ligne entière ferait
