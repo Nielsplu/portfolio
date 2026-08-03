@@ -34,20 +34,20 @@ export default defineVitestConfig({
       // Go, le second s'appuie dessus. Les exclure gonflerait le chiffre sans
       // rien prouver ; ils restent comptés, à découvert assumé.
       thresholds: {
-        statements: 36,
-        branches: 31,
-        functions: 34,
-        lines: 37,
+        statements: 39,
+        branches: 35,
+        functions: 38,
+        lines: 40,
 
         'app/utils/**': {
-          statements: 95,
-          branches: 90,
+          statements: 97,
+          branches: 95,
           functions: 100,
           lines: 100,
         },
         'app/composables/**': {
-          statements: 93,
-          branches: 88,
+          statements: 95,
+          branches: 92,
           functions: 92,
           lines: 96,
         },
