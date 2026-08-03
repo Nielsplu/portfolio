@@ -99,6 +99,7 @@ export const projets: Projet[] = [
     ],
     tags: ['VLAN', 'DHCP', 'Bind9', 'Apache', 'iptables', 'NAT'],
     categorie: 'Réseaux & Sécurité',
+    schema: 'reseau',
     liens: [{ label: 'Code', url: 'https://github.com/Nielsplu/sae-reseaux' }],
   },
   {

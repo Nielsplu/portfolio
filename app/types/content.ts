@@ -1,5 +1,6 @@
 // Schéma du contenu. Les interfaces ici, les données dans app/content/.
 import type { DemoId } from '~/demos'
+import type { SchemaId } from '~/schemas'
 
 /** Un lien externe (code, démo en ligne, rapport…). */
 export interface LienExterne {
@@ -48,6 +49,12 @@ export interface Projet {
   demoAccroche?: string
   /** Dépôt privé : la carte l'indique, plutôt que de n'afficher aucun lien. */
   codePrive?: boolean
+  /**
+   * Schéma technique montré dans la fiche (registre : app/schemas). Pour les
+   * projets qu'on ne peut pas « visiter » — une infrastructure réseau n'a pas
+   * d'URL.
+   */
+  schema?: SchemaId
   /** Détails montrés dans la fiche : contexte, décisions, difficultés. */
   details?: string[]
   /** Captures montrées dans la fiche. */

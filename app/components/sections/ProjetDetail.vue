@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Projet } from '~/types/content'
+import { schemas } from '~/schemas'
 
 // <dialog> + showModal() plutôt qu'une div stylée : le navigateur fournit le
 // piégeage du focus, la fermeture par Échap et l'inertie de l'arrière-plan.
@@ -46,6 +47,13 @@ const { dialogue, attributs } = useModale({
           <img :src="img.src" :alt="img.alt" class="galerie__image" loading="lazy">
           <figcaption v-if="img.legende" class="galerie__legende">{{ img.legende }}</figcaption>
         </figure>
+      </section>
+
+      <!-- Schéma technique : chargé à l'ouverture, jamais dans le bundle
+           initial (voir le registre app/schemas). -->
+      <section v-if="projet.schema" class="fiche__bloc">
+        <h3 class="fiche__soustitre">Architecture</h3>
+        <component :is="schemas[projet.schema]" />
       </section>
 
       <section v-if="projet.details?.length" class="fiche__bloc">
