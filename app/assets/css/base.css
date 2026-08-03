@@ -63,9 +63,12 @@ h3 {
 }
 
 /* Lien d'évitement (accessibilité clavier). */
+/* Lien d'évitement : invisible tant qu'on n'y arrive pas au clavier.
+   Le retrait doit dépasser la hauteur du lien — à -3rem pour 50 px de haut,
+   deux pixels d'aplat rouge affleuraient en haut de page. */
 .skip-link {
   position: absolute;
-  top: -3rem;
+  top: -5rem;
   left: 1rem;
   z-index: 100;
   background: var(--accent);

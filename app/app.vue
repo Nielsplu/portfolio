@@ -63,11 +63,32 @@ useHead({
     innerHTML: JSON.stringify(donneesStructurees),
   }],
 })
+
+/**
+ * Lien d'évitement : passe la navigation d'un coup de Tab.
+ *
+ * Le comportement natif de l'ancre ne déplaçait que la vue — le focus restait
+ * sur le lien, donc le Tab suivant retournait dans la navigation et le saut ne
+ * servait à rien. Il laissait en prime `#contenu` dans une adresse qu'on peut
+ * partager.
+ *
+ * L'ancre reste dans le gabarit : sans JavaScript, le repli natif fonctionne.
+ */
+function allerAuContenu(evenement: MouseEvent) {
+  const contenu = document.getElementById('contenu')
+  if (!contenu) return
+
+  evenement.preventDefault()
+  contenu.focus()
+  contenu.scrollIntoView({ block: 'start' })
+  // L'ancre a joué son rôle ; elle n'a pas à survivre dans l'adresse.
+  history.replaceState(null, '', location.pathname + location.search)
+}
 </script>
 
 <template>
   <div>
-    <a href="#contenu" class="skip-link">Aller au contenu</a>
+    <a href="#contenu" class="skip-link" @click="allerAuContenu">Aller au contenu</a>
     <SiteNav />
     <NuxtPage id="contenu" />
     <SiteFooter />
