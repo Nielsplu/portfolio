@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { MARQUEURS, adressage, dhcp, dns, hotesDuVlan, pareFeu } from './donnees'
+import { BANDES, BOITES, BUS, LIENS, NOTES, VUE } from './disposition'
+import { MARQUEURS, adressage, dhcp, dns, pareFeu } from './donnees'
 
 // Schéma de l'infrastructure réseau, reconstruit depuis les fichiers de
 // configuration du dépôt (github.com/Nielsplu/sae-reseaux) : dhcpd.conf, les
@@ -8,6 +9,9 @@ import { MARQUEURS, adressage, dhcp, dns, hotesDuVlan, pareFeu } from './donnees
 // La topologie est en SVG — elle se lit d'un coup d'œil — mais les détails
 // restent en HTML : le texte y est sélectionnable, traduisible, agrandissable,
 // et lisible par un lecteur d'écran sans qu'on ait à le dupliquer ailleurs.
+//
+// La géométrie vit dans disposition.ts, où des tests garantissent que rien ne
+// déborde ni ne se recouvre : un dessin ne se relit pas dans un diff.
 
 const idTitre = useId()
 const idDesc = useId()
@@ -17,46 +21,74 @@ const idDesc = useId()
   <div class="schema">
     <figure class="schema__figure">
       <div class="schema__cadre">
-        <svg viewBox="0 0 760 366" class="schema__svg" role="img" :aria-labelledby="`${idTitre} ${idDesc}`">
+        <svg
+          :viewBox="`0 0 ${VUE.largeur} ${VUE.hauteur}`"
+          class="schema__svg"
+          role="img"
+          :aria-labelledby="`${idTitre} ${idDesc}`"
+        >
           <title :id="idTitre">Topologie du réseau</title>
           <desc :id="idDesc">
-            Une machine externe rejoint un routeur, qui porte le pare-feu et la
-            traduction d'adresses, puis distribue un VLAN numéro 18 sur lequel
-            se trouvent quatre machines : serveur, DNS secondaire, serveur DHCP
-            et hôte interne. Le détail des adresses figure dans le tableau qui
-            suit.
+            Trois niveaux de haut en bas. À l'extérieur, une machine rejoint le
+            routeur, qui porte le pare-feu, la traduction d'adresses et le
+            serveur DNS maître. En dessous, un VLAN numéro 18 relie quatre
+            machines : un serveur, le DNS de la zone déléguée, le serveur DHCP
+            et l'hôte web. Le détail des adresses, des baux, des zones et des
+            règles de filtrage figure dans les tableaux qui suivent.
           </desc>
 
-          <!-- ---------- côté externe ---------- -->
-          <text x="380" y="16" class="t-bande">RÉSEAU EXTERNE</text>
-          <rect x="300" y="24" width="160" height="54" rx="6" class="boite" />
-          <text x="380" y="46" class="t-nom">externe</text>
-          <text x="380" y="65" class="t-ip">192.168.0.1/24</text>
+          <!-- Bandes de lecture : extérieur, passerelle, VLAN. -->
+          <template v-for="(bande, i) in BANDES" :key="bande.id">
+            <rect
+              x="0" :y="bande.y" :width="VUE.largeur" :height="bande.hauteur"
+              :class="['bande', { 'bande--alt': i % 2 === 1 }]"
+            />
+            <text x="16" :y="bande.y + 24" class="t-bande">{{ bande.titre }}</text>
+          </template>
 
-          <!-- lien eth0 + traduction d'adresses -->
-          <line x1="380" y1="78" x2="380" y2="118" class="lien" />
-          <text x="392" y="92" class="t-note">eth0</text>
-          <text x="392" y="108" class="t-nat">NAT 8080 → 10.0.18.18:80</text>
+          <!-- Traits : câbles en continu, relations logiques en pointillés. -->
+          <line :x1="BUS.x1" :y1="BUS.y" :x2="BUS.x2" :y2="BUS.y" class="lien lien--bus" />
+          <line
+            v-for="lien in LIENS"
+            :key="`${lien.de}-${lien.vers}`"
+            :x1="lien.x1" :y1="lien.y1" :x2="lien.x2" :y2="lien.y2"
+            :class="['lien', { 'lien--logique': lien.logique }]"
+          />
+          <text
+            v-for="lien in LIENS.filter(l => l.etiquette)"
+            :key="`etiquette-${lien.vers}`"
+            :x="lien.x1 + 10"
+            :y="lien.y1 + 22"
+            class="t-logique"
+          >{{ lien.etiquette }}</text>
 
-          <!-- ---------- routeur ---------- -->
-          <rect x="240" y="118" width="280" height="104" rx="8" class="boite boite--accent" />
-          <text x="380" y="142" class="t-nom">routeur</text>
-          <text x="380" y="162" class="t-ip">eth1.18 · 10.0.18.1/24</text>
-          <text x="380" y="181" class="t-role">pare-feu iptables · DROP par défaut</text>
-          <text x="380" y="199" class="t-role">DNS maître · ip_forward = 1</text>
+          <!-- Machines et panneau de filtrage. -->
+          <template v-for="boite in BOITES" :key="boite.id">
+            <rect
+              :x="boite.x" :y="boite.y" :width="boite.largeur" :height="boite.hauteur"
+              rx="8" :class="['boite', { 'boite--accent': boite.accent }]"
+            />
+            <text :x="boite.x + 16" :y="boite.y + 28" class="t-nom">{{ boite.titre }}</text>
+            <text
+              v-if="boite.badge"
+              :x="boite.x + boite.largeur - 14" :y="boite.y + 26"
+              class="t-badge"
+            >{{ boite.badge }}</text>
+            <text
+              v-for="(ligne, i) in boite.lignes"
+              :key="ligne"
+              :x="boite.x + 16" :y="boite.y + 56 + i * 23"
+              class="t-detail"
+            >{{ ligne }}</text>
+          </template>
 
-          <!-- ---------- bus VLAN ---------- -->
-          <line x1="380" y1="222" x2="380" y2="256" class="lien" />
-          <line x1="60" y1="256" x2="700" y2="256" class="lien lien--bus" />
-          <text x="700" y="246" class="t-bande t-bande--fin">VLAN 18 · 10.0.18.0/24</text>
-
-          <!-- ---------- machines du VLAN ---------- -->
-          <g v-for="hote in hotesDuVlan" :key="hote.nom">
-            <line :x1="hote.x" y1="256" :x2="hote.x" y2="292" class="lien" />
-            <rect :x="hote.x - 68" y="292" width="136" height="58" rx="6" class="boite" />
-            <text :x="hote.x" y="317" class="t-nom">{{ hote.nom }}</text>
-            <text :x="hote.x" y="338" class="t-ip">{{ hote.ip }}</text>
-          </g>
+          <!-- Sens du trafic et plage de baux. -->
+          <text
+            v-for="note in NOTES"
+            :key="note.id"
+            :x="note.x" :y="note.y"
+            :class="['t-note', { 't-note--accent': note.accent, 't-note--centre': note.centre }]"
+          >{{ note.texte }}</text>
         </svg>
       </div>
       <figcaption class="schema__legende">
@@ -145,56 +177,70 @@ const idDesc = useId()
   margin: 0;
   min-width: 0;
 }
-/* Le schéma ne descend pas sous ~560 px sans devenir illisible : il défile
+/* Le schéma ne descend pas sous ~640 px sans devenir illisible : il défile
    plutôt que de se tasser. */
 .schema__cadre {
   overflow-x: auto;
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
-  background: var(--surface-subtle);
-  padding: var(--esp-4);
+  background: var(--surface);
 }
 .schema__svg {
   display: block;
   width: 100%;
-  min-width: 560px;
+  min-width: 640px;
   height: auto;
 }
+
+.bande { fill: var(--surface); }
+.bande--alt { fill: var(--surface-subtle); }
 
 .boite {
   fill: var(--surface);
   stroke: var(--line);
-  stroke-width: 1;
+  stroke-width: 1.2;
 }
 .boite--accent {
   stroke: var(--accent);
-  stroke-width: 1.5;
+  stroke-width: 1.8;
 }
 .lien {
   stroke: var(--accent);
-  stroke-width: 1.5;
-  opacity: 0.55;
+  stroke-width: 1.6;
+  opacity: 0.5;
 }
 .lien--bus {
-  stroke-width: 2.5;
-  opacity: 0.8;
+  stroke-width: 3;
+  opacity: 0.85;
+}
+/* Pointillés : une délégation DNS n'est pas un câble. */
+.lien--logique {
+  stroke-dasharray: 5 4;
+  opacity: 0.7;
 }
 
-.schema__svg text {
-  font-family: var(--font-mono);
-  text-anchor: middle;
+.schema__svg text { font-family: var(--font-mono); }
+.t-nom { fill: var(--ink); font-size: 18px; font-weight: 600; }
+.t-detail { fill: var(--muted); font-size: 15px; }
+.t-badge {
+  fill: var(--accent);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-anchor: end;
 }
-.t-nom { fill: var(--ink); font-size: 16px; font-weight: 600; }
-.t-ip { fill: var(--accent); font-size: 14px; }
-.t-role { fill: var(--muted); font-size: 12.5px; }
-.t-note { fill: var(--muted); font-size: 13px; text-anchor: start; }
-.t-nat { fill: var(--accent); font-size: 13px; text-anchor: start; }
 .t-bande {
   fill: var(--muted);
-  font-size: 12.5px;
-  letter-spacing: 0.08em;
+  font-size: 15px;
+  letter-spacing: 0.1em;
 }
-.t-bande--fin { text-anchor: end; }
+.t-note { fill: var(--muted); font-size: 15px; }
+.t-note--accent { fill: var(--accent); }
+.t-note--centre { text-anchor: middle; }
+.t-logique {
+  fill: var(--accent);
+  font-size: 14px;
+}
 
 .schema__legende {
   margin-top: var(--esp-3);

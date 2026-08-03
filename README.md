@@ -198,8 +198,9 @@ vivent dans `vitest.config.ts` et font échouer la CI.
 | Utilitaires (`app/utils`) | 99,2 % | 98,2 % | 100 % | 100 % |
 | Composables (`app/composables`) | 96,8 % | 93,5 % | 93,9 % | 98,7 % |
 | Composants | 46,3 % | 42,6 % | 39,4 % | 48,9 % |
-| Schémas, plugins, sections | 70,3 % | 79,4 % | 66,7 % | 73,5 % |
+| Schémas | 100 % | 100 % | 100 % | 100 % |
 | Démos | 17,4 % | 20,1 % | 14,8 % | 17,7 % |
+| Autres | 42,1 % | 38,1 % | 42,9 % | 45,5 % |
 
 La logique — utilitaires purs et composables — est tenue haut : c'est là que
 vivent les règles, et elle se teste sans compromis. Le seuil global n'est qu'un
