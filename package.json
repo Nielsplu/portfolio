@@ -32,7 +32,8 @@
     "typecheck": "nuxt typecheck",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "verify:build": "node scripts/verifier-sortie.mjs"
+    "verify:build": "node scripts/verifier-sortie.mjs",
+    "verify:budget": "node scripts/budget-poids.mjs"
   },
   "devDependencies": {
     "@nuxt/eslint": "^1.16.0",
