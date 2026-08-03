@@ -173,9 +173,9 @@ vivent dans `vitest.config.ts` et font échouer la CI.
 
 | | Instructions | Branches | Fonctions | Lignes |
 |---|---:|---:|---:|---:|
-| Utilitaires (`app/utils`) | 97,6 % | 94,7 % | 100 % | 100 % |
-| Composables (`app/composables`) | 95,7 % | 90,3 % | 93,9 % | 98,7 % |
-| Composants | 35,5 % | 28,1 % | 27,7 % | 38,1 % |
+| Utilitaires (`app/utils`) | 98,4 % | 96,5 % | 100 % | 100 % |
+| Composables (`app/composables`) | 96,8 % | 93,5 % | 93,9 % | 98,7 % |
+| Composants | 45,6 % | 39,0 % | 38,3 % | 48,5 % |
 | Démos | 17,4 % | 20,1 % | 14,8 % | 17,7 % |
 
 La logique — utilitaires purs et composables — est tenue haut : c'est là que
@@ -209,6 +209,22 @@ Les tests qui montent des composants tournent sous `// @vitest-environment
 nuxt`, ce qui donne accès aux auto-imports et à `useState`. `happy-dom` ne
 calcule ni disposition ni media queries : une régression purement visuelle ou
 responsive leur échappe.
+
+### Accessibilité
+
+`tests/accessibilite.test.ts` passe **axe-core** sur les composants montés —
+carte et fiche projet, palette de commandes, interrupteur de thème, pied de
+page — en périmètre WCAG 2.1 AA.
+
+Trois règles sont écartées, chacune avec sa raison : `color-contrast` et
+`target-size` demandent un vrai moteur de rendu, que `happy-dom` n'est pas, et
+`region` est une règle de page qu'un composant monté seul ne peut pas
+satisfaire. Les laisser actives produirait un vert qui ne prouve rien ; elles
+se vérifient dans un navigateur.
+
+S'y ajoutent des garde-fous sur le contenu lui-même : texte de remplacement
+présent sur chaque capture, liens externes absolus, libellés distincts au sein
+d'un même projet.
 
 ## CI/CD
 
