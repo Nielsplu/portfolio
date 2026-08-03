@@ -208,7 +208,7 @@ onMounted(() => {
   overflow: visible;
 }
 .palette::backdrop {
-  background: rgb(0 0 0 / 0.45);
+  background: var(--voile);
   backdrop-filter: blur(2px);
 }
 

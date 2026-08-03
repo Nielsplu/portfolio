@@ -88,7 +88,7 @@ const { dialogue, attributs } = useModale({
   overflow: hidden;
 }
 .fiche::backdrop {
-  background: rgb(0 0 0 / 0.55);
+  background: var(--voile);
   backdrop-filter: blur(3px);
 }
 /* Même nom que la carte d'origine : le navigateur déplie l'une en l'autre.
