@@ -189,6 +189,22 @@ assumé.
 Le détail par lot s'affiche sur la page de chaque run GitHub Actions
 (`scripts/resume-couverture.mjs`), sans service tiers ni jeton.
 
+### Budget de poids
+
+`scripts/budget-poids.mjs` mesure ce qui transite réellement — gzippé — et fait
+échouer la CI au-delà des plafonds :
+
+| | Mesuré | Plafond |
+|---|---:|---:|
+| HTML de l'accueil | 34,9 Ko | 40 Ko |
+| JavaScript total | 113,5 Ko | 130 Ko |
+| CSS total | 11,3 Ko | 15 Ko |
+| Plus gros paquet JS | 98,4 Ko | 115 Ko |
+
+Environ 15 % de marge : assez pour ne pas casser au premier ajustement, trop
+peu pour laisser passer une dépendance entière. Relever un plafond est une
+décision à prendre après `npx nuxi analyze`, pas un réflexe quand ça coince.
+
 Les tests qui montent des composants tournent sous `// @vitest-environment
 nuxt`, ce qui donne accès aux auto-imports et à `useState`. `happy-dom` ne
 calcule ni disposition ni media queries : une régression purement visuelle ou
