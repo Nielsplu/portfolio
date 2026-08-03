@@ -140,8 +140,12 @@ const aDuDetail = computed(() =>
   color: var(--on-accent);
   cursor: pointer;
 }
-/* Bordée mais non remplie : ne concurrence pas le bouton de démo. */
+/* Bordée mais non remplie : ne concurrence pas le bouton de démo.
+   Le fond doit être déclaré : sans lui, ce <button> prenait celui du
+   navigateur — gris pâle en thème clair, gris moyen bien visible en sombre,
+   avec 1,99 de contraste sous le libellé. */
 .project__link--detail {
+  background: transparent;
   border-color: var(--accent);
   cursor: pointer;
   font-family: var(--font-mono);

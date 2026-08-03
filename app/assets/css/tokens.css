@@ -31,6 +31,10 @@
      tombait à 4,5 — juste au seuil. */
   --succes: #276749;
 
+  /* Voile derrière les fenêtres modales. Il doit reculer la page, donc être
+     plus sombre qu'elle : un noir à 45 % ne séparait rien d'un fond déjà noir. */
+  --voile: rgba(22, 32, 43, 0.5);
+
   /* ---- Ombres ----
      Couleur isolée : une ombre teintée de bleu nuit disparaît sur fond sombre. */
   --shadow-color: rgba(22, 32, 43, 0.35);
@@ -109,19 +113,26 @@
 
     --bg: #0c111a;
     --bg-translucent: rgba(12, 17, 26, 0.85);
-    --surface: #141b26;
-    --surface-subtle: #1a2331;
+    /* Les surfaces portent l'élévation à elles seules : une ombre noire ne se
+       voit pas sur un fond quasi noir. Chaque palier s'écarte donc franchement
+       du précédent — à 1,09 de rapport, une carte se confondait avec la page. */
+    --surface: #1c2534;
+    --surface-subtle: #242f42;
     --ink: #e6edf5;
     --muted: #93a4b8;
-    --line: #233040;
+    --line: #2c3a4e;
 
     /* Accent éclairci : le bleu nuit du thème clair manque de contraste ici. */
     --accent: #6ba3d6;
     --accent-bright: #8cbde8;
-    --accent-soft: #1a2938;
+    /* Relevé avec les surfaces : à #1a2938 il se confondait avec --surface,
+       et la sélection au clavier de la palette devenait invisible (1,04). */
+    --accent-soft: #24354c;
     --on-accent: #0c111a;
     /* Le vert sombre du thème clair serait illisible ici. */
     --succes: #6ee7a8;
+
+    --voile: rgba(2, 4, 8, 0.78);
 
     --shadow-color: rgba(0, 0, 0, 0.65);
     --shadow-color-soft: rgba(0, 0, 0, 0.5);
@@ -134,17 +145,19 @@
 
   --bg: #0c111a;
   --bg-translucent: rgba(12, 17, 26, 0.85);
-  --surface: #141b26;
-  --surface-subtle: #1a2331;
+  --surface: #1c2534;
+  --surface-subtle: #242f42;
   --ink: #e6edf5;
   --muted: #93a4b8;
-  --line: #233040;
+  --line: #2c3a4e;
 
   --accent: #6ba3d6;
   --accent-bright: #8cbde8;
-  --accent-soft: #1a2938;
+  --accent-soft: #24354c;
   --on-accent: #0c111a;
   --succes: #6ee7a8;
+
+  --voile: rgba(2, 4, 8, 0.78);
 
   --shadow-color: rgba(0, 0, 0, 0.65);
   --shadow-color-soft: rgba(0, 0, 0, 0.5);
