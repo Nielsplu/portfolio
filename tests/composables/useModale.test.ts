@@ -45,6 +45,25 @@ describe('useModale', () => {
     expect(document.body.style.overflow).toBe('hidden')
   })
 
+  it('ne rouvre pas un dialogue déjà ouvert', async () => {
+    // `showModal()` lève sur un dialogue ouvert, et l'exception traverserait
+    // le watch en laissant l'état à moitié appliqué. Le cas se présente dès
+    // que deux sources demandent l'ouverture.
+    // On observe l'appel plutôt que l'exception : `happy-dom` tolère ce que
+    // les vrais navigateurs refusent, un test sur le throw ne prouverait rien.
+    const { ouverte, composant, dialogue } = monterModale()
+    dialogue.showModal()
+    const ouvrir = vi.spyOn(dialogue, 'showModal')
+
+    ouverte.value = true
+    await composant.vm.$nextTick()
+
+    expect(ouvrir).not.toHaveBeenCalled()
+    expect(dialogue.open).toBe(true)
+    expect(document.body.style.overflow).toBe('hidden')
+    ouvrir.mockRestore()
+  })
+
   it('referme et rend le défilement', async () => {
     const { ouverte, composant, dialogue } = monterModale()
     ouverte.value = true
