@@ -160,10 +160,39 @@ pnpm dev             # http://localhost:3000
 ## Qualité
 
 ```bash
-pnpm test            # tests unitaires (Vitest)
+pnpm test            # tests (Vitest)
+pnpm test:coverage   # idem + couverture et seuils
 pnpm lint            # ESLint
 pnpm typecheck       # vérification TypeScript
 ```
+
+### Couverture
+
+Deux niveaux d'exigence plutôt qu'une moyenne qui ne dit rien — les seuils
+vivent dans `vitest.config.ts` et font échouer la CI.
+
+| | Instructions | Branches | Fonctions | Lignes |
+|---|---:|---:|---:|---:|
+| Utilitaires (`app/utils`) | 97,6 % | 94,7 % | 100 % | 100 % |
+| Composables (`app/composables`) | 95,7 % | 90,3 % | 93,9 % | 98,7 % |
+| Composants | 35,5 % | 28,1 % | 27,7 % | 38,1 % |
+| Démos | 17,4 % | 20,1 % | 14,8 % | 17,7 % |
+
+La logique — utilitaires purs et composables — est tenue haut : c'est là que
+vivent les règles, et elle se teste sans compromis. Le seuil global n'est qu'un
+cliquet contre la régression : `demos/ftp/wasm.ts` et `DemoFtpTerminal.vue`
+pèsent à eux seuls 41 % du code mesuré et ne se testent pas hors du navigateur,
+le premier pilotant un binaire Go et le second s'appuyant dessus. Les exclure
+gonflerait le chiffre sans rien prouver ; ils restent comptés, à découvert
+assumé.
+
+Le détail par lot s'affiche sur la page de chaque run GitHub Actions
+(`scripts/resume-couverture.mjs`), sans service tiers ni jeton.
+
+Les tests qui montent des composants tournent sous `// @vitest-environment
+nuxt`, ce qui donne accès aux auto-imports et à `useState`. `happy-dom` ne
+calcule ni disposition ni media queries : une régression purement visuelle ou
+responsive leur échappe.
 
 ## CI/CD
 
