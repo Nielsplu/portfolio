@@ -32,14 +32,18 @@ export function useModale(options: OptionsModale) {
   const { verrouiller } = useVerrouDefilement()
 
   function afficher() {
-    dialogue.value?.showModal()
+    // `showModal()` lève une exception sur un dialogue déjà ouvert, et
+    // l'exception traverserait le watch en laissant l'état à moitié appliqué.
+    // Le cas se présente dès que deux sources demandent l'ouverture — lien
+    // profond au chargement, clic, palette de commandes.
+    if (dialogue.value && !dialogue.value.open) dialogue.value.showModal()
     verrouiller(true)
     nextTick(() => options.surOuverture?.())
   }
 
   function masquer() {
     // Sans effet si le navigateur a déjà refermé nativement.
-    dialogue.value?.close()
+    if (dialogue.value?.open) dialogue.value.close()
     verrouiller(false)
   }
 
