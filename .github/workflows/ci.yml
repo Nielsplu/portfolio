@@ -32,7 +32,13 @@ jobs:
       - uses: ./.github/actions/setup
       - run: pnpm run lint
       - run: pnpm run typecheck
-      - run: pnpm run test
+      # Les seuils de couverture vivent dans vitest.config.ts et font échouer
+      # cette étape : la logique ne peut pas se découvrir en silence.
+      - run: pnpm run test:coverage
+      # Le résumé s'affiche sur la page du run, sans service tiers ni jeton.
+      - name: Résumé de couverture
+        if: always()
+        run: node scripts/resume-couverture.mjs >> "$GITHUB_STEP_SUMMARY"
 
   build:
     name: Build statique
