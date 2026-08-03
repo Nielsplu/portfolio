@@ -74,6 +74,11 @@ export default defineNuxtConfig({
       //   1. classe `js` — l'état masqué des animations d'apparition s'applique
       //      dès le rendu. Conditionnée à IntersectionObserver, seul capable de
       //      les révéler ensuite (sinon le contenu resterait invisible).
+      //      Un filet l'accompagne : ce script s'exécute bien avant le bundle,
+      //      et si celui-ci n'arrive jamais — réseau coupé, extension, moteur
+      //      trop ancien — la classe seule laissait les 29 blocs à opacité 0,
+      //      c'est-à-dire une page vide. Le délai la retire, le plugin
+      //      l'annule dès qu'il tourne (voir app/plugins/reveal.ts).
       //   2. attribut `data-theme` — thème choisi par le visiteur, sinon sa
       //      préférence système. Il sélectionne la palette sombre dans
       //      assets/css/tokens.css. Sa présence sert aussi de test de support :
@@ -82,7 +87,9 @@ export default defineNuxtConfig({
       // La clé de stockage doit rester alignée avec CLE_THEME
       // (app/composables/useTheme.ts).
       script: [{
-        innerHTML: `window.IntersectionObserver&&document.documentElement.classList.add("js");`
+        innerHTML: `window.IntersectionObserver&&(document.documentElement.classList.add("js"),`
+          + `window.__revelationSecours=setTimeout(function(){`
+          + `document.documentElement.classList.remove("js")},3000));`
           + `try{var t=localStorage.getItem("niels-theme");`
           + `document.documentElement.dataset.theme=t==="light"||t==="dark"?t`
           + `:(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")}catch(e){}`,
