@@ -1,7 +1,7 @@
 // @vitest-environment nuxt
 import { mount } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import ThemeToggle from './ThemeToggle.vue'
+import ThemeToggle from '~/components/layout/ThemeToggle.vue'
 import { CLE_THEME } from '~/composables/useTheme'
 
 beforeEach(() => {

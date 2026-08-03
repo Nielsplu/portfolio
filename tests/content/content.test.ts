@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { demos } from '../demos'
-import { categoriesProjet, competences, parcours, profil, projets } from '.'
+import { demos } from '~/demos'
+import { categoriesProjet, competences, parcours, profil, projets } from '~/content'
 
 describe('profil', () => {
   it('a un email valide', () => {

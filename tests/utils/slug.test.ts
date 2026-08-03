@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { projets } from '~/content'
-import { versSlug } from './slug'
+import { versSlug } from '~/utils/slug'
 
 describe('versSlug', () => {
   it('met en minuscules et remplace les espaces par des tirets', () => {

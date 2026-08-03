@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { correspond, filtrerParPertinence } from './recherche'
+import { correspond, filtrerParPertinence } from '~/utils/recherche'
 
 /** Score d'un texte pour une requête, ou -1 s'il ne correspond pas. */
 function score(texte: string, requete: string): number {

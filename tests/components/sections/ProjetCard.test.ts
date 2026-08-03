@@ -2,7 +2,7 @@
 import type { Projet } from '~/types/content'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
-import ProjetCard from './ProjetCard.vue'
+import ProjetCard from '~/components/sections/ProjetCard.vue'
 
 const BASE: Projet = {
   titre: 'Serveur et client FTP en Go',

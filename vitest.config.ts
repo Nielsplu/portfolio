@@ -4,6 +4,12 @@ export default defineVitestConfig({
   test: {
     environment: 'happy-dom',
 
+    // Les tests vivent dans `tests/`, en miroir de `app/` : un fichier de test
+    // se trouve à l'emplacement de sa source, sans encombrer le dossier
+    // qu'il vérifie. La source reste lisible d'un coup d'œil, et la suite
+    // s'étend sans réorganisation.
+    include: ['tests/**/*.test.ts'],
+
     coverage: {
       provider: 'v8',
       reporter: ['text-summary', 'json-summary', 'html'],
@@ -19,7 +25,6 @@ export default defineVitestConfig({
         'app/demos/index.ts',
         'app/sections/registry.ts',
         'app/app.vue',
-        '**/*.test.ts',
       ],
 
       // Deux niveaux d'exigence plutôt qu'une moyenne qui ne dit rien.

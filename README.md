@@ -36,11 +36,25 @@ app/
 ├── assets/css/             Design system : tokens → base → components
 └── pages/index.vue         Rend les sections du registre
 
+tests/                      Miroir de app/ : un test à l'emplacement de sa source
+├── composables/
+├── components/{layout,sections}/
+├── utils/
+├── demos/ftp/
+├── plugins/
+└── accessibilite.test.ts   Audit axe-core, transverse
+
 public/
 ├── photo.jpg               Ta photo
 ├── cv/CV_Niels_PLU.pdf     Ton CV
 └── demos/ftp/              Assets de la démo wasm (binaire, données)
 ```
+
+Les tests vivent hors de `app/`, dans une arborescence qui la reflète :
+`tests/utils/recherche.test.ts` vérifie `app/utils/recherche.ts`. Le dossier
+source reste lisible d'un coup d'œil au lieu d'alterner un fichier sur deux, et
+la suite s'étend sans réorganisation. Les tests visent la source par l'alias
+`~`, jamais par un chemin relatif : déplacer un test ne casse plus son import.
 
 ## Étendre le site
 

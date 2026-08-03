@@ -1,6 +1,6 @@
 // @vitest-environment nuxt
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import reveal from './reveal'
+import reveal from '~/plugins/reveal'
 
 /** Faux nuxtApp : le plugin n'utilise que l'enregistrement de directive. */
 function fauxNuxtApp() {

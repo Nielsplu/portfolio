@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
 import { defineComponent } from 'vue'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { usePressePapiers } from './usePressePapiers'
+import { usePressePapiers } from '~/composables/usePressePapiers'
 
 /** Le composable pose un hook de démontage : il lui faut un composant hôte. */
 function monter(delai = 2000) {

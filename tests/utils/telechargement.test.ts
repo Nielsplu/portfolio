@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { telechargerAvecProgression } from './telechargement'
+import { telechargerAvecProgression } from '~/utils/telechargement'
 
 /** Réponse dont le corps arrive en plusieurs morceaux, comme sur le réseau. */
 function reponseEnFlux(morceaux: number[][], entetes: Record<string, string> = {}) {

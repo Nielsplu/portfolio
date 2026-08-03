@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { CLE_THEME, useTheme } from './useTheme'
+import { CLE_THEME, useTheme } from '~/composables/useTheme'
 
 describe('useTheme', () => {
   beforeEach(() => {
