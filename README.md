@@ -205,6 +205,29 @@ Environ 15 % de marge : assez pour ne pas casser au premier ajustement, trop
 peu pour laisser passer une dépendance entière. Relever un plafond est une
 décision à prendre après `npx nuxi analyze`, pas un réflexe quand ça coince.
 
+### Lighthouse
+
+Trois passages sur le build à chaque PR (`.lighthouserc.json`), avec assertions
+bloquantes :
+
+| | Score | Seuil |
+|---|---:|---:|
+| Performance | 100 | 95 |
+| Accessibilité | 100 | 100 |
+| Bonnes pratiques | 100 | 100 |
+| SEO | 100 | 100 |
+
+`FCP 0,6 s · LCP 0,6 s · TBT 0 ms · CLS 0`
+
+Seule la performance tolère un écart : elle dépend de la charge de la machine
+qui exécute la CI, là où les trois autres sont déterministes. Aucun audit n'est
+désactivé — le score se tient sans exception à justifier.
+
+`scripts/preparer-lighthouse.mjs` recopie la sortie sous un dossier `portfolio`
+avant la mesure : le site est déployé sous `/portfolio/` et référence ses assets
+en absolu, donc servi à la racine il ferait 404 partout et Lighthouse
+mesurerait une page nue — un score flatteur qui ne dirait rien.
+
 Les tests qui montent des composants tournent sous `// @vitest-environment
 nuxt`, ce qui donne accès aux auto-imports et à `useState`. `happy-dom` ne
 calcule ni disposition ni media queries : une régression purement visuelle ou
