@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { profil, projets } from '~/content'
 import { liensNavigation } from '~/sections/ordre'
-import { construireCommandes, texteRecherchable } from './commandes'
-import { filtrerParPertinence } from './recherche'
+import { construireCommandes, texteRecherchable } from '~/utils/commandes'
+import { filtrerParPertinence } from '~/utils/recherche'
 
 const commandes = construireCommandes(projets, profil)
 

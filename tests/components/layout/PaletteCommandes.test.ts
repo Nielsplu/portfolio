@@ -1,7 +1,7 @@
 // @vitest-environment nuxt
 import { mount } from '@vue/test-utils'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import PaletteCommandes from './PaletteCommandes.vue'
+import PaletteCommandes from '~/components/layout/PaletteCommandes.vue'
 
 async function monter() {
   const palette = mount(PaletteCommandes, { attachTo: document.body })

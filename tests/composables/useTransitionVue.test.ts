@@ -1,6 +1,6 @@
 // @vitest-environment nuxt
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { transitionner } from './useTransitionVue'
+import { transitionner } from '~/composables/useTransitionVue'
 
 /** Remplace `matchMedia` pour décider du réglage « réduire les animations ». */
 function reglerAnimationsReduites(reduites: boolean) {

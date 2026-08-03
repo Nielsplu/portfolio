@@ -1,7 +1,7 @@
-import type { EntreesDossier } from './completion'
+import type { EntreesDossier } from '~/demos/ftp/completion'
 import { describe, expect, it } from 'vitest'
-import { COMMANDES_ADMIN, COMMANDES_CLIENT, COMMANDES_SIMULATION, completer } from './completion'
-import { creerEtat, entreesPourCompletion, executerCommande } from './simulation'
+import { COMMANDES_ADMIN, COMMANDES_CLIENT, COMMANDES_SIMULATION, completer } from '~/demos/ftp/completion'
+import { creerEtat, entreesPourCompletion, executerCommande } from '~/demos/ftp/simulation'
 
 // Arborescence data/ de la démo, telle que la sert le binaire de la v1.0.
 const RACINE: EntreesDossier = {

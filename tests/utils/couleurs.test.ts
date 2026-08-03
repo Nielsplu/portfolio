@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { couleurLisible, hexVersTsl } from './couleurs'
+import { couleurLisible, hexVersTsl } from '~/utils/couleurs'
 
 /** Extrait la luminosité d'une chaîne `hsl(t, s%, l%)`. */
 function luminosite(hsl: string): number {
