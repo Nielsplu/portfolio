@@ -68,6 +68,18 @@ describe('accessibilité des composants', () => {
     expect(await auditer(fiche.element)).toEqual([])
   })
 
+  it('fiche portant un schéma technique', async () => {
+    // Le schéma est un dessin : sans nom accessible ni tableau équivalent, il
+    // ne dit rien à qui ne le voit pas.
+    const fiche = mount(ProjetDetail, {
+      props: { projet: projets.find(p => p.schema)! },
+      attachTo: document.body,
+    })
+    await fiche.vm.$nextTick()
+    await fiche.vm.$nextTick()
+    expect(await auditer(fiche.element)).toEqual([])
+  })
+
   it('palette de commandes ouverte', async () => {
     const palette = mount(PaletteCommandes, { attachTo: document.body })
     usePalette().ouvrir()

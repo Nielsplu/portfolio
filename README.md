@@ -32,6 +32,8 @@ app/
 ├── demos/                  Démos interactives embarquées (registre + modules)
 │   ├── index.ts            Registre des démos (chargement paresseux)
 │   └── ftp/                Démo FTP : le vrai binaire Go tourne en WebAssembly
+├── schemas/                Schémas techniques (même registre paresseux)
+│   └── reseau/             Topologie SVG + données relevées dans les configs
 ├── utils/filtres.ts        Helpers génériques testés
 ├── assets/css/             Design system : tokens → base → components
 └── pages/index.vue         Rend les sections du registre
@@ -73,6 +75,12 @@ menu, **sans toucher ni la page ni la navigation**.
 
 **Ajouter une démo interactive** : créer `app/demos/<id>/`, l'inscrire dans
 `app/demos/index.ts`, puis mettre `demo: '<id>'` sur le projet concerné.
+
+**Ajouter un schéma technique** : même principe, dans `app/schemas/`. Il sert
+les projets qu'on ne peut pas « visiter » — une infrastructure réseau n'a pas
+d'URL. Le schéma `reseau` est reconstruit depuis les fichiers de configuration
+du dépôt d'origine : topologie en SVG, détails en HTML pour que le texte reste
+sélectionnable et lisible par un lecteur d'écran.
 
 **Rethemer** : tout passe par les variables de `app/assets/css/tokens.css`.
 
@@ -187,10 +195,10 @@ vivent dans `vitest.config.ts` et font échouer la CI.
 
 | | Instructions | Branches | Fonctions | Lignes |
 |---|---:|---:|---:|---:|
-| Utilitaires (`app/utils`) | 98,4 % | 96,5 % | 100 % | 100 % |
+| Utilitaires (`app/utils`) | 99,2 % | 98,2 % | 100 % | 100 % |
 | Composables (`app/composables`) | 96,8 % | 93,5 % | 93,9 % | 98,7 % |
-| Composants | 45,6 % | 39,0 % | 38,3 % | 48,5 % |
-| Plugins et sections | 42,1 % | 38,1 % | 42,9 % | 45,5 % |
+| Composants | 46,3 % | 42,6 % | 39,4 % | 48,9 % |
+| Schémas, plugins, sections | 70,3 % | 79,4 % | 66,7 % | 73,5 % |
 | Démos | 17,4 % | 20,1 % | 14,8 % | 17,7 % |
 
 La logique — utilitaires purs et composables — est tenue haut : c'est là que
