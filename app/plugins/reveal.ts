@@ -8,8 +8,21 @@
 // La classe `reveal` s'écrit dans le template et non dans getSSRProps :
 // injectée côté serveur seulement, elle manquait au vnode client et Vue
 // signalait un écart d'hydratation sur chaque élément animé.
+declare global {
+  interface Window {
+    /** Filet armé par le script de tête (voir nuxt.config.ts). */
+    __revelationSecours?: ReturnType<typeof setTimeout>
+  }
+}
+
 export default defineNuxtPlugin((nuxtApp) => {
   let observer: IntersectionObserver | undefined
+
+  if (import.meta.client) {
+    // Le bundle tourne : le filet qui devait dévoiler le contenu en cas
+    // d'échec de chargement n'a plus lieu d'être.
+    clearTimeout(window.__revelationSecours)
+  }
 
   if (import.meta.client && 'IntersectionObserver' in window) {
     observer = new IntersectionObserver(

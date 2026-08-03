@@ -176,6 +176,7 @@ vivent dans `vitest.config.ts` et font échouer la CI.
 | Utilitaires (`app/utils`) | 98,4 % | 96,5 % | 100 % | 100 % |
 | Composables (`app/composables`) | 96,8 % | 93,5 % | 93,9 % | 98,7 % |
 | Composants | 45,6 % | 39,0 % | 38,3 % | 48,5 % |
+| Plugins et sections | 42,1 % | 38,1 % | 42,9 % | 45,5 % |
 | Démos | 17,4 % | 20,1 % | 14,8 % | 17,7 % |
 
 La logique — utilitaires purs et composables — est tenue haut : c'est là que
