@@ -3,6 +3,7 @@ import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 import SchemaReseau from '~/schemas/reseau/SchemaReseau.vue'
 import { MARQUEURS, adressage, dhcp, dns, hotesDuVlan, pareFeu } from '~/schemas/reseau/donnees'
+import { BANDES, BOITES, LIENS } from '~/schemas/reseau/disposition'
 import { projets } from '~/content'
 import { schemas } from '~/schemas'
 
@@ -82,15 +83,26 @@ describe('données relevées dans les configs', () => {
 })
 
 describe('rendu du schéma', () => {
-  it('dessine une boîte et deux lignes de texte par hôte du VLAN', () => {
+  it('dessine une boîte par élément de la disposition', () => {
     const rendu = mount(SchemaReseau)
-    const groupes = rendu.findAll('.schema__svg g')
+    // Les rectangles du dessin : une bande par niveau, une boîte par élément.
+    expect(rendu.findAll('.schema__svg rect.boite')).toHaveLength(BOITES.length)
+    expect(rendu.findAll('.schema__svg rect.bande')).toHaveLength(BANDES.length)
+  })
 
-    expect(groupes).toHaveLength(hotesDuVlan.length)
+  it('nomme et adresse chaque machine du VLAN', () => {
+    const dessin = mount(SchemaReseau).get('.schema__svg').text()
     for (const hote of hotesDuVlan) {
-      expect(rendu.get('.schema__svg').text()).toContain(hote.nom)
-      expect(rendu.get('.schema__svg').text()).toContain(hote.ip)
+      expect(dessin, hote.nom).toContain(hote.nom)
+      expect(dessin, hote.ip).toContain(hote.ip)
     }
+  })
+
+  it('raccorde chaque machine par un trait', () => {
+    const rendu = mount(SchemaReseau)
+    // Un trait par lien, plus la ligne du bus.
+    expect(rendu.findAll('.schema__svg line')).toHaveLength(LIENS.length + 1)
+    expect(rendu.findAll('.schema__svg line.lien--logique')).toHaveLength(1)
   })
 
   it('donne un nom accessible au dessin', () => {

@@ -39,10 +39,10 @@ export default defineVitestConfig({
       // Go, le second s'appuie dessus. Les exclure gonflerait le chiffre sans
       // rien prouver ; ils restent comptés, à découvert assumé.
       thresholds: {
-        statements: 42,
-        branches: 41,
-        functions: 42,
-        lines: 43,
+        statements: 44,
+        branches: 40,
+        functions: 43,
+        lines: 45,
 
         'app/utils/**': {
           statements: 99,

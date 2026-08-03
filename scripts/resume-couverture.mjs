@@ -24,6 +24,7 @@ const LOTS = [
   ['Utilitaires', 'app/utils/'],
   ['Composables', 'app/composables/'],
   ['Composants', 'app/components/'],
+  ['Schémas', 'app/schemas/'],
   ['Démos', 'app/demos/'],
   ['Autres', ''],
 ]
