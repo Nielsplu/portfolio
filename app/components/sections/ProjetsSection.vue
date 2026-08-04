@@ -86,6 +86,17 @@ async function fermerFiche() {
   carteMorphee.value = null
 }
 
+/**
+ * Démo lancée depuis la fiche : on referme celle-ci d'abord. Deux fenêtres
+ * modales empilées désorientent, et la seconde piégerait le focus de la
+ * première.
+ */
+async function ouvrirDemoDepuisFiche() {
+  const id = projetOuvert.value?.demo
+  await fermerFiche()
+  ouvrirDemo(id)
+}
+
 function ouvrirDemo(id: DemoId | undefined) {
   if (!id) return
   history.pushState(null, '', PREFIXE_DEMO + id)
@@ -161,7 +172,11 @@ onMounted(() => {
       />
     </div>
 
-    <ProjetDetail :projet="projetOuvert" @fermer="fermerFiche" />
+    <ProjetDetail
+      :projet="projetOuvert"
+      @fermer="fermerFiche"
+      @ouvrir-demo="ouvrirDemoDepuisFiche"
+    />
 
     <component
       :is="demos[demoOuverte]"

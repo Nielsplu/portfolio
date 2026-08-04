@@ -5,7 +5,7 @@ import { schemas } from '~/schemas'
 // <dialog> + showModal() plutôt qu'une div stylée : le navigateur fournit le
 // piégeage du focus, la fermeture par Échap et l'inertie de l'arrière-plan.
 const props = defineProps<{ projet: Projet | null }>()
-const emit = defineEmits<{ fermer: [] }>()
+const emit = defineEmits<{ fermer: [], 'ouvrir-demo': [] }>()
 
 const corps = ref<HTMLElement>()
 const idTitre = useId()
@@ -68,17 +68,8 @@ const { dialogue, attributs } = useModale({
         <TechList :items="projet.tags" :label="`Technologies du projet ${projet.titre}`" />
       </section>
 
-      <footer v-if="projet.liens?.length || projet.codePrive" class="fiche__actions">
-        <a
-          v-for="lien in projet.liens"
-          :key="lien.url"
-          class="btn btn--primary"
-          :href="lien.url"
-          target="_blank"
-          rel="noopener"
-          :aria-label="`${lien.label} — ${projet.titre} (nouvel onglet)`"
-        >{{ lien.label }} <span aria-hidden="true">↗</span></a>
-        <span v-if="projet.codePrive" class="fiche__prive">Code privé</span>
+      <footer class="fiche__actions">
+        <ProjetActions :projet="projet" variante="fiche" @ouvrir-demo="emit('ouvrir-demo')" />
       </footer>
     </div>
   </dialog>
@@ -106,14 +97,32 @@ const { dialogue, attributs } = useModale({
   view-transition-name: fiche-projet;
   max-height: inherit;
   overflow-y: auto;
-  padding: clamp(1.4rem, 4vw, 2.2rem);
+  /* Repris par l'en-tête collant, qui doit déborder de ce rembourrage pour le
+     couvrir en entier. */
+  --fiche-pad: clamp(1.4rem, 4vw, 2.2rem);
+  padding: var(--fiche-pad);
 }
+/* L'en-tête suit le défilement : sur mobile, la croix sortait de l'écran dès
+   qu'on descendait dans une fiche longue, et il ne restait que les quelques
+   pixels de marge autour du cadre pour refermer. Le fond est opaque, sinon le
+   contenu défilerait visiblement dessous. */
+/* L'en-tête suit le défilement : sur mobile, la croix sortait de l'écran dès
+   qu'on descendait dans une fiche longue, et il ne restait que les quelques
+   pixels de marge autour du cadre pour refermer.
+   Les marges négatives lui font couvrir le rembourrage du corps, sans quoi le
+   contenu défilerait visiblement dans l'espace resté au-dessus. */
 .fiche__entete {
+  position: sticky;
+  top: calc(-1 * var(--fiche-pad));
+  z-index: 1;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--esp-4);
-  margin-bottom: var(--esp-5);
+  margin: calc(-1 * var(--fiche-pad)) calc(-1 * var(--fiche-pad)) var(--esp-5);
+  padding: var(--fiche-pad) var(--fiche-pad) var(--esp-3);
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
 }
 .fiche__categorie {
   font-family: var(--font-mono);
@@ -177,21 +186,7 @@ const { dialogue, attributs } = useModale({
 }
 .fiche__liste li { margin-bottom: var(--esp-2); }
 .fiche__liste li::marker { color: var(--accent); }
-.fiche__actions {
-  display: flex;
-  gap: var(--esp-3);
-  flex-wrap: wrap;
-  align-items: center;
-  padding-top: var(--esp-2);
-}
-.fiche__prive {
-  border: 1.5px dashed var(--line);
-  border-radius: var(--radius-sm);
-  padding: var(--esp-2) var(--esp-4);
-  font-family: var(--font-mono);
-  font-size: var(--txt-xs);
-  color: var(--muted);
-}
+.fiche__actions { padding-top: var(--esp-2); }
 
 /* ---- Galerie ---- */
 .galerie {
