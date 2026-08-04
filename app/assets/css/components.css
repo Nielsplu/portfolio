@@ -91,6 +91,12 @@
     min-height: 44px;
   }
 
+  /* Les sélecteurs de port du terminal étaient hors de la règle, qui couvrait
+     pourtant la croix de fermeture juste à côté d'eux. */
+  .terminal__ports button {
+    min-height: 44px;
+  }
+
   /* iOS zoome la page entière dès qu'on touche un champ dont la police fait
      moins de 16 px. Le terminal en affichait 13 : le site sautait au premier
      appui sur la zone de saisie. La chasse fixe reste, seule la taille change. */

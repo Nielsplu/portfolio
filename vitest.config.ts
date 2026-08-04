@@ -40,8 +40,8 @@ export default defineVitestConfig({
       // rien prouver ; ils restent comptés, à découvert assumé.
       thresholds: {
         statements: 44,
-        branches: 40,
-        functions: 43,
+        branches: 42,
+        functions: 44,
         lines: 45,
 
         'app/utils/**': {
