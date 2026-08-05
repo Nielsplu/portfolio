@@ -110,14 +110,35 @@ function fermerDemo() {
   }
 }
 
-onMounted(() => {
+/** Aligne l'état sur l'adresse et amène la section derrière la fenêtre. */
+function synchroniserEtCadrer() {
   synchroniser()
   // Lien partagé : la section doit être à l'écran derrière la fenêtre.
   if (projetOuvert.value || demoOuverte.value) {
     document.getElementById('projets')?.scrollIntoView({ block: 'start' })
   }
+}
+
+onMounted(() => {
+  synchroniserEtCadrer()
+
+  // Sur la page prérendue, `window.location.hash` n'est pas encore restitué
+  // quand `onMounted` s'exécute : un lien partagé ouvrait la page sans ouvrir
+  // la fiche. Le hash arrive au tour de boucle suivant, et sans `hashchange`
+  // puisqu'il s'agit d'une restitution et non d'une navigation. On relit donc
+  // une fois la main rendue au navigateur.
+  //
+  // Invisible en dev, où le hash est là dès le montage. Constaté en servant
+  // deux builds statiques côte à côte, avec et sans cette relecture.
+  const relecture = setTimeout(synchroniserEtCadrer, 0)
+
+  // `pushState` et `replaceState` n'informent pas le routeur : l'événement
+  // natif reste nécessaire pour le Précédent et les changements d'ancre.
   window.addEventListener('hashchange', synchroniser)
-  onBeforeUnmount(() => window.removeEventListener('hashchange', synchroniser))
+  onBeforeUnmount(() => {
+    clearTimeout(relecture)
+    window.removeEventListener('hashchange', synchroniser)
+  })
 })
 </script>
 
