@@ -36,21 +36,21 @@
     "verify:budget": "node scripts/budget-poids.mjs"
   },
   "devDependencies": {
-    "@nuxt/eslint": "^1.16.0",
+    "@nuxt/eslint": "^1.17.0",
     "@nuxt/fonts": "^0.14.0",
     "@nuxt/image": "^2.1.0",
     "@nuxt/test-utils": "^4.1.0",
-    "@vitest/coverage-v8": "^4.1.10",
-    "@vitest/eslint-plugin": "^1.6.24",
+    "@vitest/coverage-v8": "^4.1.11",
+    "@vitest/eslint-plugin": "^1.6.27",
     "@vue/test-utils": "^2.4.11",
-    "axe-core": "^4.12.1",
-    "eslint": "^10.8.0",
-    "happy-dom": "^20.11.1",
-    "nuxt": "^4.5.1",
+    "axe-core": "^4.13.0",
+    "eslint": "^10.9.0",
+    "happy-dom": "^20.11.6",
+    "nuxt": "^4.5.2",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.10",
-    "vue": "^3.5.0",
-    "vue-tsc": "^3.3.9"
+    "vitest": "^4.1.11",
+    "vue": "^3.5.41",
+    "vue-tsc": "^3.3.11"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
@@ -60,6 +60,6 @@
     ]
   },
   "dependencies": {
-    "simple-icons": "^16.27.1"
+    "simple-icons": "^16.28.0"
   }
 }
