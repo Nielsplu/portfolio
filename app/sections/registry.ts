@@ -39,7 +39,3 @@ export interface Section {
 export const sections: Section[] = ordreSections
   .filter(s => composants[s.id])
   .map(s => ({ ...s, component: composants[s.id]! }))
-
-// Réexporté pour ne pas casser les imports existants ; la définition vit dans
-// ./ordre.ts, avec le reste de ce qui dérive de l'ordre.
-export { liensNavigation, numeroSection } from './ordre'

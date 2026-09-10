@@ -60,7 +60,7 @@ const hotes: Boite[] = hotesDuVlan.map((hote, i) => ({
   badge: BADGES[hote.nom],
 }))
 
-export const ROUTEUR: Boite = {
+const ROUTEUR: Boite = {
   id: 'routeur',
   x: 250,
   y: 176,
@@ -71,7 +71,7 @@ export const ROUTEUR: Boite = {
   accent: true,
 }
 
-export const EXTERNE: Boite = {
+const EXTERNE: Boite = {
   id: 'externe',
   x: 300,
   y: 40,
@@ -82,7 +82,7 @@ export const EXTERNE: Boite = {
 }
 
 /** Le pare-feu est un panneau et non une boîte réseau : il n'a pas d'adresse. */
-export const PARE_FEU: Boite = {
+const PARE_FEU: Boite = {
   id: 'pare-feu',
   x: 570,
   y: 176,

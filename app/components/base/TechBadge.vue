@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { SimpleIcon } from 'simple-icons'
+import type { IconeTech } from '~/content/tech'
 import { techIcons } from '~/content/tech'
 import { couleurLisible } from '~/utils/couleurs'
 
@@ -10,7 +10,7 @@ const props = defineProps<{
   justificatif?: string
 }>()
 // Logo si la techno est connue du registre, sinon simple badge texte.
-const icon = computed<SimpleIcon | undefined>(() => techIcons[props.label])
+const icon = computed<IconeTech | undefined>(() => techIcons[props.label])
 
 // Calculées ici et non en CSS : elles dépendent de la teinte de chaque marque.
 // Ne dépend que des données de l'icône, donc stable à l'hydratation.

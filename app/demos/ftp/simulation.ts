@@ -31,7 +31,7 @@ export interface ResultatCommande {
 // le composant anime une barre de progression pour ces fichiers-là.
 export const SEUIL_GROS_FICHIER = 1 << 20
 
-export const AIDE = [
+const AIDE = [
   'Commandes disponibles :',
   '  List              liste le dossier courant',
   '  Cd <dossier>      change de dossier (Cd .. pour remonter, Cd seul pour la racine)',
