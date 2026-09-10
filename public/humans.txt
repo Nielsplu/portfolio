@@ -1,0 +1,15 @@
+/* AUTEUR */
+
+Développeur : Niels Plu
+Rôle : Étudiant en BUT Informatique — développement web & sécurité des SI
+Localisation : Nantes, France
+GitHub : https://github.com/Nielsplu
+Site : https://nielsplu.github.io/portfolio/
+
+/* SITE */
+
+Stack : Nuxt 4, Vue 3, TypeScript
+Style : CSS maison (aucun framework), design tokens, thème clair/sombre
+Qualité : ESLint, Vitest, vue-tsc, axe-core, budget de poids, Lighthouse
+Livraison : GitHub Actions, GitHub Pages
+Langue : Français

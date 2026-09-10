@@ -118,6 +118,11 @@ export default defineNuxtConfig({
       ],
       link: [
         { rel: 'icon', type: 'image/svg+xml', href: `${baseURL}favicon.svg` },
+        // Rend le site installable (PWA) : nom, couleurs et icône. L'icône SVG
+        // est acceptée par les navigateurs modernes ; à défaut, le site reste
+        // pleinement fonctionnel (amélioration progressive).
+        { rel: 'manifest', href: `${baseURL}site.webmanifest` },
+        { rel: 'author', href: `${baseURL}humans.txt` },
         { rel: 'canonical', href: siteUrl },
       ],
     },
