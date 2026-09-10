@@ -1,0 +1,19 @@
+{
+  "name": "Niels Plu — Portfolio",
+  "short_name": "Niels Plu",
+  "description": "Portfolio de Niels Plu — développement web et sécurité des systèmes d'information.",
+  "lang": "fr",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#f6f8fb",
+  "theme_color": "#1f4e79",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any maskable"
+    }
+  ]
+}
