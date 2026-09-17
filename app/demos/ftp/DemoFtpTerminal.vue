@@ -137,6 +137,60 @@ function completerSaisie(evenement: KeyboardEvent) {
 }
 
 // ------------------------------------------------------------------
+// Explorateur : le dossier courant, cliquable. Rend la démo utilisable sans
+// rien taper (un visiteur non technique explore et télécharge à la souris),
+// et montre visuellement l'effet des commandes tapées, y compris Hide/Reveal.
+// ------------------------------------------------------------------
+
+// Le FS virtuel n'est pas réactif : ce compteur, incrémenté après chaque
+// commande et à chaque réponse du serveur, force la relecture du dossier.
+const versionFs = ref(0)
+function rafraichirFs() {
+  versionFs.value++
+}
+
+const entreesAffichees = computed<EntreesDossier>(() => {
+  // Dépendances réactives explicites : relecture après commande, changement de
+  // dossier, de port ou de mode.
+  void versionFs.value
+  void cheminCourant.value
+  void port.value
+  if (!connecte.value || chargement.value) return { dossiers: [], fichiers: [], masques: [] }
+  return entreesDuDossier()
+})
+
+const estRacine = computed(() => cheminCourant.value === '')
+/** '' → ['data'] ; '/important/test' → ['data', 'important', 'test']. */
+const filDAriane = computed(() => ['data', ...cheminCourant.value.split('/').filter(Boolean)])
+
+function refocus() {
+  champ.value?.focus()
+}
+function ouvrirDossier(nom: string) {
+  lancerCommande(`Cd ${nom}`)
+  refocus()
+}
+function remonter() {
+  lancerCommande('Cd ..')
+  refocus()
+}
+/** Remonte jusqu'au segment cliqué du fil d'Ariane (Cd .. répétés). */
+function remonterVers(index: number) {
+  const remontees = filDAriane.value.length - 1 - index
+  for (let i = 0; i < remontees; i++) lancerCommande('Cd ..')
+  refocus()
+}
+/** Clic sur un fichier : télécharger (port client) ou masquer (port admin). */
+function actionnerFichier(nom: string) {
+  lancerCommande(port.value === '4444' && mode.value === 'reel' ? `Hide ${nom}` : `Get ${nom}`)
+  refocus()
+}
+function revelerFichier(nom: string) {
+  lancerCommande(`Reveal ${nom}`)
+  refocus()
+}
+
+// ------------------------------------------------------------------
 // Mode réel : pilotage du binaire wasm compilé depuis Nielsplu/ftp-go.
 // ------------------------------------------------------------------
 
@@ -197,6 +251,8 @@ function connecterReel() {
         const donnees = lireFichierVirtuel(`/downloads/${nom}`)
         if (donnees) livrerFichier(nom, donnees)
       }
+      // Le serveur a répondu : le FS a pu changer (Hide/Reveal). On relit.
+      rafraichirFs()
     },
     cwd(vers) {
       cheminCourant.value = vers
@@ -325,20 +381,12 @@ async function executerSimulation(commande: string) {
 
 // ------------------------------------------------------------------
 
-function soumettre() {
-  if (chargement.value) return
-  const commande = saisie.value
-  saisie.value = ''
-
-  if (!connecte.value) {
-    if (mode.value === 'reel') connecterReel()
-    else {
-      connecterSimulation()
-      ecrire('Reconnecté.', 'terminal__ligne--sys')
-    }
-    return
-  }
-  if (!commande.trim()) return
+/**
+ * Exécute une commande déjà connue (saisie validée, clic dans l'explorateur ou
+ * le fil d'Ariane). Suppose une session ouverte.
+ */
+function lancerCommande(commande: string) {
+  if (chargement.value || !connecte.value || !commande.trim()) return
   memoriser(commande)
 
   if (mode.value === 'reel') {
@@ -352,8 +400,24 @@ function soumettre() {
     window.__ftpgo?.send(commande)
   }
   else {
-    void executerSimulation(commande)
+    void executerSimulation(commande).then(rafraichirFs)
   }
+}
+
+function soumettre() {
+  if (chargement.value) return
+  const commande = saisie.value
+  saisie.value = ''
+
+  if (!connecte.value) {
+    if (mode.value === 'reel') connecterReel()
+    else {
+      connecterSimulation()
+      ecrire('Reconnecté.', 'terminal__ligne--sys')
+    }
+    return
+  }
+  lancerCommande(commande)
 }
 
 function fermer() {
@@ -438,28 +502,85 @@ onBeforeUnmount(nettoyer)
       />
     </div>
 
-    <div ref="sortie" class="terminal__sortie" @click="champ?.focus()">
-      <p v-for="(l, i) in lignes" :key="i" class="terminal__ligne" :class="l.classe">{{ l.texte }}</p>
-    </div>
+    <div class="terminal__corps" :class="{ 'terminal__corps--avec-explorateur': connecte && !chargement }">
+      <!-- Explorateur : le dossier courant, cliquable. Un visiteur explore et
+           télécharge à la souris ; les commandes tapées s'y reflètent aussi. -->
+      <aside v-if="connecte && !chargement" class="explorateur" aria-label="Explorateur de fichiers">
+        <nav class="explorateur__fil" aria-label="Chemin">
+          <button
+            v-for="(seg, i) in filDAriane"
+            :key="i"
+            type="button"
+            class="explorateur__segment"
+            :disabled="i === filDAriane.length - 1"
+            @click="remonterVers(i)"
+          >{{ seg }}</button>
+        </nav>
 
-    <form class="terminal__invite" @submit.prevent="soumettre">
-      <!-- Prompt identique à la TUI native : "<chemin>/ $ " -->
-      <label class="terminal__prompt" for="demo-ftp-champ">{{ connecte && mode === 'reel' ? `${cheminCourant}/ $` : '$' }}</label>
-      <input
-        id="demo-ftp-champ"
-        ref="champ"
-        v-model="saisie"
-        class="terminal__champ"
-        type="text"
-        autocomplete="off"
-        spellcheck="false"
-        maxlength="156"
-        :placeholder="connecte ? 'Entrez une commande' : 'Entrée pour se reconnecter'"
-        @keydown.up.prevent="historiquePrecedent"
-        @keydown.down.prevent="historiqueSuivant"
-        @keydown.tab.exact="completerSaisie"
-      >
-    </form>
+        <ul class="explorateur__liste">
+          <li v-if="!estRacine">
+            <button type="button" class="explorateur__entree explorateur__entree--dossier" @click="remonter">
+              <span class="explorateur__icone" aria-hidden="true">↩</span>
+              <span class="explorateur__nom">..</span>
+            </button>
+          </li>
+          <li v-for="d in entreesAffichees.dossiers" :key="`d-${d}`">
+            <button type="button" class="explorateur__entree explorateur__entree--dossier" @click="ouvrirDossier(d)">
+              <span class="explorateur__icone" aria-hidden="true">▸</span>
+              <span class="explorateur__nom">{{ d }}</span>
+            </button>
+          </li>
+          <li v-for="f in entreesAffichees.fichiers" :key="`f-${f}`">
+            <button
+              type="button"
+              class="explorateur__entree"
+              :title="port === '4444' && mode === 'reel' ? `Masquer ${f}` : `Télécharger ${f}`"
+              @click="actionnerFichier(f)"
+            >
+              <span class="explorateur__icone" aria-hidden="true">▪</span>
+              <span class="explorateur__nom">{{ f }}</span>
+              <span class="explorateur__action" aria-hidden="true">{{ port === '4444' && mode === 'reel' ? 'Hide' : '↓' }}</span>
+            </button>
+          </li>
+          <li v-for="m in (port === '4444' && mode === 'reel' ? entreesAffichees.masques : [])" :key="`m-${m}`">
+            <button type="button" class="explorateur__entree explorateur__entree--masque" :title="`Révéler ${m}`" @click="revelerFichier(m)">
+              <span class="explorateur__icone" aria-hidden="true">▫</span>
+              <span class="explorateur__nom">{{ m }}</span>
+              <span class="explorateur__action" aria-hidden="true">Reveal</span>
+            </button>
+          </li>
+        </ul>
+
+        <p class="explorateur__aide">
+          {{ port === '4444' && mode === 'reel' ? 'Admin — clic : masquer / révéler' : 'Dossier : ouvrir · fichier : télécharger' }}
+        </p>
+      </aside>
+
+      <div class="terminal__main">
+        <div ref="sortie" class="terminal__sortie" @click="champ?.focus()">
+          <p v-for="(l, i) in lignes" :key="i" class="terminal__ligne" :class="l.classe">{{ l.texte }}</p>
+        </div>
+
+        <form class="terminal__invite" @submit.prevent="soumettre">
+          <!-- Prompt identique à la TUI native : "<chemin>/ $ " -->
+          <label class="terminal__prompt" for="demo-ftp-champ">{{ connecte && mode === 'reel' ? `${cheminCourant}/ $` : '$' }}</label>
+          <input
+            id="demo-ftp-champ"
+            ref="champ"
+            v-model="saisie"
+            class="terminal__champ"
+            type="text"
+            autocomplete="off"
+            spellcheck="false"
+            maxlength="156"
+            :placeholder="connecte ? 'Entrez une commande' : 'Entrée pour se reconnecter'"
+            @keydown.up.prevent="historiquePrecedent"
+            @keydown.down.prevent="historiqueSuivant"
+            @keydown.tab.exact="completerSaisie"
+          >
+        </form>
+      </div>
+    </div>
 
     <p class="terminal__note">
       <template v-if="mode === 'reel'">
@@ -477,7 +598,7 @@ onBeforeUnmount(nettoyer)
 
 <style scoped>
 .terminal {
-  width: min(720px, 94vw);
+  width: min(900px, 96vw);
   border: 1px solid var(--line);
   border-radius: var(--radius);
   padding: 0;
@@ -549,6 +670,93 @@ onBeforeUnmount(nettoyer)
 @media (prefers-reduced-motion: reduce) {
   .terminal__progression-barre--indeterminee { animation: none; width: 100%; opacity: 0.5; }
 }
+/* Corps : explorateur (optionnel) + terminal. Une seule colonne quand
+   l'explorateur est absent, pour ne pas laisser de gouttière vide. */
+.terminal__corps {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+.terminal__corps--avec-explorateur {
+  grid-template-columns: minmax(0, 190px) minmax(0, 1fr);
+}
+.terminal__main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* ---- Explorateur ---- */
+.explorateur {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border-right: 1px solid rgba(226, 233, 241, 0.12);
+  background: rgba(143, 180, 216, 0.04);
+}
+.explorateur__fil {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.1rem;
+  padding: var(--esp-2) var(--esp-3);
+  border-bottom: 1px solid rgba(226, 233, 241, 0.1);
+  font-family: var(--font-mono);
+  font-size: var(--txt-2xs);
+}
+.explorateur__segment {
+  border: none;
+  background: none;
+  color: #8fb4d8;
+  font: inherit;
+  padding: 0;
+  cursor: pointer;
+}
+.explorateur__segment:disabled { color: #d7e2ec; cursor: default; }
+.explorateur__segment:not(:last-child)::after { content: '/'; color: rgba(215, 226, 236, 0.4); margin: 0 0.1rem; }
+.explorateur__segment:not(:disabled):hover { text-decoration: underline; }
+.explorateur__liste {
+  flex: 1;
+  overflow-y: auto;
+  list-style: none;
+  margin: 0;
+  padding: var(--esp-1) 0;
+}
+.explorateur__entree {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  width: 100%;
+  border: none;
+  background: none;
+  color: #c9d6e5;
+  font-family: var(--font-mono);
+  font-size: var(--txt-2xs);
+  text-align: left;
+  padding: 0.28rem var(--esp-3);
+  cursor: pointer;
+}
+.explorateur__entree:hover { background: rgba(143, 180, 216, 0.12); color: #fff; }
+.explorateur__icone { color: #8fb4d8; flex-shrink: 0; }
+.explorateur__entree--dossier .explorateur__icone { color: #f6a96e; }
+.explorateur__nom { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.explorateur__action { flex-shrink: 0; color: rgba(215, 226, 236, 0.4); }
+.explorateur__entree:hover .explorateur__action { color: #7ee0a3; }
+.explorateur__entree--masque { color: rgba(215, 226, 236, 0.4); font-style: italic; }
+.explorateur__aide {
+  margin: 0;
+  padding: var(--esp-2) var(--esp-3);
+  border-top: 1px solid rgba(226, 233, 241, 0.1);
+  font-size: var(--txt-2xs);
+  color: rgba(215, 226, 236, 0.45);
+  line-height: 1.4;
+}
+/* Sur mobile, l'explorateur passe au-dessus du terminal, hauteur limitée. */
+@media (max-width: 640px) {
+  .terminal__corps--avec-explorateur { grid-template-columns: 1fr; }
+  .explorateur { border-right: none; border-bottom: 1px solid rgba(226, 233, 241, 0.12); }
+  .explorateur__liste { max-height: 120px; }
+}
+
 .terminal__sortie {
   height: min(46vh, 380px);
   overflow-y: auto;
