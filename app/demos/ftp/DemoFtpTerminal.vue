@@ -2,6 +2,7 @@
 import type { EntreesDossier } from '~/demos/ftp/completion'
 import type { EtatDemo, Telechargement } from '~/demos/ftp/simulation'
 import { COMMANDES_ADMIN, COMMANDES_CLIENT, COMMANDES_SIMULATION, completer } from '~/demos/ftp/completion'
+import { commandeFichier, filAriane, remonteesVers } from '~/demos/ftp/explorateur'
 import { SEUIL_GROS_FICHIER, creerEtat, entreesPourCompletion, executerCommande, formatTaille, invite } from '~/demos/ftp/simulation'
 import { connecterFtpWasm, deconnecterFtpWasm, demarrerFtpWasm, lireFichierVirtuel, listerDossierVirtuel, listerMasquesVirtuels } from '~/demos/ftp/wasm'
 
@@ -160,8 +161,7 @@ const entreesAffichees = computed<EntreesDossier>(() => {
 })
 
 const estRacine = computed(() => cheminCourant.value === '')
-/** '' → ['data'] ; '/important/test' → ['data', 'important', 'test']. */
-const filDAriane = computed(() => ['data', ...cheminCourant.value.split('/').filter(Boolean)])
+const filDAriane = computed(() => filAriane(cheminCourant.value))
 
 function refocus() {
   champ.value?.focus()
@@ -176,13 +176,13 @@ function remonter() {
 }
 /** Remonte jusqu'au segment cliqué du fil d'Ariane (Cd .. répétés). */
 function remonterVers(index: number) {
-  const remontees = filDAriane.value.length - 1 - index
+  const remontees = remonteesVers(filDAriane.value, index)
   for (let i = 0; i < remontees; i++) lancerCommande('Cd ..')
   refocus()
 }
 /** Clic sur un fichier : télécharger (port client) ou masquer (port admin). */
 function actionnerFichier(nom: string) {
-  lancerCommande(port.value === '4444' && mode.value === 'reel' ? `Hide ${nom}` : `Get ${nom}`)
+  lancerCommande(commandeFichier(nom, port.value === '4444' && mode.value === 'reel'))
   refocus()
 }
 function revelerFichier(nom: string) {
