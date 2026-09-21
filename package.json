@@ -39,10 +39,10 @@
     "@nuxt/eslint": "^1.16.0",
     "@nuxt/fonts": "^0.14.0",
     "@nuxt/image": "^2.1.0",
-    "@nuxt/test-utils": "^4.2.0",
+    "@nuxt/test-utils": "^4.3.2",
     "@vitest/coverage-v8": "^4.1.10",
     "@vitest/eslint-plugin": "^1.6.27",
-    "@vue/test-utils": "^2.5.0",
+    "@vue/test-utils": "^2.5.1",
     "axe-core": "^4.13.0",
     "eslint": "^10.10.0",
     "happy-dom": "^20.14.3",
@@ -60,6 +60,6 @@
     ]
   },
   "dependencies": {
-    "simple-icons": "^16.30.0"
+    "simple-icons": "^16.31.0"
   }
 }
